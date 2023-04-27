@@ -1,0 +1,26 @@
+{
+  "name": "raain-ui-example",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "start": "npm run clean && npm i && parcel example.html",
+    "build": "parcel build example.html",
+    "clean": "rm -rf .parcel-cache dist node_modules",
+    "parcel": "parcel example.html"
+  },
+  "dependencies": {
+    "@kurkle/color": "^0.3.2",
+    "chart.js": "^4.2.1",
+    "chartjs-plugin-dragdata": "^2.2.5",
+    "geolib": "^3.3.3",
+    "leaflet": "^1.9.3",
+    "pixi.js": "^5.3.12",
+    "raain-ui": "../dist"
+  },
+  "devDependencies": {
+    "parcel": "^2.8.3",
+    "punycode": "^1.4.1",
+    "querystring-es3": "^0.2.1"
+  },
+  "keywords": []
+}

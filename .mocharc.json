@@ -1,0 +1,4 @@
+{
+  "require": "./tools/register.js",
+  "reporter": "dot"
+}
