@@ -1,6 +1,6 @@
 import {LatLng, Point} from 'leaflet';
 
-import {expect} from "chai";
+import {expect} from 'chai';
 import {CartesianDrawer, CartesianGridValue, CartesianMapValue, PolarMapValue} from '../../src';
 
 describe('CartesianDrawer', () => {
@@ -24,7 +24,7 @@ describe('CartesianDrawer', () => {
             },
             'rain');
 
-        expect(cartesianDrawer.renderCartesianMapValues(new LatLng(0, 0), new Point(0,0),null)).eq(0);
+        expect(cartesianDrawer.renderCartesianMapValues(new LatLng(0, 0), new Point(0, 0), null)).eq(0);
     });
 
     it('should render a basic PolarMapValues without optimization', async () => {
@@ -41,12 +41,12 @@ describe('CartesianDrawer', () => {
         const spy = {drawn: 0, values: []};
         const spyDrawing = (gridValue: CartesianGridValue) => {
             spy.drawn++;
-            spy.values.push({gridValue: gridValue});
+            spy.values.push({gridValue});
             return true;
         };
         cartesianDrawer.setConfiguration(0, 0, 40001);
 
-        expect(cartesianDrawer.renderCartesianMapValues(new LatLng(0.001, 0.001), new Point(0,0), spyDrawing)).eq(50);
+        expect(cartesianDrawer.renderCartesianMapValues(new LatLng(0.001, 0.001), new Point(0, 0), spyDrawing)).eq(50);
         expect(spy.drawn).eq(50);
         expect(spy.values.length).eq(50);
 
