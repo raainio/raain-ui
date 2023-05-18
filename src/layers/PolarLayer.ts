@@ -88,7 +88,7 @@ export class PolarLayer implements IPixiUniqueLayer {
         if (this.addSomeDebugInfos) {
             const pixiText = new Text('PixiPolar ' + this.getId(), {
                 fontFamily: 'Arial',
-                fontSize: 24,
+                fontSize: 14,
                 fill: 0xff1010,
                 align: 'center',
             });

@@ -1,6 +1,6 @@
 import {icon, IconOptions, layerGroup, LayerGroup, Map, Marker, marker, MarkerOptions} from 'leaflet';
-import {PolarMapValue} from '../tools/PolarMapValue';
-import {IPixiLayer} from "./IPixiLayer";
+import {IPixiLayer} from './IPixiLayer';
+import {MapLatLng} from '../tools/MapLatLng';
 
 export class MarkersLayer implements IPixiLayer {
 
@@ -21,7 +21,7 @@ export class MarkersLayer implements IPixiLayer {
         }
 
         if (!map.hasLayer(this._layerGroup)) {
-            map.addLayer(this._layerGroup)
+            map.addLayer(this._layerGroup);
         }
     }
 
@@ -43,7 +43,7 @@ export class MarkersLayer implements IPixiLayer {
         this._height = height;
     }
 
-    public render(markers: PolarMapValue[]): LayerGroup {
+    public render(markers: MapLatLng[]): LayerGroup {
         if (this._layerGroup) {
             this._layerGroup.clearLayers();
         }
@@ -71,7 +71,11 @@ export class MarkersLayer implements IPixiLayer {
             y = markerToDisplay.lng;
 
             if (x !== undefined && !isNaN(x) && y !== undefined && !isNaN(y)) {
-                const options: MarkerOptions = {icon: iconL, title: markerToDisplay.name, alt: markerToDisplay.id};
+                const options: MarkerOptions = {
+                    // icon: iconL,
+                    title: markerToDisplay.name,
+                    alt: markerToDisplay.id
+                };
                 ms.push(marker([x, y], options));
             } else {
                 // implement your own error handling

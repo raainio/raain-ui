@@ -1,15 +1,14 @@
 import {canvas, LatLng, map, tileLayer} from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import {CartesianLayer} from '../layers/CartesianLayer';
 import {TimeframeContainers} from '../timeframes/TimeframeContainers';
 import {PolarLayer} from '../layers/PolarLayer';
 import {MarkersLayer} from '../layers/MarkersLayer';
 import {CompositeLayer} from '../layers/CompositeLayer';
 import {PolarLayerConfig} from '../layers/PolarLayerConfig';
-import {PolarMapValue} from '../tools/PolarMapValue';
 import colorLib from '@kurkle/color';
-import Chart from 'chart.js/auto';
+import Chart, {ChartTypeRegistry} from 'chart.js/auto';
 import chartDragData from 'chartjs-plugin-dragdata';
+import {MapLatLng} from '../tools/MapLatLng';
 
 const CHART_COLORS = {
     red: 'rgb(255, 99, 132)',
@@ -29,37 +28,37 @@ function getTransparency(value, opacity) {
 export class ElementsFactory {
 
     constructor(
-        public center: LatLng | { lat: number, lng: number } | { latitude: number, longitude: number } | any,
+        public center: LatLng | { lat: number, lng: number } | { latitude: number, longitude: number } | any = {lat: 0, lng: 0},
         protected addSomeDebugInfos = false,
     ) {
-        const lat = this.center.lat || this.center.latitude;
-        const lng = this.center.lng || this.center.longitude;
+        const lat = typeof this.center.lat !== 'undefined' ? this.center.lat : this.center.latitude;
+        const lng = typeof this.center.lng !== 'undefined' ? this.center.lng : this.center.longitude;
         this.center = new LatLng(lat, lng);
     }
 
     public createMap(element: HTMLElement,
-                     markers: PolarMapValue[] = [],
+                     markers: MapLatLng[] = [],
                      timeframeContainers: TimeframeContainers = null) {
 
-        let markersLayer;
-        let compositeLayer;
+        let markersLayer: MarkersLayer;
+        let compositeLayer: CompositeLayer;
         const mapLeaflet = map(element, {
             preferCanvas: true, zoomControl: true, zoomAnimation: true, trackResize: false, boxZoom: false,
             renderer: canvas(),
         }).setView([this.center.lat, this.center.lng], 10);
 
-        tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy;<a href="https://www.openstreetmap.org/copyright">osm</a>',
-        }).addTo(mapLeaflet);
+        // tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        //    attribution: '&copy;<a href="https://www.openstreetmap.org/copyright">osm</a>',
+        // }).addTo(mapLeaflet);
 
         //   // https://leaflet-extras.github.io/leaflet-providers/preview/
         //     const OpenTopoMap = tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
         //       maxZoom: 17,
         //       attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-        //         '<a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> ' +
+        //    '<a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> ' +
         //         '(<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
         //     });
-        //     const Stamen_TerrainBackground = tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}{r}.{ext}',
+        //  const Stamen_TerrainBackground = tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}{r}.{ext}',
         //       {
         //         attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
         //           '<a href="http://creativecommons.org/licenses/by/3.0">' +
@@ -70,13 +69,12 @@ export class ElementsFactory {
         //         maxZoom: 18,
         //         // ext: 'png'
         //       });
-        //     const Esri_WorldTopoMap = tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile' +
-        //       '/{z}/{y}/{x}',
-        //       {
-        //         attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, ' +
-        //           'Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
-        //       });
-        //     Esri_WorldTopoMap.addTo(this.map);
+        const Esri_WorldTopoMap = tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile' +
+            '/{z}/{y}/{x}',
+            {
+                attribution: '&copy;arcgis',
+            });
+        Esri_WorldTopoMap.addTo(mapLeaflet);
 
         const width = element.offsetWidth;
         const height = element.offsetHeight;
@@ -127,7 +125,10 @@ export class ElementsFactory {
 
     public createCompare(element: HTMLCanvasElement,
                          points: { x: number, y: number, r: number }[] = [],
-                         topPoint: { x: number, y: number } = {x: 100, y: 100}): Chart {
+                         topPoint: { x: number, y: number } = {
+                             x: 100,
+                             y: 100
+                         }): Chart<'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar', [ChartTypeRegistry['bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar']['defaultDataPoint']] extends [unknown] ? Array<ChartTypeRegistry['bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar']['defaultDataPoint']> : never, unknown> {
 
         const bijectivePoints = [{x: 0, y: 0}, {x: topPoint.x, y: topPoint.y}];
         const data = {
@@ -308,5 +309,94 @@ export class ElementsFactory {
         return new Chart(element, config);
     }
 
+
+    public createSpeedIndicator(element: HTMLCanvasElement, angleDegrees: number, speedMetersPerSec: number): Chart {
+
+        const data = {
+            datasets: [
+                {
+                    type: 'pie',
+                    labels: [
+                        '' + speedMetersPerSec,
+                        ''
+                    ],
+                    data: [5, 355],
+                    backgroundColor: [
+                        'rgb(99,255,193)',
+                        'rgb(255,255,255)'
+                    ],
+                    rotation: angleDegrees,
+                }],
+        };
+
+        const config: any = {
+            data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    tooltip: {
+                        filter: (a) => {
+                            return a.dataIndex === 0;
+                        },
+                        callbacks: {
+                            label: (context) => {
+                                return context.dataIndex === 0 ? 'angle (deg):' + angleDegrees + ' speed(m/s):' + speedMetersPerSec : '';
+                            }
+                        }
+                    }
+                },
+            }
+        };
+
+        return new Chart(element, config);
+    }
+
+    public createQualityIndicator(element: HTMLCanvasElement, indicator: number): Chart {
+        const data = {
+            datasets: [
+                {
+                    type: 'doughnut',
+                    labels: [
+                        '' + indicator,
+                        ''
+                    ],
+                    data: [indicator, 100 - indicator],
+                    backgroundColor: [
+                        'rgb(99,255,242)',
+                        'rgb(255,255,255)'
+                    ],
+                    rotation: -90,
+                    circumference: 180,
+                }],
+        };
+
+        const config: any = {
+            data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    tooltip: {
+                        filter: (a) => {
+                            return a.dataIndex === 0;
+                        },
+                        callbacks: {
+                            label: (context) => {
+                                return context.dataIndex === 0 ? indicator : '';
+                            }
+                        }
+                    }
+                },
+            }
+        };
+
+        return new Chart(element, config);
+
+    }
 
 }

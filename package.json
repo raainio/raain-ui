@@ -17,7 +17,8 @@
     "chartjs-plugin-dragdata": "^2.2.5",
     "geolib": "^3.3.3",
     "leaflet": "^1.9.3",
-    "pixi.js": "^5.3.12"
+    "pixi.js": "^5.3.12",
+    "raain-model": "file:../raain-model/dist"
   },
   "peerDependencies": {
     "chart.js": "^4.2.1",

@@ -1,4 +1,4 @@
-import { CartesianMapValue, ElementsFactory, FrameContainer, PolarMapValue, TimeframeContainer, TimeframeContainers } from 'raain-ui';
+import { CartesianMapValue, ElementsFactory, FrameContainer, MapLatLng, PolarMapValue, TimeframeContainer, TimeframeContainers } from 'raain-ui';
 
 const center = { latitude: 51.505, longitude: -0.09 };
 const now = new Date();
@@ -20,7 +20,22 @@ const createPolarMapValues = () => {
   return values;
 };
 
-const creatCartesianMapValues = () => {
+const createCartesianMapValues = () => {
+  const values = [];
+  for (let latitude = center.latitude - 1; latitude < center.latitude + 1; latitude += 0.01) {
+    for (let longitude = center.longitude - 1; longitude < center.longitude + 1; longitude += 0.01) {
+      const value = 40 * Math.random();
+      const mapValue = new CartesianMapValue(value,
+        latitude, longitude,
+        latitude + 0.1, longitude + 0.1);
+      values.push(mapValue);
+    }
+  }
+  return values;
+};
+
+const transformRadarNodeMap = () => {
+
   const values = [];
   for (let latitude = center.latitude - 1; latitude < center.latitude + 1; latitude += 0.01) {
     for (let longitude = center.longitude - 1; longitude < center.longitude + 1; longitude += 0.01) {
@@ -37,13 +52,18 @@ const creatCartesianMapValues = () => {
 const mapElement = document.getElementById('map');
 const compareElement = document.getElementById('compare');
 const configurationElement = document.getElementById('configuration');
+const speedElement = document.getElementById('speed');
+const indicatorElement = document.getElementById('indicator');
 
 // Values
-const markers = []; // PolarMapValue[]
+const markers = [
+  new MapLatLng(center.latitude, center.longitude, 0, 'centerId', 'center'),
+  new MapLatLng(center.latitude + 0.1, center.longitude - 0.1, 0, '2', 'near center'),
+];
 
 const allCartesianValues = new TimeframeContainer('allCartesianValues', [
-  new FrameContainer(now, creatCartesianMapValues(), false, true),
-  new FrameContainer(addMinutes(now, 10), creatCartesianMapValues(), false, true),
+  new FrameContainer(now, createCartesianMapValues(), false, true),
+  new FrameContainer(addMinutes(now, 10), transformRadarNodeMap(), false, true),
 ]);
 
 const timeframeContainers = new TimeframeContainers([
@@ -60,11 +80,13 @@ const factory = new ElementsFactory(center, true);
 const mapManagement = factory.createMap(mapElement, markers, timeframeContainers);
 factory.createCompare(compareElement, comparePoints);
 factory.createConfiguration(configurationElement, configurationPoints);
+factory.createSpeedIndicator(speedElement, 20.6, 13);
+factory.createQualityIndicator(indicatorElement, 34);
 
 // switching timeframes
 const animationTimeInMs = 2000;
 const switchTimeFramePolar1 = () => {
-  mapManagement.compositeLayer.showTheFistMatchingId('polar1');
+  timeframeContainers.showTimeframe('polar1', now);
   console.log('configurationPoints:', configurationPoints);
   setTimeout(switchTimeFramePolar2, animationTimeInMs);
 };

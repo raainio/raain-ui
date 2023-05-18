@@ -3,6 +3,7 @@ export * from './factories/ElementsFactory';
 export * from './tools/PolarMapValue';
 export * from './tools/CartesianMapValue';
 export * from './tools/MapTools';
+export * from './tools/MapLatLng';
 
 export * from './drawers/PolarDrawer';
 export * from './drawers/PolarDrawerOptimization';

@@ -23,7 +23,7 @@ export class TimeframeContainer {
         let frameContainerFound = null;
         this.timeframe.forEach(c => {
             index++;
-            if (c.date.getTime() === date.getTime()) {
+            if (new Date(c.date).getTime() === date.getTime()) {
                 frameContainerFound = c;
             }
         });
@@ -34,6 +34,6 @@ export class TimeframeContainer {
     }
 
     getFrameId(frameContainer: FrameContainer): string {
-        return this.name + frameContainer.date.toISOString();
+        return this.name + new Date(frameContainer.date).toISOString();
     }
 }

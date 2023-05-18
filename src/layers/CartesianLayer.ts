@@ -68,7 +68,7 @@ export class CartesianLayer implements IPixiUniqueLayer {
         if (this.addSomeDebugInfos) {
             const pixiText = new Text('Pixi Cartesian ' + this.getId(), {
                 fontFamily: 'Arial',
-                fontSize: 24,
+                fontSize: 14,
                 fill: 0xff1010,
                 align: 'center',
             });
