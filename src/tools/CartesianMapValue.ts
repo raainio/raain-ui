@@ -27,14 +27,14 @@ export class CartesianMapValue extends MapLatLng {
         );
     }
 
-    public static from(cartesianValues: CartesianValue[]): CartesianMapValue[] {
+    public static from(cartesianValues: CartesianValue[], scale = 0.01): CartesianMapValue[] {
 
-        let latDiff = 0.01;
-        let lngDiff = 0.01;
-        if (cartesianValues.length > 0) {
-            latDiff = cartesianValues[1].lat - cartesianValues[0].lat;
-            lngDiff = cartesianValues[1].lng - cartesianValues[0].lng;
-        }
+        const latDiff = scale; // TODO DEFAULT_SCALE
+        const lngDiff = scale;
+        //if (cartesianValues.length > 0) {
+        //    latDiff = cartesianValues[cartesianValues.length - 1].lat - cartesianValues[0].lat;
+        //    lngDiff = cartesianValues[cartesianValues.length - 1].lng - cartesianValues[0].lng;
+        //}
 
         const cartesianMapValues = [];
         cartesianValues.forEach(cartesianValue => {
