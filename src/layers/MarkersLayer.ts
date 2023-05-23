@@ -49,12 +49,12 @@ export class MarkersLayer implements IPixiLayer {
         }
 
         const MapIconOptions: IconOptions = {
-            iconAnchor: [0, 42],
-            iconSize: [25, 42],
-            iconUrl: './assets/maps/marker-icon.png', // './assets/maps/mario_mle.gif',
-            shadowUrl: './assets/maps/marker-shadow.png',
-            shadowSize: [41, 41],
-            shadowAnchor: [0, 41],
+            // iconAnchor: [0, 42],
+            // iconSize: [25, 42],
+            iconUrl: './assets/marker-icon.png',
+            shadowUrl: './assets/marker-shadow.png',
+            //  shadowSize: [41, 41],
+            //  shadowAnchor: [0, 41],
         };
 
         // Add markers
@@ -72,7 +72,7 @@ export class MarkersLayer implements IPixiLayer {
 
             if (x !== undefined && !isNaN(x) && y !== undefined && !isNaN(y)) {
                 const options: MarkerOptions = {
-                    // icon: iconL,
+                    icon: iconL,
                     title: markerToDisplay.name,
                     alt: markerToDisplay.id
                 };

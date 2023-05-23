@@ -199,65 +199,34 @@ export class ElementsFactory {
                         display: false,
                     },
                     dragData: {
-                        dragX: true,
+                        // round: 1, // rounds the values to n decimal places; in this case 1, e.g 0.1234 => 0.1)
+                        magnet: {
+                            to: (value) => {
+                                return {x: value.x, y: Math.round(value.y * 10) / 10};
+                            }
+                        },
+                        showTooltip: false, // show the tooltip while dragging [default = true]
+                        // dragX: true // also enable dragging along the x-axis.
+                        // this solely works for continous, numerical x-axis scales (no categories or dates)!
+                        // onDrag: (e, datasetIndex, index, value) => {
+                        //     console.log('onDrag : ', e, datasetIndex, index, value);
+                        //     if (points && index > 0) {
+                        //         const pointBefore = points[index - 1];
+                        //         if (pointBefore.y > value.y) {
+                        //             return false;
+                        //         }
+                        //     }
+                        //     if (points && index < points.length) {
+                        //         const pointAfter = points[index + 1];
+                        //         if (pointAfter.y < value.y) {
+                        //             return false;
+                        //         }
+                        //     }
+                        //     return true;
+                        // },
                     },
                     tooltip: {
-                        enabled: false,
-                        external: (context) => {
-                            // Tooltip Element
-                            // console.log('tooltip ', context);
-                            const tooltipModel = context.tooltip;
-                            // Tooltip Element
-                            //    let tooltipEl = document.getElementById('chartjs-tooltip');
-//
-                            //    // Substitute the appropriate scale IDs
-                            //    const dataX = chart.scales.x.getValueForPixel(tooltipModel.caretX);
-                            //    const dataY = chart.scales.y.getValueForPixel(tooltipModel.caretY);
-                            //    const pointAsString = '' + dataX + ' , ' + dataY;
-                            //    console.log('pointAsString:', pointAsString);
-                            //    const body = '<div>' +
-                            //        '<button onclick="removePoint(' + pointAsString + ')">del.</button>' +
-                            //        '</div>';
-//
-                            //    // Create element on first render
-                            //    if (!tooltipEl) {
-                            //        tooltipEl = document.createElement('div');
-                            //        tooltipEl.id = 'chartjs-tooltip';
-                            //        // tooltipEl.innerHTML = '<table></table>';
-                            //        // tooltipEl.innerHTML = body;
-                            //        tooltipEl.style = '-webkit-transition: opacity 1s ease-out;\n' +
-                            //            '    -moz-transition: opacity 1s ease-out;\n' +
-                            //            '    transition: opacity 1s ease-out;';
-                            //        document.body.appendChild(tooltipEl);
-                            //    }
-//
-                            //    // Hide if no tooltip
-                            //    if (tooltipModel.opacity === 0) {
-                            //        setTimeout(() => {
-                            //            tooltipEl.style.opacity = 0;
-                            //        }, 5000);
-                            //        return;
-                            //    }
-//
-                            //    // Set caret Position
-                            //    tooltipEl.classList.remove('above', 'below', 'no-transform');
-                            //    if (tooltipModel.yAlign) {
-                            //        tooltipEl.classList.add(tooltipModel.yAlign);
-                            //    } else {
-                            //        tooltipEl.classList.add('no-transform');
-                            //    }
-//
-                            //    tooltipEl.innerHTML = body;
-//
-                            //    const position = context.chart.canvas.getBoundingClientRect();
-                            //    tooltipEl.style.opacity = 1;
-                            //    tooltipEl.style.position = 'absolute';
-                            //    tooltipEl.style.left = 10 + position.left + window.pageXOffset + tooltipModel.caretX + 'px';
-                            //    tooltipEl.style.top = 10 + position.top + window.pageYOffset + tooltipModel.caretY + 'px';
-                            //    tooltipEl.style.font = 'arial';
-                            //    tooltipEl.style.padding = tooltipModel.padding + 'px ' + tooltipModel.padding + 'px';
-
-                        },
+                        enabled: false
                     },
                 },
 

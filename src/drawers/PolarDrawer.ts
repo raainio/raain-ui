@@ -17,7 +17,7 @@ export class PolarDrawer {
                 private polarMap2Display: (pv: PolarMapValue) => boolean,
                 private type: string) {
         this.geoValues = [];
-        this.hardLimit = 40001;
+        this.hardLimit = 40001; // 40001 ? 250001 ?
         this.possibleDrawing = 0;
         this.distanceRatio = 0;
         this.centerPoint = new Point(0, 0);

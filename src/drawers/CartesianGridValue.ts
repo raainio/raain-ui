@@ -20,28 +20,28 @@ export class CartesianGridValue {
 
         let transparency = 1; // not visible
         let color = 0x000000;
-        if (0.4 >= src.value && src.value < 1) {
+        if (0.4 <= src.value && src.value < 1) {
             color = 0x0013C1;
             transparency = 0.9;
-        } else if (1 >= src.value && src.value < 3) {
+        } else if (1 <= src.value && src.value < 3) {
             color = 0x00CEF9;
             transparency = 0.85;
-        } else if (3 >= src.value && src.value < 10) {
+        } else if (3 <= src.value && src.value < 10) {
             color = 0x009A0F;
             transparency = 0.8;
-        } else if (10 >= src.value && src.value < 20) {
+        } else if (10 <= src.value && src.value < 20) {
             color = 0x6DED00;
             transparency = 0.75;
-        } else if (20 >= src.value && src.value < 30) {
+        } else if (20 <= src.value && src.value < 30) {
             color = 0xFFF300;
             transparency = 0.70;
-        } else if (30 >= src.value && src.value < 50) {
+        } else if (30 <= src.value && src.value < 50) {
             color = 0xFF9201;
             transparency = 0.65;
-        } else if (50 >= src.value && src.value < 100) {
+        } else if (50 <= src.value && src.value < 100) {
             color = 0xFF0000;
             transparency = 0.6;
-        } else if (100 >= src.value) {
+        } else if (100 <= src.value) {
             color = 0xA80000;
             transparency = 0.5;
         }

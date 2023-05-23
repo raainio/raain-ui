@@ -15,7 +15,7 @@ export class CartesianDrawer {
                 private cartesianMap2Display: (mapValue: CartesianMapValue) => boolean,
                 private type: string) {
         this.geoValues = [];
-        this.hardLimit = 40001;
+        this.hardLimit = 250001; // 40001 ? 250001 ?
         this.distanceRatio = 0;
         this.centerPoint = new Point(0, 0);
     }
