@@ -73,7 +73,7 @@ const timeframeContainers = new TimeframeContainers([
 ]);
 
 const comparePoints = [{ x: 1, y: 2, r: 3 }, { x: 10, y: 25, r: 5 }, { x: 9, y: 25, r: 9 }, { x: 55, y: 22, r: 10 }, { x: 46, y: 32, r: 5 }];
-const configurationPoints = [{ x: 3, y: 2 }, { x: 10, y: 25 }, { x: 55, y: 35 }];
+const configurationPoints = [{ x: 3, y: 2 }, { x: 10, y: 25 }, { x: 55, y: 135 }];
 
 // Factory
 const factory = new ElementsFactory(center, true);

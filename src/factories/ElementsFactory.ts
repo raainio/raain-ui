@@ -160,7 +160,7 @@ export class ElementsFactory {
                     legend: {
                         display: false,
                     },
-                },
+                }
             },
         };
 
@@ -238,6 +238,7 @@ export class ElementsFactory {
                     y: {
                         display: true,
                         suggestedMin: minPoint.y, suggestedMax: maxPoint.y,
+                        type: 'logarithmic',
                     },
                 },
 
