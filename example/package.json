@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "start": "npm run clean && npm i && parcel example.html",
+    "start": "npm run clean && npm i && npm run parcel",
     "build": "parcel build example.html",
     "clean": "rm -rf .parcel-cache dist node_modules",
-    "parcel": "parcel example.html"
+    "parcel": "parcel example.html *.png"
   },
   "dependencies": {
     "@kurkle/color": "^0.3.2",

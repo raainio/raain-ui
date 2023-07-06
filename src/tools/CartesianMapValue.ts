@@ -31,10 +31,10 @@ export class CartesianMapValue extends MapLatLng {
 
         const latDiff = scale; // TODO DEFAULT_SCALE
         const lngDiff = scale;
-        //if (cartesianValues.length > 0) {
+        // if (cartesianValues.length > 0) {
         //    latDiff = cartesianValues[cartesianValues.length - 1].lat - cartesianValues[0].lat;
         //    lngDiff = cartesianValues[cartesianValues.length - 1].lng - cartesianValues[0].lng;
-        //}
+        // }
 
         const cartesianMapValues = [];
         cartesianValues.forEach(cartesianValue => {

@@ -1,4 +1,4 @@
-import {canvas, LatLng, map, tileLayer} from 'leaflet';
+import {canvas, IconOptions, LatLng, map, Map, Marker, tileLayer} from 'leaflet';
 import {CartesianLayer} from '../layers/CartesianLayer';
 import {TimeframeContainers} from '../timeframes/TimeframeContainers';
 import {PolarLayer} from '../layers/PolarLayer';
@@ -6,7 +6,9 @@ import {MarkersLayer} from '../layers/MarkersLayer';
 import {CompositeLayer} from '../layers/CompositeLayer';
 import {PolarLayerConfig} from '../layers/PolarLayerConfig';
 import colorLib from '@kurkle/color';
-import Chart, {ChartTypeRegistry} from 'chart.js/auto';
+import Chart from 'chart.js/auto';
+import {getRelativePosition} from 'chart.js/helpers';
+
 import chartDragData from 'chartjs-plugin-dragdata';
 import {MapLatLng} from '../tools/MapLatLng';
 
@@ -20,9 +22,12 @@ const CHART_COLORS = {
     grey: 'rgb(201, 203, 207)',
 };
 
-function getTransparency(value, opacity) {
-    const alpha = opacity === undefined ? 0.5 : 1 - opacity;
-    return colorLib(value).alpha(alpha).rgbString();
+export enum FocusRange {
+    CENTURY,
+    YEAR,
+    MONTH,
+    DAY,
+    HOUR
 }
 
 export class ElementsFactory {
@@ -38,18 +43,26 @@ export class ElementsFactory {
 
     public createMap(element: HTMLElement,
                      markers: MapLatLng[] = [],
-                     timeframeContainers: TimeframeContainers = null) {
+                     timeframeContainers: TimeframeContainers = null,
+                     iconOptions?: IconOptions): {
+        mapLeaflet: Map,
+        markersLayer: MarkersLayer,
+        compositeLayer: CompositeLayer,
+        markersProduced: Marker[]
+    } {
 
+        let mapLeaflet: Map;
         let markersLayer: MarkersLayer;
         let compositeLayer: CompositeLayer;
-        const mapLeaflet = map(element, {
+
+        mapLeaflet = map(element, {
             preferCanvas: true, zoomControl: true, zoomAnimation: true, trackResize: false, boxZoom: false,
             renderer: canvas(),
         }).setView([this.center.lat, this.center.lng], 10);
 
-        // tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //    attribution: '&copy;<a href="https://www.openstreetmap.org/copyright">osm</a>',
-        // }).addTo(mapLeaflet);
+        tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy;<a href="https://www.openstreetmap.org/copyright">osm</a>',
+        }).addTo(mapLeaflet);
 
         //   // https://leaflet-extras.github.io/leaflet-providers/preview/
         //     const OpenTopoMap = tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
@@ -69,32 +82,31 @@ export class ElementsFactory {
         //         maxZoom: 18,
         //         // ext: 'png'
         //       });
-        const Esri_WorldTopoMap = tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile' +
-            '/{z}/{y}/{x}',
-            {
-                attribution: '&copy;arcgis',
-            });
-        Esri_WorldTopoMap.addTo(mapLeaflet);
+        //  const Esri_WorldTopoMap = tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile' +
+        //      '/{z}/{y}/{x}',
+        //      {
+        //          attribution: '&copy;arcgis',
+        //      });
+        //  Esri_WorldTopoMap.addTo(mapLeaflet);
 
         const width = element.offsetWidth;
         const height = element.offsetHeight;
-
-        if (markers && markers.length) {
+        let markersProduced = [];
+        if (markers?.length) {
             markersLayer = new MarkersLayer();
             markersLayer.setCurrentWidth(width);
             markersLayer.setCurrentHeight(height);
-            markersLayer.render(markers);
+            markersProduced = markersLayer.render(markers, iconOptions).markers;
             markersLayer.addToMap(mapLeaflet);
         }
 
-        if (timeframeContainers && timeframeContainers.containers.length) {
+        if (timeframeContainers?.containers.length) {
             compositeLayer = new CompositeLayer();
             compositeLayer.setCurrentWidth(width);
             compositeLayer.setCurrentHeight(height);
 
             let firstLayerIdPushed;
-            const tfcs = timeframeContainers.containers;
-            tfcs.forEach(timeFrameContainer => {
+            timeframeContainers.containers.forEach(timeFrameContainer => {
                 timeFrameContainer.setCompositeLayer(compositeLayer);
                 timeFrameContainer.timeframe.forEach((frameContainer, timeframeIndex) => {
                     const layerId = timeFrameContainer.getFrameId(frameContainer);
@@ -120,15 +132,15 @@ export class ElementsFactory {
         }
 
         mapLeaflet.invalidateSize({animate: true});
-        return {mapLeaflet, markersLayer, compositeLayer};
+        return {mapLeaflet, markersLayer, compositeLayer, markersProduced};
     }
 
     public createCompare(element: HTMLCanvasElement,
-                         points: { x: number, y: number, r: number }[] = [],
+                         points: { x: number, y: number, r: number, name: string }[] = [],
                          topPoint: { x: number, y: number } = {
                              x: 100,
                              y: 100
-                         }): Chart<'bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar', [ChartTypeRegistry['bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar']['defaultDataPoint']] extends [unknown] ? Array<ChartTypeRegistry['bar' | 'line' | 'scatter' | 'bubble' | 'pie' | 'doughnut' | 'polarArea' | 'radar']['defaultDataPoint']> : never, unknown> {
+                         }): Chart<any> {
 
         const bijectivePoints = [{x: 0, y: 0}, {x: topPoint.x, y: topPoint.y}];
         const data = {
@@ -160,13 +172,27 @@ export class ElementsFactory {
                     legend: {
                         display: false,
                     },
+
+                    tooltip: {
+                        // filter: (a) => {
+                        //     return a.dataIndex === 0;
+                        // },
+                        callbacks: {
+                            label: (context) => {
+                                let label = points[context.dataIndex]?.name;
+                                if (!label) {
+                                    label = '';
+                                }
+                                return label;
+                            }
+                        }
+                    }
                 }
             },
         };
 
         return new Chart(element, config);
     }
-
 
     public createConfiguration(element: HTMLCanvasElement,
                                points: { x: number, y: number }[] = [],
@@ -179,7 +205,6 @@ export class ElementsFactory {
                     type: 'scatter',
                     data: points,
                     borderColor: getTransparency(CHART_COLORS.blue, 0.5),
-                    fill: false,
                 },
                 {
                     type: 'line',
@@ -279,6 +304,134 @@ export class ElementsFactory {
         return new Chart(element, config);
     }
 
+    public createDateStatus(element: HTMLCanvasElement,
+                            setOfData: {
+                                label: string,
+                                style: string,
+                                values: { date: Date, value: number }[],
+                            }[] = [],
+                            focusDate: Date,
+                            focusRange: FocusRange = FocusRange.CENTURY): Chart {
+
+        if (setOfData.length > 7) {
+            return null;
+        }
+
+        const datasets = [];
+        const colors = [
+            getTransparency(CHART_COLORS.blue, 0.5),
+            getTransparency(CHART_COLORS.red, 0.5),
+            getTransparency(CHART_COLORS.grey, 0.5),
+            getTransparency(CHART_COLORS.green, 0.5),
+            getTransparency(CHART_COLORS.orange, 0.5),
+            getTransparency(CHART_COLORS.purple, 0.5),
+            getTransparency(CHART_COLORS.yellow, 0.5),
+        ];
+        const originalDataPoints = [];
+        let min, max;
+        setOfData.forEach(s => {
+            s.values.forEach(v => {
+                min = min ? Math.min(min, v.date.getTime()) : v.date.getTime();
+                max = max ? Math.max(max, v.date.getTime()) : v.date.getTime();
+            });
+        });
+        min = new Date(min);
+        max = new Date(max);
+
+        for (const [index, dataContainer] of setOfData.entries()) {
+            const borderColor = colors[index];
+            const dataPoints = groupFocus(dataContainer.values, focusDate, focusRange, min, max);
+            datasets.push(
+                {
+                    label: dataContainer.label,
+                    type: dataContainer.style,
+                    data: dataPoints,
+                    borderColor,
+                });
+            originalDataPoints.push(dataPoints);
+        }
+
+        const data = {
+            datasets,
+            labels: focusLabels(focusDate, focusRange, min, max)
+        };
+
+        const config: any = {
+            data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        // display: false,
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                //  if (context.dataset.type === 'bubble') {
+                                //      return new Date(context.parsed.x).toISOString() + ': '
+                                //          + context.parsed.y + ' , ' + context.parsed._custom;
+                                //  }
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'My Chart'
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            callback: labelCallBack,
+                        }
+                    }
+                },
+                onClick: (e) => {
+                    const eChart = e.chart;
+                    const eFocusRange = eChart['focusRange'];
+                    if (eFocusRange >= FocusRange.HOUR) {
+                        return;
+                    }
+
+                    const canvasPosition = getRelativePosition(e, eChart);
+                    const pos = chart.scales.x.getValueForPixel(canvasPosition.x);
+
+                    eChart['focusRange'] = eFocusRange + 1;
+
+                    // TODO eChart['focusDate'].setFullYear(2023);
+                    eChart.config['_config'].options.plugins.title.text = eChart['focusRange'] + ' > ' + eChart['focusDate'];
+
+                    eChart.data.datasets.forEach((dataset, index) => {
+                        // dataset.data = Utils.numbers({count: chart.data.labels.length, min: -100, max: 100});
+                        dataset.data = groupFocus(setOfData[index].values, eChart['focusDate'], eChart['focusRange'],
+                            eChart['focusDateMin'], eChart['focusDateMax']);
+                    });
+                    eChart.data.labels = focusLabels(eChart['focusDate'], eChart['focusRange'],
+                        eChart['focusDateMin'], eChart['focusDateMax']);
+                    eChart.update();
+                }
+            },
+        };
+
+        const chart = new Chart(element, config);
+        chart['focusDate'] = focusDate;
+        chart['focusRange'] = focusRange;
+        chart['focusDateMin'] = min;
+        chart['focusDateMax'] = max;
+        chart['focusReset'] = () => {
+            console.log('focusReset');
+            chart.config['_config'].options.plugins.title.text = '...';
+            chart['focusDate'] = focusDate;
+            chart['focusRange'] = focusRange;
+            chart.data.datasets.forEach((dataset, index) => {
+                dataset.data = originalDataPoints[index];
+            });
+            chart.data.labels = focusLabels(chart['focusDate'], chart['focusRange'],
+                chart['focusDateMin'], chart['focusDateMax']);
+            chart.update();
+        };
+        return chart;
+    }
 
     public createSpeedIndicator(element: HTMLCanvasElement, angleDegrees: number, speedMetersPerSec: number): Chart {
 
@@ -367,6 +520,174 @@ export class ElementsFactory {
 
         return new Chart(element, config);
 
+    }
+
+
+    static protected  getTransparency(value, opacity) {
+        const alpha = opacity === undefined ? 0.5 : 1 - opacity;
+        return colorLib(value).alpha(alpha).rgbString();
+    }
+
+
+    static protected   filterFocus(mapToFilter: Array<{ date: Date, value: number }>, focusDate: Date, focusRange: FocusRange): Array<{
+        date: Date,
+        value: number
+    }> {
+
+        const filtered = mapToFilter
+            .filter(e => {
+                let isIn = true;
+                if (isIn && focusRange >= FocusRange.YEAR) {
+                    isIn = e.date.getFullYear() === focusDate.getFullYear();
+                }
+                if (isIn && focusRange >= FocusRange.MONTH) {
+                    isIn = e.date.getMonth() === focusDate.getMonth();
+                }
+                if (isIn && focusRange >= FocusRange.DAY) {
+                    isIn = e.date.getDay() === focusDate.getDay();
+                }
+                if (isIn && focusRange >= FocusRange.HOUR) {
+                    isIn = e.date.getHours() === focusDate.getHours();
+                }
+                return isIn;
+            })
+            .sort((a, b) => a.date.getTime() - b.date.getTime());
+        return filtered;
+    }
+
+    static protected   groupFocus(mapToFilter: Array<{ date: Date, value: number }>, focusDate: Date, focusRange: FocusRange, min: Date, max: Date) {
+
+        const filteredAndSorted = filterFocus(mapToFilter, focusDate, focusRange);
+        // const min = filteredAndSorted[0];
+        // const max = filteredAndSorted[filteredAndSorted.length - 1];
+        if (focusRange === FocusRange.CENTURY) {
+            const groupedByYear = [];
+            for (let i = min.getFullYear(); i <= max.getFullYear(); i++) {
+                const yearDate = new Date(focusDate);
+                yearDate.setFullYear(i);
+                const sum = filterFocus(filteredAndSorted, yearDate, FocusRange.YEAR)
+                    .reduce((partialSum, a) => partialSum + a.value, 0);
+                groupedByYear.push(sum);
+            }
+            return groupedByYear;
+        }
+
+        if (focusRange === FocusRange.YEAR) {
+            const groupedByMonth = [];
+            for (let i = 0; i < 12; i++) {
+                const monthDate = new Date(focusDate);
+                monthDate.setMonth(i);
+                const sum = filterFocus(filteredAndSorted, monthDate, FocusRange.MONTH)
+                    .reduce((partialSum, a) => partialSum + a.value, 0);
+                groupedByMonth.push(sum);
+            }
+            return groupedByMonth;
+        }
+
+        if (focusRange === FocusRange.MONTH) {
+            const groupedByDay = [];
+            const daysInMonth = new Date(focusDate.getFullYear(), focusDate.getMonth(), 0).getDate();
+            for (let i = 0; i < daysInMonth; i++) {
+                const dayDate = new Date(focusDate);
+                dayDate.setDate(i);
+                const sum = filterFocus(filteredAndSorted, dayDate, FocusRange.DAY)
+                    .reduce((partialSum, a) => partialSum + a.value, 0);
+                groupedByDay.push(sum);
+            }
+            return groupedByDay;
+        }
+
+        if (focusRange === FocusRange.DAY) {
+            const groupedByHour = [];
+            for (let i = 0; i < 24; i++) {
+                const hourDate = new Date(focusDate);
+                hourDate.setHours(i);
+                const sum = filterFocus(filteredAndSorted, hourDate, FocusRange.HOUR)
+                    .reduce((partialSum, a) => partialSum + a.value, 0);
+                groupedByHour.push(sum);
+            }
+            return groupedByHour;
+        }
+
+        // if (focusRange === FocusRange.HOUR) {
+        return filteredAndSorted;
+    }
+
+
+    static protected   focusLabels(focusDate: Date, focusRange: FocusRange, min: Date, max: Date) {
+        if (focusRange === FocusRange.CENTURY) {
+            const groupedByYear = [];
+            for (let i = min.getFullYear(); i <= max.getFullYear(); i++) {
+                const yearDate = new Date(focusDate);
+                yearDate.setFullYear(i);
+                groupedByYear.push(yearDate.toISOString().substring(0, 4));
+            }
+            return groupedByYear;
+        }
+
+        if (focusRange === FocusRange.YEAR) {
+            const groupedByMonth = [];
+            for (let i = 0; i < 12; i++) {
+                const monthDate = new Date(focusDate);
+                monthDate.setMonth(i);
+                groupedByMonth.push(monthDate.toISOString().substring(0, 7));
+            }
+            return groupedByMonth;
+        }
+
+        if (focusRange === FocusRange.MONTH) {
+            const groupedByDay = [];
+            const daysInMonth = new Date(focusDate.getFullYear(), focusDate.getMonth(), 0).getDate();
+            for (let i = 0; i < daysInMonth; i++) {
+                const dayDate = new Date(focusDate);
+                dayDate.setDate(i);
+                groupedByDay.push(dayDate.toISOString().substring(0, 10));
+            }
+            return groupedByDay;
+        }
+
+        if (focusRange === FocusRange.DAY) {
+            const groupedByHour = [];
+            for (let i = 0; i < 24; i++) {
+                const hourDate = new Date(focusDate);
+                hourDate.setHours(i);
+                groupedByHour.push(hourDate.toISOString().substring(0, 13));
+            }
+            return groupedByHour;
+        }
+
+        return undefined;
+    }
+
+    static protected   labelCallBack(val, index) {
+        console.log('focusDate', this.chart.focusDate, val);
+        if (!this.chart['focusDate'] || !this.chart['focusDateMin'] || !this.chart['focusDateMax']) {
+            return;
+        }
+
+        return focusLabel(
+            this.chart['focusDate'],
+            this.chart['focusRange'] ? this.chart['focusRange'] : FocusRange.CENTURY,
+            val,
+            this.chart['focusDateMin'],
+            this.chart['focusDateMax']);
+    }
+
+    static protected   focusLabel(focusDate: Date, focusRange: FocusRange, index: number, min: Date, max: Date) {
+        return focusLabels(focusDate, focusRange, min, max)[index];
+    }
+
+    static protected   focusDate(oldFocusDate: Date, focusRange: FocusRange, index: number) {
+
+        let focusDate = new Date(oldFocusDate);
+        let title = '....';
+        if (focusRange === FocusRange.MONTH) {
+            title = focusDate.toISOString().substring(0, 10);
+        }
+        // TODO eChart['focusDate'].setFullYear(2023);
+        // eChart.config['_config'].options.plugins.title.text = eChart['focusRange'] + ' > ' + eChart['focusDate'];
+
+        return {focusDate, title};
     }
 
 }

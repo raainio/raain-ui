@@ -1,4 +1,5 @@
 import { CartesianMapValue, ElementsFactory, FrameContainer, MapLatLng, PolarMapValue, TimeframeContainer, TimeframeContainers } from 'raain-ui';
+import 'leaflet/dist/leaflet.css';
 
 const center = { latitude: 51.505, longitude: -0.09 };
 const now = new Date();
@@ -51,6 +52,7 @@ const transformRadarNodeMap = () => {
 
 const mapElement = document.getElementById('map');
 const compareElement = document.getElementById('compare');
+const dateFocusElement = document.getElementById('dateFocus');
 const configurationElement = document.getElementById('configuration');
 const speedElement = document.getElementById('speed');
 const indicatorElement = document.getElementById('indicator');
@@ -72,13 +74,40 @@ const timeframeContainers = new TimeframeContainers([
   allCartesianValues,
 ]);
 
-const comparePoints = [{ x: 1, y: 2, r: 3 }, { x: 10, y: 25, r: 5 }, { x: 9, y: 25, r: 9 }, { x: 55, y: 22, r: 10 }, { x: 46, y: 32, r: 5 }];
+const comparePoints = [
+  { x: 1, y: 2, r: 3 },
+  { x: 10, y: 25, r: 5, name: 'one' },
+  { x: 9, y: 25, r: 9, name: 'two' },
+  { x: 55, y: 22, r: 10, name: 'three' },
+  { x: 46, y: 32, r: 5 }];
 const configurationPoints = [{ x: 3, y: 2 }, { x: 10, y: 25 }, { x: 55, y: 135 }];
+const dateStatusPoints1 = [
+  { date: new Date('2022-05-01 13:05'), value: 2 },
+  { date: new Date('2023-05-01 13:05'), value: 2 },
+  { date: new Date('2023-06-01 13:05'), value: 2 },
+  { date: new Date('2023-06-02'), value: 1 },
+  { date: new Date('2023-06-02 13:12'), value: 3 }];
+const dateStatusPoints2 = [
+  { date: new Date('2023-05-12 11:05'), value: 5 },
+  { date: new Date('2023-04-02 13:15'), value: 8 },
+  { date: new Date('2023-06-02 13:15'), value: 8 },
+  { date: new Date('2023-06-12 13:22'), value: 3 },
+  { date: new Date('2024-06-12 13:22'), value: 3 }];
+const setOfData = [
+  { label: 'data 1', style: 'bar', values: dateStatusPoints1 },
+  { label: 'data 2', style: 'bar', values: dateStatusPoints2 },
+  { label: 'data 2 with lines', style: 'line', values: dateStatusPoints2 },
+];
 
 // Factory
 const factory = new ElementsFactory(center, true);
-const mapManagement = factory.createMap(mapElement, markers, timeframeContainers);
+const iconsOptions = {
+  iconUrl: './my-marker-icon.png',
+  shadowUrl: './my-marker-shadow.png',
+};
+const mapManagement = factory.createMap(mapElement, markers, timeframeContainers, iconsOptions);
 factory.createCompare(compareElement, comparePoints);
+const dateStatusChart = factory.createDateStatus(dateFocusElement, setOfData, new Date('2023-06-02 13:15'));
 factory.createConfiguration(configurationElement, configurationPoints);
 factory.createSpeedIndicator(speedElement, 20.6, 13);
 factory.createQualityIndicator(indicatorElement, 34);
@@ -103,4 +132,6 @@ const switchTimeFrameCartesianDate2 = () => {
   setTimeout(switchTimeFramePolar1, animationTimeInMs);
 };
 setTimeout(switchTimeFramePolar1, animationTimeInMs);
+
+setTimeout(dateStatusChart.focusReset, 100000);
 

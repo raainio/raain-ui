@@ -43,22 +43,17 @@ export class MarkersLayer implements IPixiLayer {
         this._height = height;
     }
 
-    public render(markers: MapLatLng[]): LayerGroup {
+    public render(markers: MapLatLng[], iconOptions?: IconOptions): { markers: Marker[] } {
         if (this._layerGroup) {
             this._layerGroup.clearLayers();
         }
 
-        const MapIconOptions: IconOptions = {
-            // iconAnchor: [0, 42],
-            // iconSize: [25, 42],
-            iconUrl: './assets/marker-icon.png',
-            shadowUrl: './assets/marker-shadow.png',
-            //  shadowSize: [41, 41],
-            //  shadowAnchor: [0, 41],
-        };
+        let iconOption;
+        if (iconOptions) {
+            iconOption = icon(iconOptions);
+        }
 
         // Add markers
-        const iconL = icon(MapIconOptions);
         const n: number = markers.length;
         let i: number;
         const ms: Marker[] = [];
@@ -72,10 +67,12 @@ export class MarkersLayer implements IPixiLayer {
 
             if (x !== undefined && !isNaN(x) && y !== undefined && !isNaN(y)) {
                 const options: MarkerOptions = {
-                    icon: iconL,
                     title: markerToDisplay.name,
                     alt: markerToDisplay.id
                 };
+                if (iconOption) {
+                    options.icon = iconOption;
+                }
                 ms.push(marker([x, y], options));
             } else {
                 // implement your own error handling
@@ -86,7 +83,7 @@ export class MarkersLayer implements IPixiLayer {
         // this.markerGroup.addTo(this.map);
 
         this._layerGroup = layerGroup(ms);
-        return this._layerGroup;
+        return {markers: ms};
     }
 
 }
