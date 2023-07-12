@@ -14,8 +14,9 @@ export class CartesianLayer implements IPixiUniqueLayer {
 
     constructor(protected id: string,
                 protected type: string,
+                protected bypassColor: boolean,
                 protected gridMap: Map,
-                protected addSomeDebugInfos = false,) {
+                protected addSomeDebugInfos = false) {
         this.mapGraph = new Graphics();
     }
 
@@ -47,7 +48,7 @@ export class CartesianLayer implements IPixiUniqueLayer {
                 };
             }, (mapValue: CartesianMapValue) => {
                 return this.gridMap.getBounds().contains(mapValue);
-            }, this.type);
+            }, this.bypassColor);
 
         this.cartesianDrawer.updateValues(values);
     }

@@ -13,10 +13,12 @@ export class PolarGridValue {
 
     static Create(src: PolarMapValue,
                   distanceRatio: number,
+                  bypassColor: boolean,
                   optimization?: PolarDrawerOptimization): PolarGridValue {
 
         let transparency = 1; // not visible
         let value = 0x51CFF3;
+
         if (!optimization || optimization.type === 'rain') {
             value = 0x000000;
             if (0.4 <= src.value && src.value < 1) {
@@ -55,13 +57,18 @@ export class PolarGridValue {
             }
         }
 
+
+        if (bypassColor && 0.4 <= src.value) {
+            value = 0x0013C1;
+        }
+
         const distance = Math.round(100 * src.polarDistanceInMeters * distanceRatio) / 100;
 
         // hack to see limits:
-        //if (src.polarDistanceInMeters > (250 * 1000)) {
+        // if (src.polarDistanceInMeters > (250 * 1000)) {
         //    transparency = 0.8;
         //    value = 0x9836FF;
-        //}
+        // }
 
         return new PolarGridValue(
             value,

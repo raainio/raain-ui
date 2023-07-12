@@ -17,8 +17,9 @@ export class PolarLayer implements IPixiUniqueLayer {
 
     constructor(protected id: string,
                 protected type: string,
+                protected bypassColor: boolean,
                 protected gridMap: Map,
-                protected addSomeDebugInfos = false,) {
+                protected addSomeDebugInfos = false) {
         this.mapGraph = new Graphics();
         this.config = new PolarLayerConfig();
     }
@@ -55,7 +56,7 @@ export class PolarLayer implements IPixiUniqueLayer {
                     return false;
                 }
                 return this.gridMap.getBounds().contains(polar);
-            }, this.type);
+            }, this.type, this.bypassColor);
 
         // TODO hardLimit 40001 by config
         //   this.config.optimization and based on this.config.lastCount

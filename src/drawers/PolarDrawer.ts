@@ -15,7 +15,8 @@ export class PolarDrawer {
 
     constructor(private polarMap2Point: (pv: PolarMapValue) => Point,
                 private polarMap2Display: (pv: PolarMapValue) => boolean,
-                private type: string) {
+                private type: string,
+                private bypassColor: boolean) {
         this.geoValues = [];
         this.hardLimit = 40001; // 40001 ? 250001 ?
         this.possibleDrawing = 0;
@@ -93,7 +94,7 @@ export class PolarDrawer {
                 if (!x1 || !pv2) {
                     return false;
                 }
-                const x2 = PolarGridValue.Create(pv2, distanceRatio, optimization);
+                const x2 = PolarGridValue.Create(pv2, distanceRatio, this.bypassColor, optimization);
                 x2.polarAzimuthInDegrees = x1.polarAzimuthInDegrees + azimuthStepInDegrees;
 
                 let drawDone = false;
@@ -121,13 +122,34 @@ export class PolarDrawer {
             } else {
                 const drawDone = drawValue(optimizationValues.x1, polarValue);
                 if (drawDone || !optimizationValues.x1) {
-                    optimizationValues.x1 = PolarGridValue.Create(polarValue, distanceRatio, optimization);
+                    optimizationValues.x1 = PolarGridValue.Create(polarValue, distanceRatio, this.bypassColor, optimization);
                 }
             }
         }
 
         console.log('Polar done vs possible:', done, this.possibleDrawing);
         return done;
+    }
+
+    public _getNextOffset(index, edgeCount): number {
+        const preciseId = (index + 1) / edgeCount;
+        const edgeId = Math.floor(preciseId);
+
+        let newIndex = (edgeId + 1) * edgeCount;
+        if (preciseId === edgeId) {
+            newIndex = edgeId * edgeCount;
+        }
+        return newIndex;
+    }
+
+    protected getPossibleDrawing() {
+        let count = 0;
+        for (const mapValue of this.geoValues) {
+            if (this.polarMap2Display(mapValue)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private getDistanceRatio(center: LatLng, edgeCount: number): number {
@@ -170,26 +192,5 @@ export class PolarDrawer {
         }
         // console.log('sameEdgeValuesCount: ', sameEdgeValuesCount);
         return sameEdgeValuesCount;
-    }
-
-    public _getNextOffset(index, edgeCount): number {
-        const preciseId = (index + 1) / edgeCount;
-        const edgeId = Math.floor(preciseId);
-
-        let newIndex = (edgeId + 1) * edgeCount;
-        if (preciseId === edgeId) {
-            newIndex = edgeId * edgeCount;
-        }
-        return newIndex;
-    }
-
-    protected getPossibleDrawing() {
-        let count = 0;
-        for (const mapValue of this.geoValues) {
-            if (this.polarMap2Display(mapValue)) {
-                count++;
-            }
-        }
-        return count;
     }
 }

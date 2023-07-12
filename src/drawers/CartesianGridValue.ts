@@ -16,10 +16,12 @@ export class CartesianGridValue {
     static Create(src: CartesianMapValue,
                   srcPoints: { p1: Point, p2: Point },
                   center: Point,
-                  ratio: number): CartesianGridValue {
+                  ratio: number,
+                  bypassColor: boolean): CartesianGridValue {
 
         let transparency = 1; // not visible
         let color = 0x000000;
+
         if (0.4 <= src.value && src.value < 1) {
             color = 0x0013C1;
             transparency = 0.9;
@@ -44,6 +46,10 @@ export class CartesianGridValue {
         } else if (100 <= src.value) {
             color = 0xA80000;
             transparency = 0.5;
+        }
+
+        if (bypassColor && 0.4 <= src.value) {
+            color = 0x0013C1;
         }
 
         const x = srcPoints.p1.x,

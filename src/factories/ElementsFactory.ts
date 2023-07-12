@@ -32,7 +32,7 @@ export enum FocusRange {
 
 
 function labelCallBack(val, index) {
-    console.log('focusDate', this.chart.focusDate, val);
+    // console.log('focusDate', this.chart.focusDate, val);
     if (!this.chart['focusDate'] || !this.chart['focusDateMin'] || !this.chart['focusDateMax']) {
         return;
     }
@@ -42,7 +42,7 @@ function labelCallBack(val, index) {
         this.chart['focusRange'] ? this.chart['focusRange'] : FocusRange.CENTURY,
         val,
         this.chart['focusDateMin'],
-        this.chart['focusDateMax']);
+        this.chart['focusDateMax'], null);
 }
 
 export class ElementsFactory {
@@ -56,8 +56,8 @@ export class ElementsFactory {
         this.center = new LatLng(lat, lng);
     }
 
-    static focusLabel(focusDate: Date, focusRange: FocusRange, index: number, min: Date, max: Date) {
-        return this.focusLabels(focusDate, focusRange, min, max)[index];
+    static focusLabel(focusDate: Date, focusRange: FocusRange, index: number, min: Date, max: Date, data) {
+        return this.focusLabels(focusDate, focusRange, min, max, data)[index];
     }
 
     protected static getTransparency(value, opacity) {
@@ -70,7 +70,7 @@ export class ElementsFactory {
         value: number
     }> {
 
-        const filtered = mapToFilter
+        return mapToFilter
             .filter(e => {
                 let isIn = true;
                 if (isIn && focusRange >= FocusRange.YEAR) {
@@ -80,7 +80,7 @@ export class ElementsFactory {
                     isIn = e.date.getMonth() === focusDate.getMonth();
                 }
                 if (isIn && focusRange >= FocusRange.DAY) {
-                    isIn = e.date.getDay() === focusDate.getDay();
+                    isIn = e.date.getDate() === focusDate.getDate();
                 }
                 if (isIn && focusRange >= FocusRange.HOUR) {
                     isIn = e.date.getHours() === focusDate.getHours();
@@ -88,7 +88,6 @@ export class ElementsFactory {
                 return isIn;
             })
             .sort((a, b) => a.date.getTime() - b.date.getTime());
-        return filtered;
     }
 
     protected static groupFocus(mapToFilter: Array<{
@@ -96,9 +95,10 @@ export class ElementsFactory {
         value: number
     }>, focusDate: Date, focusRange: FocusRange, min: Date, max: Date) {
 
+        // console.log('groupFocus', focusDate, focusRange);
         const filteredAndSorted = this.filterFocus(mapToFilter, focusDate, focusRange);
-        // const min = filteredAndSorted[0];
-        // const max = filteredAndSorted[filteredAndSorted.length - 1];
+        // console.log('groupFocus filteredAndSorted', filteredAndSorted);
+
         if (focusRange === FocusRange.CENTURY) {
             const groupedByYear = [];
             for (let i = min.getFullYear(); i <= max.getFullYear(); i++) {
@@ -149,10 +149,14 @@ export class ElementsFactory {
         }
 
         // if (focusRange === FocusRange.HOUR) {
-        return filteredAndSorted;
+        return filteredAndSorted.map(e => e.value);
     }
 
-    protected static focusLabels(focusDate: Date, focusRange: FocusRange, min: Date, max: Date) {
+    protected static focusLabels(focusDate: Date, focusRange: FocusRange, min: Date, max: Date, data: {
+        label: string,
+        style: string,
+        values: { date: Date, value: number }[],
+    }[]) {
         if (focusRange === FocusRange.CENTURY) {
             const groupedByYear = [];
             for (let i = min.getFullYear(); i <= max.getFullYear(); i++) {
@@ -194,20 +198,40 @@ export class ElementsFactory {
             return groupedByHour;
         }
 
-        return undefined;
+        // all dates that are in the current hour
+        let allDates = [];
+        data.forEach(d => {
+            allDates = allDates.concat(d.values);
+        });
+        const filteredHourDates = this.filterFocus(allDates, focusDate, FocusRange.HOUR);
+        const filteredHourDatesISO = filteredHourDates.map(v => v.date.toISOString());
+        return filteredHourDatesISO.filter((item, pos, self) => {
+            return self.indexOf(item) === pos;
+        });
     }
 
-    protected static focusDate(oldFocusDate: Date, focusRange: FocusRange, index: number) {
+    protected static getFocusDateAndTitle(oldFocusDate: Date, focusRange: FocusRange, index: number, min: Date, max: Date) {
 
-        let focusDate = new Date(oldFocusDate);
-        let title = '....';
-        if (focusRange === FocusRange.MONTH) {
-            title = focusDate.toISOString().substring(0, 10);
+        const newFocusDate = new Date(oldFocusDate);
+        let newTitle = '....';
+
+        if (focusRange === FocusRange.CENTURY) {
+            newFocusDate.setFullYear(min.getFullYear() + index);
+            newTitle = newFocusDate.toISOString().substring(0, 4);
+        } else if (focusRange === FocusRange.YEAR) {
+            newFocusDate.setMonth(index);
+            newTitle = newFocusDate.toISOString().substring(0, 7);
+        } else if (focusRange === FocusRange.MONTH) {
+            newFocusDate.setDate(index);
+            newTitle = newFocusDate.toISOString().substring(0, 10);
+        } else if (focusRange === FocusRange.DAY) {
+            newFocusDate.setHours(index);
+            newTitle = newFocusDate.toISOString().substring(0, 13);
+        } else if (focusRange === FocusRange.HOUR) {
+            newTitle = newFocusDate.toISOString();
         }
-        // TODO eChart['focusDate'].setFullYear(2023);
-        // eChart.config['_config'].options.plugins.title.text = eChart['focusRange'] + ' > ' + eChart['focusDate'];
 
-        return {focusDate, title};
+        return {newFocusDate, newTitle};
     }
 
     public createMap(element: HTMLElement,
@@ -282,11 +306,12 @@ export class ElementsFactory {
                     const values: any = frameContainer.values;
 
                     let layer;
+                    const bypassColor = timeFrameContainer.name.indexOf('adar') > 0;
                     if (frameContainer.isPolar) {
-                        layer = new PolarLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
+                        layer = new PolarLayer(layerId, timeFrameContainer.name, bypassColor, mapLeaflet, this.addSomeDebugInfos);
                         layer.setPolarValues(this.center, values, new PolarLayerConfig());
                     } else if (frameContainer.isCartesian) {
-                        layer = new CartesianLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
+                        layer = new CartesianLayer(layerId, timeFrameContainer.name, bypassColor, mapLeaflet, this.addSomeDebugInfos);
                         layer.setCartesianGridValues(this.center, values);
                     }
 
@@ -437,7 +462,7 @@ export class ElementsFactory {
                 },
 
                 onClick(e) {
-                    console.log('onClick ', e);
+                    // console.log('onClick ', e);
 
                     // const canvasPosition = Chart.helpers.getRelativePosition(e, chart);
 
@@ -490,8 +515,8 @@ export class ElementsFactory {
         const colors = [
             ElementsFactory.getTransparency(CHART_COLORS.blue, 0.5),
             ElementsFactory.getTransparency(CHART_COLORS.red, 0.5),
-            ElementsFactory.getTransparency(CHART_COLORS.grey, 0.5),
             ElementsFactory.getTransparency(CHART_COLORS.green, 0.5),
+            ElementsFactory.getTransparency(CHART_COLORS.grey, 0.5),
             ElementsFactory.getTransparency(CHART_COLORS.orange, 0.5),
             ElementsFactory.getTransparency(CHART_COLORS.purple, 0.5),
             ElementsFactory.getTransparency(CHART_COLORS.yellow, 0.5),
@@ -516,13 +541,14 @@ export class ElementsFactory {
                     type: dataContainer.style,
                     data: dataPoints,
                     borderColor,
+                    backgroundColor: borderColor,
                 });
             originalDataPoints.push(dataPoints);
         }
 
         const data = {
             datasets,
-            labels: ElementsFactory.focusLabels(focusDate, focusRange, min, max)
+            labels: ElementsFactory.focusLabels(focusDate, focusRange, min, max, setOfData)
         };
 
         const config: any = {
@@ -545,38 +571,45 @@ export class ElementsFactory {
                     },
                     title: {
                         display: true,
-                        text: 'My Chart'
+                        text: ' '
                     }
                 },
-                scales: {
-                    x: {
-                        ticks: {
-                            callback: labelCallBack,
-                        }
-                    }
-                },
+                // scales: {
+                //    x: {
+                //        ticks: {
+                //            callback: labelCallBack,
+                //        }
+                //    }
+                // },
                 onClick: (e) => {
                     const eChart = e.chart;
                     const eFocusRange = eChart['focusRange'];
-                    if (eFocusRange >= FocusRange.HOUR) {
-                        return;
-                    }
+                    // if (eFocusRange >= FocusRange.DAY) {
+                    //     return;
+                    // }
 
                     const canvasPosition = getRelativePosition(e, eChart);
                     const pos = chart.scales.x.getValueForPixel(canvasPosition.x);
 
+                    const {
+                        newFocusDate,
+                        newTitle
+                    } = ElementsFactory.getFocusDateAndTitle(eChart['focusDate'], eFocusRange, pos, eChart['focusDateMin'], eChart['focusDateMax']);
+                    // console.log('newFocusDate:', eFocusRange, newFocusDate.toISOString(), newTitle);
                     eChart['focusRange'] = eFocusRange + 1;
-
-                    // TODO eChart['focusDate'].setFullYear(2023);
-                    eChart.config['_config'].options.plugins.title.text = eChart['focusRange'] + ' > ' + eChart['focusDate'];
+                    eChart['focusDate'] = new Date(newFocusDate);
+                    eChart.config['_config'].options.plugins.title.text = '' + newTitle;
 
                     eChart.data.datasets.forEach((dataset, index) => {
-                        // dataset.data = Utils.numbers({count: chart.data.labels.length, min: -100, max: 100});
-                        dataset.data = ElementsFactory.groupFocus(setOfData[index].values, eChart['focusDate'], eChart['focusRange'],
+                        const newFocusData = ElementsFactory.groupFocus(setOfData[index].values, eChart['focusDate'], eChart['focusRange'],
                             eChart['focusDateMin'], eChart['focusDateMax']);
+                        // console.log('newFocusData:', newFocusData);
+                        dataset.data = newFocusData;
                     });
                     eChart.data.labels = ElementsFactory.focusLabels(eChart['focusDate'], eChart['focusRange'],
-                        eChart['focusDateMin'], eChart['focusDateMax']);
+                        eChart['focusDateMin'], eChart['focusDateMax'], setOfData);
+
+                    // console.log('update...');
                     eChart.update();
                 }
             },
@@ -588,15 +621,15 @@ export class ElementsFactory {
         chart['focusDateMin'] = min;
         chart['focusDateMax'] = max;
         chart['focusReset'] = () => {
-            console.log('focusReset');
+            // console.log('focusReset');
             chart.config['_config'].options.plugins.title.text = '...';
             chart['focusDate'] = focusDate;
-            chart['focusRange'] = focusRange;
+            chart['focusRange'] = FocusRange.CENTURY;
             chart.data.datasets.forEach((dataset, index) => {
                 dataset.data = originalDataPoints[index];
             });
             chart.data.labels = ElementsFactory.focusLabels(chart['focusDate'], chart['focusRange'],
-                chart['focusDateMin'], chart['focusDateMax']);
+                chart['focusDateMin'], chart['focusDateMax'], setOfData);
             chart.update();
         };
         return chart;

@@ -13,7 +13,7 @@ export class CartesianDrawer {
 
     constructor(private cartesianMap2Points: (mapValue: CartesianMapValue) => { p1: Point, p2: Point },
                 private cartesianMap2Display: (mapValue: CartesianMapValue) => boolean,
-                private type: string) {
+                private bypassColor: boolean) {
         this.geoValues = [];
         this.hardLimit = 250001; // 40001 ? 250001 ?
         this.distanceRatio = 0;
@@ -57,7 +57,7 @@ export class CartesianDrawer {
 
                 const points = this.cartesianMap2Points(mapValue);
 
-                const gridValue = CartesianGridValue.Create(mapValue, points, centerPoint, distanceRatio);
+                const gridValue = CartesianGridValue.Create(mapValue, points, centerPoint, distanceRatio, this.bypassColor);
 
                 if (drawShape(gridValue)) {
                     done++;
