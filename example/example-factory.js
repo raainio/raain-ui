@@ -9,6 +9,7 @@ import {
     TimeframeContainers
 } from 'raain-ui';
 import 'leaflet/dist/leaflet.css';
+// import './map-dark.css';
 
 const center = {latitude: 51.505, longitude: -0.09};
 const now = new Date();
@@ -65,6 +66,7 @@ const dateFocusElement = document.getElementById('dateFocus');
 const configurationElement = document.getElementById('configuration');
 const speedElement = document.getElementById('speed');
 const indicatorElement = document.getElementById('indicator');
+const speedMatrixElement = document.getElementById('speedMatrix');
 
 // Values
 const markers = [
@@ -108,6 +110,13 @@ const setOfData = [
     {label: 'data 2', style: 'bar', values: dateStatusPoints2},
     {label: 'data 2 with lines', style: 'line', values: dateStatusPoints2},
 ];
+const positionValuesMatrix = [
+    [{x: -1, y: -2, value: 0}, {x: -1, y: -1, value: 0}, {x: 0, y: -2, value: 0}, {x: 0, y: -1, value: 0}],
+    [{x: -1, y: -2, value: 1}, {x: -1, y: -1, value: 2}, {x: 0, y: -2, value: 3}, {x: 0, y: -1, value: 4}],
+    [{x: -1, y: -2, value: 2}, {x: -1, y: -1, value: 6}, {x: 0, y: -2, value: 4}, {x: 0, y: -1, value: 8}],
+    [{x: -1, y: -2, value: 0.2}, {x: -1, y: -1, value: 3}, {x: 0, y: -2, value: 7}, {x: 0, y: -1, value: 5}],
+    [{x: -1, y: -2, value: 3}, {x: -1, y: -1, value: 2}, {x: 0, y: -2, value: 1}, {x: 0, y: -1, value: 0}],
+]
 
 // Factory
 const factory = new ElementsFactory(center, true);
@@ -121,6 +130,7 @@ const dateStatusChart = factory.createDateStatus(dateFocusElement, setOfData, ne
 factory.createConfiguration(configurationElement, configurationPoints);
 factory.createSpeedIndicator(speedElement, 20.6, 13);
 factory.createQualityIndicator(indicatorElement, 34);
+factory.createSpeedMatrixIndicator(speedMatrixElement, positionValuesMatrix[1]);
 
 // switching timeframes
 const animationTimeInMs = 2000;

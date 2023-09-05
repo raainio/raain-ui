@@ -8,9 +8,9 @@ import {PolarLayerConfig} from '../layers/PolarLayerConfig';
 import colorLib from '@kurkle/color';
 import Chart from 'chart.js/auto';
 import {getRelativePosition} from 'chart.js/helpers';
-
 import chartDragData from 'chartjs-plugin-dragdata';
 import {MapLatLng} from '../tools/MapLatLng';
+import {Application, Graphics} from 'pixi.js';
 
 const CHART_COLORS = {
     red: 'rgb(255, 99, 132)',
@@ -30,19 +30,10 @@ export enum FocusRange {
     HOUR
 }
 
-
-function labelCallBack(val, index) {
-    // console.log('focusDate', this.chart.focusDate, val);
-    if (!this.chart['focusDate'] || !this.chart['focusDateMin'] || !this.chart['focusDateMax']) {
-        return;
-    }
-
-    return ElementsFactory.focusLabel(
-        this.chart['focusDate'],
-        this.chart['focusRange'] ? this.chart['focusRange'] : FocusRange.CENTURY,
-        val,
-        this.chart['focusDateMin'],
-        this.chart['focusDateMax'], null);
+function hexStringToNumber(hexString: string): number {
+    const hex = hexString.substring(1, 3) + hexString.substring(3, 5) + hexString.substring(5, 7);
+    console.log('hex:', hex);
+    return parseInt(hex, 16);
 }
 
 export class ElementsFactory {
@@ -90,10 +81,12 @@ export class ElementsFactory {
             .sort((a, b) => a.date.getTime() - b.date.getTime());
     }
 
-    protected static groupFocus(mapToFilter: Array<{
-        date: Date,
-        value: number
-    }>, focusDate: Date, focusRange: FocusRange, min: Date, max: Date) {
+    protected static groupFocus(
+        mapToFilter: Array<{ date: Date, value: number }>,
+        focusDate: Date,
+        focusRange: FocusRange,
+        min: Date,
+        max: Date) {
 
         // console.log('groupFocus', focusDate, focusRange);
         const filteredAndSorted = this.filterFocus(mapToFilter, focusDate, focusRange);
@@ -256,6 +249,18 @@ export class ElementsFactory {
         tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy;<a href="https://www.openstreetmap.org/copyright">osm</a>',
         }).addTo(mapLeaflet);
+
+        // tileLayer('https://{s}.tile.jawg.io/jawg-dark/{z}/{x}/{y}{r}.png?access-token={accessToken}', {
+        //    attribution: '<a href="http://jawg.io" target="_blank">&copy; jawg</a>
+        //    &copy; <a href="https://www.openstreetmap.org/copyright">osm</a>'
+        // }).addTo(mapLeaflet);
+
+        // tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
+        //     maxZoom: 20,
+        //     attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy;
+        //     <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy;
+        //     <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+        // });
 
         //   // https://leaflet-extras.github.io/leaflet-providers/preview/
         //     const OpenTopoMap = tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
@@ -677,6 +682,78 @@ export class ElementsFactory {
         };
 
         return new Chart(element, config);
+    }
+
+    public createSpeedMatrixIndicator(element: HTMLCanvasElement, positionValuesMatrix: [{ x: number, y: number, value: number }]): void {
+
+        const wh = 10;
+        let minX, maxX, minY, maxY, minValue, maxValue;
+        for (const value of positionValuesMatrix) {
+            if (!minX || minX !== Math.min(value.x, minX)) {
+                minX = value.x;
+            }
+            if (!maxX || maxX !== Math.max(value.x, maxX)) {
+                maxX = value.x;
+            }
+            if (!minY || minY !== Math.min(value.x, minY)) {
+                minY = value.y;
+            }
+            if (!maxY || maxY !== Math.max(value.x, maxY)) {
+                maxY = value.y;
+            }
+            if (!minValue || minValue !== Math.min(value.value, minValue)) {
+                minValue = value.value;
+            }
+            if (!maxValue || maxValue !== Math.max(value.value, maxValue)) {
+                maxValue = value.value;
+            }
+        }
+        const width = maxX - minX + 1;
+        const height = maxY - minY + 1;
+        const range = maxValue - minValue;
+
+        const app = new Application({
+            width: width * wh,
+            height: height * wh,
+            view: element,
+            antialias: true,
+            backgroundColor: hexStringToNumber('#FFFFFF')
+        });
+
+        const pixiGraphic = new Graphics();
+        const translateX = x => {
+            const v = (x - minX) * wh;
+            console.log('x:', v);
+            return v;
+        };
+        const translateY = y => {
+            const v = (y - minY) * wh;
+            console.log('y:', v);
+            return v;
+        };
+        const translateColor = value => {
+            const valueOpt = maxValue ? value / maxValue : 0;
+            console.log('valueOpt:', valueOpt, value, range);
+            if (valueOpt >= 1) {
+                return '#35CC5A';
+            } else if (valueOpt >= 0.8) {
+                return '#a3ab10';
+            } else if (valueOpt >= 0.6) {
+                return '#d8de32';
+            } else if (valueOpt >= 0.4) {
+                return '#d9de6d';
+            }
+            return '#FEEB77';
+        };
+
+        for (const value of positionValuesMatrix) {
+            pixiGraphic.lineStyle(2, hexStringToNumber('#FEEB77'), 1);
+            pixiGraphic.beginFill(hexStringToNumber(translateColor(value.value)));
+            pixiGraphic.drawRect(translateX(value.x), translateY(value.y), wh, wh);
+            pixiGraphic.endFill();
+        }
+
+        app.stage.addChild(pixiGraphic);
     }
 
     public createQualityIndicator(element: HTMLCanvasElement, indicator: number): Chart {

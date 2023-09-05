@@ -45,13 +45,11 @@ export class CartesianDrawer {
         this.distanceRatio = distanceRatio;
         this.centerPoint = centerPoint;
 
-        for (let i = 0; i < this.geoValues.length; i++) {
+        for (const mapValue of this.geoValues) {
             if (done > this.hardLimit) {
                 console.log('hard limit reached ', this.hardLimit);
                 break;
             }
-
-            const mapValue = this.geoValues[i];
 
             if (this.cartesianMap2Display(mapValue)) {
 
