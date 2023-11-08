@@ -16,7 +16,8 @@
     "leaflet": "^1.9.3",
     "pixi.js": "^5.3.12",
     "raain-ui": "../dist",
-    "raain-model": "file:../../raain-model/dist"
+    "raain-model": "file:../../raain-model/dist",
+    "raain-quality": "file:../raain-quality/dist"
   },
   "devDependencies": {
     "parcel": "^2.8.3",

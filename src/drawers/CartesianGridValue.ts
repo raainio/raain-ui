@@ -1,5 +1,6 @@
 import {CartesianMapValue} from '../tools/CartesianMapValue';
 import {Point} from 'leaflet';
+import {CartesianDrawerOptimization} from './CartesianDrawerOptimization';
 
 export class CartesianGridValue {
 
@@ -17,12 +18,12 @@ export class CartesianGridValue {
                   srcPoints: { p1: Point, p2: Point },
                   center: Point,
                   ratio: number,
-                  bypassColor: boolean): CartesianGridValue {
+                  optimization: CartesianDrawerOptimization): CartesianGridValue {
 
         let transparency = 1; // not visible
         let color = 0x000000;
 
-        if (0.4 <= src.value && src.value < 1) {
+        if (0.2 <= src.value && src.value < 1) {
             color = 0x0013C1;
             transparency = 0.7;
         } else if (1 <= src.value && src.value < 3) {
@@ -48,7 +49,7 @@ export class CartesianGridValue {
             transparency = 0.3;
         }
 
-        if (bypassColor && 0.4 <= src.value) {
+        if (optimization?.bypass && 0.4 <= src.value) {
             color = 0x0013C1;
         }
 

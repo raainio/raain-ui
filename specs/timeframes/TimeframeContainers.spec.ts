@@ -26,7 +26,7 @@ describe('TimeframeContainers', () => {
         const measureValuePolarContainer = new MeasureValuePolarContainer(0, 1, [33, 45.5]);
         const polarMeasureValue = new PolarMeasureValue([measureValuePolarContainer]);
         const radarMeasure1 = new RadarMeasure('rm1', new Date(), [polarMeasureValue]);
-        const radarNodeMap1 = new RadarNodeMap('r1', 'radarName.polar', [], 10, 20);
+        const radarNodeMap1 = new RadarNodeMap('r1', 'radarName.polar', new Date(), new Date(), [], 10, 20);
         radarNodeMap1.setMapData([radarMeasure1, radarMeasure1]);
 
         timeframeContainers.addFromRadarNodeMap(radarNodeMap1, true);
@@ -36,7 +36,7 @@ describe('TimeframeContainers', () => {
         const cartesianValue = new CartesianValue(123, 10, 20);
         const cartesianMeasureValue = new CartesianMeasureValue([cartesianValue, cartesianValue]);
         const radarMeasure2 = new RadarMeasure('rm1', new Date(), [cartesianMeasureValue, cartesianMeasureValue]);
-        const radarNodeMap2 = new RadarNodeMap('r1', 'radarName.cartesian', [], 10, 20);
+        const radarNodeMap2 = new RadarNodeMap('r1', 'radarName.cartesian', new Date(), new Date(), [], 10, 20);
         radarNodeMap2.setMapData([radarMeasure2, radarMeasure2]);
 
         timeframeContainers.addFromRadarNodeMap(radarNodeMap2, false);

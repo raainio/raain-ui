@@ -17,7 +17,6 @@ export class PolarLayer implements IPixiUniqueLayer {
 
     constructor(protected id: string,
                 protected type: string,
-                protected bypassColor: boolean,
                 protected gridMap: Map,
                 protected addSomeDebugInfos = false) {
         this.mapGraph = new Graphics();
@@ -51,19 +50,21 @@ export class PolarLayer implements IPixiUniqueLayer {
                 polar.setCenter({latitude: center.lat, longitude: center.lng});
                 const latLng = new LatLng(polar.getLatitude(), polar.getLongitude());
                 return this.gridMap.latLngToContainerPoint(latLng);
-            }, (polar: PolarMapValue) => {
+            },
+            (polar: PolarMapValue) => {
                 if (this.config.minValueToDisplay > polar.value) {
                     return false;
                 }
                 return this.gridMap.getBounds().contains(polar);
-            }, this.type, this.bypassColor);
+            },
+            (): number => {
+                return this.gridMap.getZoom();
+            },
+            this.type);
 
-        // TODO hardLimit 40001 by config
-        //   this.config.optimization and based on this.config.lastCount
-        const optimizations = [
-            new PolarDrawerOptimization('radar', 0.2, 100, 3),
-            new PolarDrawerOptimization('rain', 0, 76, 10)];
-        this.polarDrawer.setConfiguration(this.config.theme, this.config.range, optimizations, 40001);
+        const optimizations = PolarDrawerOptimization.Defaults();
+
+        this.polarDrawer.setConfiguration(this.config.theme, this.config.range, optimizations);
         this.polarDrawer.updateValues(geoValues);
     }
 
@@ -87,7 +88,8 @@ export class PolarLayer implements IPixiUniqueLayer {
 
         // Debug purpose :
         if (this.addSomeDebugInfos) {
-            const pixiText = new Text('PixiPolar ' + this.getId(), {
+            const optimization = this.polarDrawer.getOptimization();
+            const pixiText = new Text('PixiPolar_' + optimization?.type + '_' + this.getId(), {
                 fontFamily: 'Arial',
                 fontSize: 14,
                 fill: 0xff1010,
@@ -96,31 +98,48 @@ export class PolarLayer implements IPixiUniqueLayer {
             this.mapGraph.addChild(pixiText);
         }
 
-        const drawCount = this.polarDrawer.renderPolarMapValues(this.center, centerPoint,
-            (polar1: PolarGridValue, polar2: PolarGridValue) => {
-                const width = Math.abs(polar2.getPolarDistanceRelative() - polar1.getPolarDistanceRelative());
-                if (width <= 0) {
-                    return false;
-                }
+        const drawPolarSharp = (polar1: PolarGridValue, polar2?: PolarGridValue) => {
 
-                const pixiGraphic = new Graphics();
-                const alpha = 1 - polar1.getTransparency(this.config.opacity);
+            const pixiGraphic = new Graphics();
 
-                pixiGraphic.lineStyle(width, polar1.getColor(), alpha);
-                let rad1 = polar2radians(polar1);
-                let rad2 = polar2radians(polar2);
-                if (rad1 === rad2 || rad1 === rad2 + 2 * Math.PI) {
-                    rad1 = 0;
-                    rad2 = 2 * Math.PI;
-                }
-                pixiGraphic.arc(0, 0, polar1.getPolarDistanceRelative(), rad1, rad2);
-
-                pixiGraphic.position.x = centerPoint.x;
-                pixiGraphic.position.y = centerPoint.y;
-
+            if (!polar2) {
+                const point1 = polar1.getPositionFrom(centerPoint);
+                const polar1alpha = 1 - polar1.getTransparency(this.config.opacity);
+                pixiGraphic.lineStyle(10, polar1.getColor(), polar1alpha);
+                pixiGraphic.drawCircle(point1.x, point1.y, 1);
                 this.mapGraph.addChild(pixiGraphic);
                 return true;
-            });
+            }
+
+            // TODO pixi arc is not working as expected
+            const polar1Distance = polar1.getPolarDistanceRelative();
+            const polar2Distance = polar2.getPolarDistanceRelative();
+            const width = Math.abs(polar2Distance - polar1Distance);
+            if (width <= 0) {
+                return false;
+            }
+
+            const alpha = 1 - polar1.getTransparency(this.config.opacity);
+
+            // pixiGraphic.lineStyle(width, polar1.getColor(), alpha);
+            pixiGraphic.lineStyle(1, polar1.getColor(), alpha);
+            let rad1 = polar2radians(polar1);
+            let rad2 = polar2radians(polar2);
+            if (rad1 === rad2 || rad1 === rad2 + 2 * Math.PI) {
+                rad1 = 0;
+                rad2 = 2 * Math.PI;
+            }
+            pixiGraphic.arc(0, 0, width / 2, rad1, rad2);
+            pixiGraphic.position.x = centerPoint.x;
+            pixiGraphic.position.y = centerPoint.y;
+            // console.log('polar:', centerPoint, point1, point2);
+
+            this.mapGraph.addChild(pixiGraphic);
+
+            return true;
+        };
+
+        const drawCount = this.polarDrawer.renderPolarMapValues(this.center, centerPoint, drawPolarSharp);
 
         // console.log(this.id, ' drawCount : ', drawCount);
         if (!this.addedInContainer) {

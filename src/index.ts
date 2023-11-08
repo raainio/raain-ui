@@ -9,6 +9,7 @@ export * from './drawers/PolarDrawer';
 export * from './drawers/PolarDrawerOptimization';
 export * from './drawers/PolarGridValue';
 export * from './drawers/CartesianDrawer';
+export * from './drawers/CartesianDrawerOptimization';
 export * from './drawers/CartesianGridValue';
 
 export * from './layers/PolarLayer';

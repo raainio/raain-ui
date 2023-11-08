@@ -1,5 +1,6 @@
 import {PolarMapValue} from '../tools/PolarMapValue';
 import {PolarDrawerOptimization} from './PolarDrawerOptimization';
+import {Point} from 'leaflet';
 
 export class PolarGridValue {
 
@@ -13,15 +14,14 @@ export class PolarGridValue {
 
     static Create(src: PolarMapValue,
                   distanceRatio: number,
-                  bypassColor: boolean,
-                  optimization?: PolarDrawerOptimization): PolarGridValue {
+                  optimization: PolarDrawerOptimization): PolarGridValue {
 
         let transparency = 1; // not visible
         let value = 0x51CFF3;
 
-        if (!optimization || optimization.type === 'rain') {
+        if (optimization.type === 'rain') {
             value = 0x000000;
-            if (0.4 <= src.value && src.value < 1) {
+            if (0.2 <= src.value && src.value < 1) {
                 value = 0x0013C0;
                 transparency = 0.7;
             } else if (1 <= src.value && src.value < 3) {
@@ -58,7 +58,7 @@ export class PolarGridValue {
         }
 
 
-        if (bypassColor && 0.4 <= src.value) {
+        if (optimization.bypass && 0.2 <= src.value) {
             value = 0x0013C1;
         }
 
@@ -93,5 +93,16 @@ export class PolarGridValue {
 
     public setPolarDistanceRelative(d: number) {
         this.polarDistanceRelative = d;
+    }
+
+    public getPositionFrom(centerPoint: Point): Point {
+        const radian = this.polarAzimuthInDegrees * (Math.PI / 180);
+        const x1 = Math.sin(radian) * this.polarDistanceRelative;
+        const y1 = Math.cos(radian) * this.polarDistanceRelative;
+
+        const precision = 100000;
+        const x2 = Math.round((x1 + centerPoint.x) * precision) / precision;
+        const y2 = Math.round((centerPoint.y - y1) * precision) / precision;
+        return new Point(x2, y2);
     }
 }

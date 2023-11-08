@@ -10,7 +10,7 @@ import Chart from 'chart.js/auto';
 import {getRelativePosition} from 'chart.js/helpers';
 import chartDragData from 'chartjs-plugin-dragdata';
 import {MapLatLng} from '../tools/MapLatLng';
-import {Application, Graphics} from 'pixi.js';
+import {Application, Graphics, Text} from 'pixi.js';
 
 const CHART_COLORS = {
     red: 'rgb(255, 99, 132)',
@@ -32,7 +32,7 @@ export enum FocusRange {
 
 function hexStringToNumber(hexString: string): number {
     const hex = hexString.substring(1, 3) + hexString.substring(3, 5) + hexString.substring(5, 7);
-    console.log('hex:', hex);
+    // console.log('hex:', hex);
     return parseInt(hex, 16);
 }
 
@@ -311,12 +311,11 @@ export class ElementsFactory {
                     const values: any = frameContainer.values;
 
                     let layer;
-                    const bypassColor = timeFrameContainer.name.indexOf('adar') > 0;
                     if (frameContainer.isPolar) {
-                        layer = new PolarLayer(layerId, timeFrameContainer.name, bypassColor, mapLeaflet, this.addSomeDebugInfos);
+                        layer = new PolarLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
                         layer.setPolarValues(this.center, values, new PolarLayerConfig());
                     } else if (frameContainer.isCartesian) {
-                        layer = new CartesianLayer(layerId, timeFrameContainer.name, bypassColor, mapLeaflet, this.addSomeDebugInfos);
+                        layer = new CartesianLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
                         layer.setCartesianGridValues(this.center, values);
                     }
 
@@ -684,7 +683,9 @@ export class ElementsFactory {
         return new Chart(element, config);
     }
 
-    public createSpeedMatrixIndicator(element: HTMLCanvasElement, positionValuesMatrix: [{ x: number, y: number, value: number }]): void {
+    public createSpeedMatrixIndicator(element: HTMLCanvasElement,
+                                      positionValuesMatrix: [{ x: number, y: number, value: number }],
+                                      trustIndicator: number = 1): void {
 
         const wh = 10;
         let minX, maxX, minY, maxY, minValue, maxValue;
@@ -716,42 +717,62 @@ export class ElementsFactory {
             width: width * wh,
             height: height * wh,
             view: element,
-            antialias: true,
+            // antialias: true,
             backgroundColor: hexStringToNumber('#FFFFFF')
         });
+        app.stage.removeChildren();
 
-        const pixiGraphic = new Graphics();
         const translateX = x => {
             const v = (x - minX) * wh;
-            console.log('x:', v);
+            // console.log('x:', v);
             return v;
         };
         const translateY = y => {
             const v = (y - minY) * wh;
-            console.log('y:', v);
+            // console.log('y:', v);
             return v;
         };
         const translateColor = value => {
             const valueOpt = maxValue ? value / maxValue : 0;
-            console.log('valueOpt:', valueOpt, value, range);
+            // console.log('valueOpt:', valueOpt, value, range);
             if (valueOpt >= 1) {
-                return '#35CC5A';
-            } else if (valueOpt >= 0.8) {
-                return '#a3ab10';
-            } else if (valueOpt >= 0.6) {
-                return '#d8de32';
+                return '#01d331';
+            } else if (valueOpt >= 0.85) {
+                return '#1bc041';
+            } else if (valueOpt >= 0.7) {
+                return '#30a64b';
+            } else if (valueOpt >= 0.55) {
+                return '#3f884f';
             } else if (valueOpt >= 0.4) {
-                return '#d9de6d';
+                return '#487953';
+            } else if (valueOpt >= 0.25) {
+                return '#4b6751';
+            } else if (valueOpt >= 0.1) {
+                return '#48544a';
             }
-            return '#FEEB77';
+            return '#484848';
         };
 
+        const pixiGraphic = new Graphics();
+        pixiGraphic.lineStyle(0); // 2, hexStringToNumber('#FEEB77'), 1);
         for (const value of positionValuesMatrix) {
-            pixiGraphic.lineStyle(2, hexStringToNumber('#FEEB77'), 1);
             pixiGraphic.beginFill(hexStringToNumber(translateColor(value.value)));
             pixiGraphic.drawRect(translateX(value.x), translateY(value.y), wh, wh);
             pixiGraphic.endFill();
         }
+
+        let message = ' ';
+        if (trustIndicator < 0.5) {
+            message = 'No trust in ' + trustIndicator;
+        }
+
+        const pixiText = new Text(message, {
+            fontFamily: 'Arial',
+            fontSize: 20,
+            fill: 0xff1010,
+            align: 'center',
+        });
+        pixiGraphic.addChild(pixiText);
 
         app.stage.addChild(pixiGraphic);
     }

@@ -7,7 +7,6 @@ import {MapTools} from '../tools/MapTools';
 export class PolarDrawer {
 
     private geoValues: PolarMapValue[];
-    private hardLimit: number;
     private optimizations: PolarDrawerOptimization[];
     private possibleDrawing: number;
     private distanceRatio: number;
@@ -15,24 +14,31 @@ export class PolarDrawer {
 
     constructor(private polarMap2Point: (pv: PolarMapValue) => Point,
                 private polarMap2Display: (pv: PolarMapValue) => boolean,
-                private type: string,
-                private bypassColor: boolean) {
+                private polarMapZoom: () => number,
+                private type: string) {
         this.geoValues = [];
-        this.hardLimit = 40001; // 40001 ? 250001 ?
         this.possibleDrawing = 0;
         this.distanceRatio = 0;
         this.centerPoint = new Point(0, 0);
-        this.optimizations = [
-            new PolarDrawerOptimization('radar', 0.2, 100, 3),
-            new PolarDrawerOptimization('rain', 0, 76, 10)];
+        this.optimizations = PolarDrawerOptimization.Defaults();
     }
 
     public setConfiguration(theme: number,
                             range: number,
-                            optimizations: PolarDrawerOptimization[],
-                            hardLimit: number): void {
-        this.hardLimit = hardLimit;
+                            optimizations: PolarDrawerOptimization[]): void {
         this.optimizations = optimizations;
+    }
+
+    public getOptimization(): PolarDrawerOptimization {
+        const optimizations = this.optimizations.filter((o) => {
+            return this.type.toLowerCase().indexOf(o.type.toLowerCase()) > 0;
+        });
+        if (optimizations.length === 1) {
+            return optimizations[0];
+        }
+
+        console.warn('no optimization found for polar drawer - please consider to use one');
+        return PolarDrawerOptimization.Defaults()[0];
     }
 
     public updateValues(geoValues: PolarMapValue[]): void {
@@ -43,88 +49,90 @@ export class PolarDrawer {
         if (!centerPoint.equals(this.centerPoint)) {
             return true;
         }
-        if (this.distanceRatio !== this.getDistanceRatio(center, this.getEdgeCount())) {
+        if (this.distanceRatio !== this.getDistanceRatio(centerPoint)) {
             return true;
         }
         return this.possibleDrawing !== this.getPossibleDrawing();
     }
 
     public renderPolarMapValues(center: LatLng, centerPoint: Point,
-                                drawPolarSharp: (polar1: PolarGridValue, polar2: PolarGridValue) => boolean): number {
+                                drawPolarSharp: (polar1: PolarGridValue, polar2?: PolarGridValue) => boolean): number {
 
         let done = 0;
         const edgeCount = this.getEdgeCount();
-        const distanceRatio = this.getDistanceRatio(center, edgeCount);
+        const distanceRatio = this.getDistanceRatio(centerPoint);
         const azimuthStepInDegrees = this.getAzimuthStepInDegrees();
         const optimizationValues: { x1: PolarGridValue, x2: PolarGridValue } = {
             x1: null,
             x2: null
         };
-        const optimizations = this.optimizations.filter((o) => {
-            return this.type === o.type;
-        });
-        let optimization = null;
-        if (optimizations.length === 1) {
-            optimization = optimizations[0];
-        } else {
-            console.warn('Please consider to set an UI optimization');
-        }
 
         if (distanceRatio <= 0) {
-            console.warn('distanceRatio is 0 - no sense ? ', center);
+            console.warn('distanceRatio is 0 - no sense ? ', center, centerPoint);
             return 0;
         }
 
+        const optimization = this.getOptimization();
         this.possibleDrawing = this.getPossibleDrawing();
         this.distanceRatio = distanceRatio;
         this.centerPoint = centerPoint;
 
-        for (let i = 0; i < this.geoValues.length; i++) {
-            if (done > this.hardLimit) {
-                // console.log('hard limit reached ', this.hardLimit);
+        const filteredValues = optimization.filteringValues(this.polarMapZoom(), this.geoValues, this.polarMap2Display);
+        for (let [i, polarValue] of filteredValues.entries()) {
+            if (done > optimization.hardLimit) {
+                console.log('hard limit reached ', optimization.hardLimit);
                 break;
             }
 
-            const polarValue = PolarMapValue.Duplicate(this.geoValues[i]);
-
+            polarValue = PolarMapValue.Duplicate(polarValue);
             polarValue.setCenter({latitude: center.lat, longitude: center.lng});
             // console.log('rendered polarValue : ', polarValue);
 
-            const drawValue = (x1: PolarGridValue, pv2: PolarMapValue, forceDraw?: boolean): boolean => {
-                if (!x1 || !pv2) {
-                    return false;
-                }
-                const x2 = PolarGridValue.Create(pv2, distanceRatio, this.bypassColor, optimization);
-                x2.polarAzimuthInDegrees = x1.polarAzimuthInDegrees + azimuthStepInDegrees;
+            if (optimization.groupAzimuths()) {
+                const drawValue = (x1: PolarGridValue, pv2: PolarMapValue, forceDraw?: boolean): boolean => {
+                    if (!x1 || !pv2) {
+                        return false;
+                    }
+                    const x2 = PolarGridValue.Create(pv2, distanceRatio, optimization);
+                    x2.polarAzimuthInDegrees = x1.polarAzimuthInDegrees + azimuthStepInDegrees;
 
-                let drawDone = false;
-                if (!forceDraw && x2.getTransparency() === x1.getTransparency()) {
-                    // same value => optimize drawing
-                    optimizationValues.x2 = x2;
-                } else {
-                    if (x1.getTransparency() < 1) {
-                        drawDone = drawPolarSharp(x1, x2);
+                    let drawDone = false;
+                    if (!forceDraw && x2.getTransparency() === x1.getTransparency()) {
+                        // same value => optimize drawing
+                        optimizationValues.x2 = x2;
                     } else {
-                        drawDone = true;
+                        if (x1.getTransparency() < 1) {
+                            drawDone = drawPolarSharp(x1, x2);
+                        } else {
+                            drawDone = true;
+                        }
+                        optimizationValues.x2 = null;
+                        if (drawDone) {
+                            done++;
+                        }
                     }
-                    optimizationValues.x2 = null;
-                    if (drawDone) {
-                        done++;
-                    }
-                }
-                return drawDone;
-            };
+                    return drawDone;
+                };
 
-            if (!this.polarMap2Display(polarValue) || ((i % edgeCount) === (edgeCount - 1))) {
-                drawValue(optimizationValues.x1, polarValue, true);
-                optimizationValues.x1 = null;
-                i = this._getNextOffset(i, edgeCount) - 1;
-            } else {
-                const drawDone = drawValue(optimizationValues.x1, polarValue);
-                if (drawDone || !optimizationValues.x1) {
-                    optimizationValues.x1 = PolarGridValue.Create(polarValue, distanceRatio, this.bypassColor, optimization);
+                if (!this.polarMap2Display(polarValue)) {
+                    drawValue(optimizationValues.x1, polarValue, true);
+                    optimizationValues.x1 = null;
+                } else if (((i % edgeCount) === (edgeCount - 1))) {
+                    drawValue(optimizationValues.x1, polarValue, true);
+                    optimizationValues.x1 = null;
+                    i = this._getNextOffset(i, edgeCount) - 1;
+                } else {
+                    const drawDone = drawValue(optimizationValues.x1, polarValue);
+                    if (drawDone || !optimizationValues.x1) {
+                        optimizationValues.x1 = PolarGridValue.Create(polarValue, distanceRatio, optimization);
+                    }
                 }
+            } else {
+                const x = PolarGridValue.Create(polarValue, distanceRatio, optimization);
+                done += drawPolarSharp(x) ? 1 : 0;
             }
+
+
         }
 
         console.log('Polar done vs possible:', done, this.possibleDrawing);
@@ -144,7 +152,8 @@ export class PolarDrawer {
 
     protected getPossibleDrawing() {
         let count = 0;
-        for (const mapValue of this.geoValues) {
+        const nonNullValues = this.geoValues.filter(v => v.value);
+        for (const mapValue of nonNullValues) {
             if (this.polarMap2Display(mapValue)) {
                 count++;
             }
@@ -152,9 +161,15 @@ export class PolarDrawer {
         return count;
     }
 
-    private getDistanceRatio(center: LatLng, edgeCount: number): number {
+    private getDistanceRatio(centerPoint: Point): number {
 
-        const distanceRatio = MapTools.getPolarDistanceRatio(center, this.geoValues, edgeCount, this.polarMap2Point);
+        if (this.geoValues.length < 1) {
+            return 0;
+        }
+
+        const distanceRatio = MapTools.getPolarDistanceRatio(centerPoint,
+            this.geoValues[this.geoValues.length - 1],
+            this.polarMap2Point);
         // console.log('distanceRatio: ', distanceRatio);
         return distanceRatio;
     }

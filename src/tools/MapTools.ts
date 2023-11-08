@@ -4,21 +4,17 @@ import {CartesianMapValue} from './CartesianMapValue';
 
 export class MapTools {
 
-    static getPolarDistanceRatio(center: LatLng,
-                                 geoValues: PolarMapValue[],
-                                 edgeCount: number,
+    static getPolarDistanceRatio(centerPoint: Point,
+                                 lastGeoValue: PolarMapValue,
                                  polarMap2Point: (pv: PolarMapValue) => Point): number {
-        if (geoValues.length <= 1) {
-            return 1;
-        }
 
-        const lastGeoValue = PolarMapValue.Duplicate(geoValues[geoValues.length - 1]);
-        const firstGeoValue = PolarMapValue.Duplicate(geoValues[0]);
-        const lastPoint = polarMap2Point(lastGeoValue);
-        const centerPoint = polarMap2Point(firstGeoValue);
+        const lastGeoValueDuplicated = PolarMapValue.Duplicate(lastGeoValue);
+        // const firstGeoValue = PolarMapValue.Duplicate(geoValues[0]);
+        // const centerPoint = polarMap2Point(firstGeoValue);
+        const lastPoint = polarMap2Point(lastGeoValueDuplicated);
         return Math.sqrt(
             Math.pow(centerPoint.x - lastPoint.x, 2) + Math.pow(centerPoint.y - lastPoint.y, 2)
-        ) / lastGeoValue.polarDistanceInMeters;
+        ) / lastGeoValueDuplicated.polarDistanceInMeters;
     }
 
     static getCartesianDistanceRatio(center: LatLng,

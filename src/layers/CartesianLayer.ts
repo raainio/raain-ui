@@ -14,7 +14,6 @@ export class CartesianLayer implements IPixiUniqueLayer {
 
     constructor(protected id: string,
                 protected type: string,
-                protected bypassColor: boolean,
                 protected gridMap: Map,
                 protected addSomeDebugInfos = false) {
         this.mapGraph = new Graphics();
@@ -48,7 +47,11 @@ export class CartesianLayer implements IPixiUniqueLayer {
                 };
             }, (mapValue: CartesianMapValue) => {
                 return this.gridMap.getBounds().contains(mapValue);
-            }, this.bypassColor);
+            },
+            (): number => {
+                return this.gridMap.getZoom();
+            },
+            this.type);
 
         this.cartesianDrawer.updateValues(values);
     }
@@ -67,7 +70,8 @@ export class CartesianLayer implements IPixiUniqueLayer {
 
         // Debug purpose :
         if (this.addSomeDebugInfos) {
-            const pixiText = new Text('Pixi Cartesian ' + this.getId(), {
+            const optimization = this.cartesianDrawer.getOptimization();
+            const pixiText = new Text('PixiCartesian_' + optimization?.type + '_' + this.getId(), {
                 fontFamily: 'Arial',
                 fontSize: 14,
                 fill: 0xff1010,
@@ -82,6 +86,7 @@ export class CartesianLayer implements IPixiUniqueLayer {
                 pixiGraphic.beginFill(gridValue.getColor(), 1 - gridValue.getTransparency());
                 pixiGraphic.drawRect(gridValue.x, gridValue.y, gridValue.width, gridValue.height);
                 pixiGraphic.endFill();
+                // console.log('renderCartesianMapValues:', gridValue);
                 this.mapGraph.addChild(pixiGraphic);
                 return true;
             });

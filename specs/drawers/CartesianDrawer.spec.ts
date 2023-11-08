@@ -1,18 +1,17 @@
 import {LatLng, Point} from 'leaflet';
 
 import {expect} from 'chai';
-import {CartesianDrawer, CartesianGridValue, CartesianMapValue, PolarMapValue} from '../../src';
+import {CartesianDrawer, CartesianGridValue, CartesianMapValue} from '../../src';
+import {CartesianDrawerOptimization} from '../../src/drawers/CartesianDrawerOptimization';
 
 describe('CartesianDrawer', () => {
 
-    const polarMapValues = [];
-    const step = 10;
-    const azimuthStep = 360 / step;
-    for (let azimuthInDegrees = 0; azimuthInDegrees < 360; azimuthInDegrees += azimuthStep) {
-        for (let distance = 0; distance < step; distance++) {
-            polarMapValues.push(new PolarMapValue(
-                distance, azimuthInDegrees, distance * 1000, 0,
-                `${distance * azimuthInDegrees}`, `${distance * azimuthInDegrees}`));
+    const cartesianMapValues: CartesianMapValue[] = [];
+    const step = 0.2;
+    for (let lat = -1; lat <= 1; lat += step) {
+        for (let lng = -1; lng <= 1; lng += step) {
+            cartesianMapValues.push(new CartesianMapValue(lat * lng, lat, lng, lat + step, lng + step,
+                `id_${lat}_${lng}`, `name_${lat}_${lng}`));
         }
     }
 
@@ -22,41 +21,103 @@ describe('CartesianDrawer', () => {
             }, () => {
                 return false;
             },
-            'rain');
+            () => {
+                return 1;
+            },
+            'basic');
 
         expect(cartesianDrawer.renderCartesianMapValues(new LatLng(0, 0), new Point(0, 0), null)).eq(0);
     });
 
-    it('should render a basic PolarMapValues without optimization', async () => {
+    it('should render a basic CartesianMapValue without optimization', async () => {
+        // scenario
         const cartesianDrawer = new CartesianDrawer((mapValue: CartesianMapValue) => {
                 return {
-                    p1: new Point(mapValue.latitude * 100000, mapValue.longitude * 100000),
-                    p2: new Point(mapValue.latitude * 100000, mapValue.longitude * 100000)
+                    p1: new Point(mapValue.latitude * 1000, mapValue.longitude * 1000),
+                    p2: new Point(mapValue.latitude * 1000 + 1, mapValue.longitude * 1000 + 1)
                 };
             }, (mapValue: CartesianMapValue) => {
                 return mapValue.value < 5;
             },
-            'radar');
-        cartesianDrawer.updateValues(polarMapValues);
+            () => {
+                return 0.5;
+            },
+            'without optim');
+        cartesianDrawer.updateValues(cartesianMapValues);
         const spy = {drawn: 0, values: []};
         const spyDrawing = (gridValue: CartesianGridValue) => {
             spy.drawn++;
             spy.values.push({gridValue});
             return true;
         };
-        cartesianDrawer.setConfiguration(0, 0, 40001);
 
-        expect(cartesianDrawer.renderCartesianMapValues(new LatLng(0.001, 0.001), new Point(0, 0), spyDrawing)).eq(50);
-        expect(spy.drawn).eq(50);
-        expect(spy.values.length).eq(50);
+        // render
+        const rendered = cartesianDrawer.renderCartesianMapValues(
+            new LatLng(0.001, 0.001),
+            new Point(0, 0),
+            spyDrawing);
 
-        expect(spy.values[0]).deep.equal({d1: 0, a1: 0, d2: 38, a2: 36, v: 0.5});
-        expect(spy.values[1]).deep.equal({d1: 38, a1: 0, d2: 76, a2: 36, v: 0.85});
-        expect(spy.values[4]).deep.equal({d1: 0, a1: 36, d2: 38, a2: 72, v: 0.9});
-        expect(spy.values[5]).deep.equal({d1: 38, a1: 36, d2: 76, a2: 72, v: 0.85});
-        expect(spy.values[6]).deep.equal({d1: 76, a1: 36, d2: 153, a2: 72, v: 0.8});
-        expect(spy.values[9]).deep.equal({d1: 38, a1: 72, d2: 76, a2: 108, v: 0.85});
-        expect(spy.values[10]).deep.equal({d1: 76, a1: 72, d2: 153, a2: 108, v: 0.8});
+        // verify
+        expect(rendered).eq(cartesianMapValues.length);
+        expect(spy.drawn).eq(121);
+        expect(spy.values.length).eq(121);
+
+        expect(spy.values[0]).deep.equal({
+            gridValue: {
+                color: 52985,
+                height: 1,
+                id: 'id_-1_-1',
+                transparency: 0.65,
+                width: 1,
+                x: -1000,
+                y: -1000,
+            }
+        });
+    });
+
+    it('should render a basic CartesianMapValue with optimization', async () => {
+        // scenario
+        const cartesianDrawer = new CartesianDrawer((mapValue: CartesianMapValue) => {
+                const result = {
+                    p1: new Point(mapValue.latitude * 1000, mapValue.longitude * 1000),
+                    p2: new Point(mapValue.latitude * 1000, mapValue.longitude * 1000)
+                };
+                return result;
+            }, (mapValue: CartesianMapValue) => {
+                return mapValue.value < 5;
+            },
+            () => {
+                return 9;
+            },
+            'withOptim');
+        cartesianDrawer.updateValues(cartesianMapValues);
+        const spy = {drawn: 0, values: []};
+        const spyDrawing = (gridValue: CartesianGridValue) => {
+            spy.drawn++;
+            spy.values.push({gridValue});
+            return true;
+        };
+        cartesianDrawer.setConfiguration(0, 0,
+            [new CartesianDrawerOptimization('optim', 40001, false, true)]);
+
+        // render
+        const rendered = cartesianDrawer.renderCartesianMapValues(new LatLng(0.001, 0.001), new Point(0, 0), spyDrawing);
+
+        // verify
+        expect(spy.drawn).eq(60);
+        expect(spy.values.length).eq(60);
+
+        expect(spy.values[0]).deep.equal({
+            gridValue: {
+                color: 5057,
+                transparency: 0.7,
+                x: -1000,
+                y: -800,
+                width: 0,
+                height: 0,
+                id: 'id_-1_-0.8'
+            }
+        });
     });
 });
 

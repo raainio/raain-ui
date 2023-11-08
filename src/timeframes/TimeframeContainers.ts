@@ -8,7 +8,8 @@ export class TimeframeContainers {
     constructor(public containers: TimeframeContainer[]) {
     }
 
-    public addFromRadarNodeMap(radarNodeMap: RadarNodeMap, isPolar: boolean, cartesianScale = 0.01) {
+    public addFromRadarNodeMap(radarNodeMap: RadarNodeMap,
+                               isPolar: boolean) {
 
         const radarMeasures = radarNodeMap.getMapData();
         let frames;
@@ -27,7 +28,7 @@ export class TimeframeContainers {
                 let values: CartesianMapValue[] = [];
                 rm.values.forEach(v => {
                     const cartesianValues = typeof v.cartesianValues === 'string' ? JSON.parse(v.cartesianValues) : v.cartesianValues;
-                    values = values.concat(CartesianMapValue.from(cartesianValues, cartesianScale));
+                    values = values.concat(CartesianMapValue.From(cartesianValues));
                 });
                 return new FrameContainer(rm.date, values, false, true);
             });
@@ -36,7 +37,8 @@ export class TimeframeContainers {
         this.containers.push(new TimeframeContainer(radarNodeMap.name, frames));
     }
 
-    public addFromRainComputationMap(rainComputationMap: RainComputationMap, isPolar: boolean, cartesianScale = 0.01) {
+    public addFromRainComputationMap(rainComputationMap: RainComputationMap,
+                                     isPolar: boolean) {
 
         const rainMeasures = rainComputationMap.getMapData();
         let frames;
@@ -53,7 +55,7 @@ export class TimeframeContainers {
             frames = rainMeasures.map(rm => {
                 let values: CartesianMapValue[] = [];
                 rm.values.forEach(v => {
-                    values = values.concat(CartesianMapValue.from(v.cartesianValues, cartesianScale));
+                    values = values.concat(CartesianMapValue.From(v.cartesianValues));
                 });
                 return new FrameContainer(rm.date, values, false, true);
             });
