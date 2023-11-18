@@ -41,7 +41,8 @@ export class PolarLayer implements IPixiUniqueLayer {
         return this.mapGraph.alpha === 1;
     }
 
-    public setPolarValues(center: LatLng | { lat: number, lng: number }, geoValues: PolarMapValue[],
+    public setPolarValues(center: LatLng | { lat: number, lng: number },
+                          geoValues: PolarMapValue[],
                           config: PolarLayerConfig) {
         this.center = new LatLng(center.lat, center.lng);
         this.config.copy(config);

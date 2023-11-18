@@ -1,7 +1,6 @@
 import {CartesianValue} from 'raain-model';
-import {ConverterFromPolar} from 'raain-quality';
+import {Converter, LatLng} from 'raain-quality';
 import {MapLatLng} from './MapLatLng';
-import {LatLng} from 'leaflet';
 
 export class CartesianMapValue extends MapLatLng {
 
@@ -33,8 +32,7 @@ export class CartesianMapValue extends MapLatLng {
 
         let widthForMap = width;
         if (!widthForMap) {
-            // @ts-ignore
-            widthForMap = ConverterFromPolar.ComputeLatLngWidth(cartesianValues);
+            widthForMap = Converter.ComputeLatLngWidth(cartesianValues);
         }
 
         const cartesianMapValues = [];
@@ -50,17 +48,17 @@ export class CartesianMapValue extends MapLatLng {
         return cartesianMapValues;
     }
 
-    public static ConvertFromPolar(converterFromPolar: ConverterFromPolar, widthInKm: number): CartesianMapValue[] {
+    public static ConvertFromPolar(converterFromPolar: Converter, widthInKm: number): CartesianMapValue[] {
 
         const center = converterFromPolar.getCenter();
-        const pointToGetLatWidth = ConverterFromPolar.GetLatLngFromDistances(center, 0, 1000);
-        const pointToGetLngWidth = ConverterFromPolar.GetLatLngFromDistances(center, 1000, 0);
+        const pointToGetLatWidth = Converter.GetLatLngFromDistances(center, 0, 1000);
+        const pointToGetLngWidth = Converter.GetLatLngFromDistances(center, 1000, 0);
 
         const width = new LatLng(pointToGetLatWidth.lat - center.lat, pointToGetLngWidth.lng - center.lng);
         converterFromPolar.setWidth(width.lat, width.lng);
-        const rainCartesianMeasureValue = converterFromPolar.getRainCartesianMeasureValue(widthInKm);
+        const cartesianMeasureValue = converterFromPolar.getCartesianMeasureValue(widthInKm);
 
-        const cartesianValues = rainCartesianMeasureValue.getCartesianValues();
+        const cartesianValues = cartesianMeasureValue.getCartesianValues();
 
         return CartesianMapValue.From(cartesianValues, width);
     }

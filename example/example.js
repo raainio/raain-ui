@@ -9,16 +9,20 @@ import {
     TimeframeContainer,
     TimeframeContainers,
 } from 'raain-ui';
-import {ConverterFromPolar, LatLng,} from 'raain-quality';
+import {Converter, LatLng} from 'raain-quality';
 import {MeasureValuePolarContainer, PolarMeasureValue} from 'raain-model';
 import {CartesianMapValue} from '../src';
 
 const center = {latitude: 51.505, longitude: -0.09};
 const now = new Date();
 
-function addMinutes(date, minutes) {
+const addMinutes = (date, minutes) => {
     return new Date(date.getTime() + minutes * 60000);
-}
+};
+
+const isOdd = (num) => {
+    return num % 2;
+};
 
 const createPolarMapValues = (scenario) => {
     const values = [];
@@ -26,9 +30,10 @@ const createPolarMapValues = (scenario) => {
     for (let azimuth = 0; azimuth < 360; azimuth += 10) {
         for (let distance = 0; distance < 1000 * kms; distance += 1000) {
 
-            let value = azimuth;
+            const distanceIsOdd = isOdd(distance / 1000);
+            let value = distanceIsOdd ? azimuth : 0;
             if (scenario === 1) {
-                value = azimuth * distance / (1000 * kms);
+                value = distanceIsOdd ? azimuth * distance / (1000 * kms) : 0;
             }
 
             if (20 === azimuth && 30000 <= distance && distance <= 40000) {
@@ -42,24 +47,6 @@ const createPolarMapValues = (scenario) => {
     }
     return values;
 };
-
-const createPolarFromJson = () => {
-    const {rainPolarMeasureValues} = require('./555555b00000000000000003-polarMeasureValues-2023-11-02T23:04:45.666Z.gitignored.json');
-    const polarMapValues = [];
-    for (const rpmv of rainPolarMeasureValues) {
-        const measureValuePolarContainers = rpmv.polars;
-        for (const container of measureValuePolarContainers) {
-            let index = 0;
-            for (const edge of container.polarEdges) {
-                const cmv = new PolarMapValue(edge, container.azimuth, container.distance * index++);
-                cmv.setCenter(center);
-                polarMapValues.push(cmv);
-            }
-        }
-    }
-    console.log('polarMapValues:', polarMapValues.length);
-    return polarMapValues;
-}
 
 const createCartesianMapValues = (scenario) => {
 
@@ -77,27 +64,13 @@ const createCartesianMapValues = (scenario) => {
     }
 
     const polarMeasureValue = new PolarMeasureValue(measureValuePolarContainers);
-    const converterFromPolar = new ConverterFromPolar(new LatLng(center.latitude, center.longitude), polarMeasureValue);
+    const converterFromPolar = new Converter(new LatLng(center.latitude, center.longitude), polarMeasureValue);
+    console.log('polar to cartesian');
     const cartesianMapValues = CartesianMapValue.ConvertFromPolar(converterFromPolar, 100);
     const cartesianMapValuesNotNull = cartesianMapValues.filter(v => v.value);
     console.log('cartesianMapValues:', cartesianMapValues.length, cartesianMapValuesNotNull.length, cartesianMapValuesNotNull);
     return cartesianMapValues;
 };
-
-const createCartesianMapFromJson = () => {
-    const cartesianRainHistories = require('./555555b00000000000000003-cartesianRainHistories-2023-11-02T23:05:09.451Z.gitignored.snap.2018-05-25T20:15:19.000Z.json');
-    const cartesianMapValues = cartesianRainHistories.map(crh => {
-        const cmv = new CartesianMapValue(
-            crh.computedValue.value,
-            crh.computedValue.lat,
-            crh.computedValue.lng,
-            crh.computedValue.lat + 0.01,
-            crh.computedValue.lng + 0.01);
-        return cmv;
-    });
-    console.log('cartesianMapValues:', cartesianMapValues.length, cartesianMapValues);
-    return cartesianMapValues;
-}
 
 const mapElement = document.getElementById('map');
 const compareElement = document.getElementById('compare');
@@ -117,7 +90,6 @@ const markers = [
 const allCartesianValues = new TimeframeContainer('allCartesianValuesZoomSensitive', [
     new FrameContainer(now, createCartesianMapValues(0), false, true),
     new FrameContainer(addMinutes(now, 10), createCartesianMapValues(1), false, true),
-    new FrameContainer(addMinutes(now, 20), createCartesianMapFromJson(), false, true),
 ]);
 
 const timeframeContainers = new TimeframeContainers([
@@ -125,7 +97,6 @@ const timeframeContainers = new TimeframeContainers([
     new TimeframeContainer('polar_with_Radar0_', [new FrameContainer(addMinutes(now, 10), createPolarMapValues(0), true, false)]),
     new TimeframeContainer('polar_Rain1_', [new FrameContainer(addMinutes(now, 20), createPolarMapValues(1), true, false)]),
     new TimeframeContainer('polar_without_optimization_', [new FrameContainer(addMinutes(now, 30), createPolarMapValues(1), true, false)]),
-    new TimeframeContainer('polar_json_Rain1_', [new FrameContainer(now, createPolarFromJson(), true, false)]),
     allCartesianValues,
 ]);
 
@@ -162,8 +133,6 @@ let positionValuesMatrix = [
     [{x: -1, y: -2, value: 0.2}, {x: -1, y: -1, value: 3}, {x: 0, y: -2, value: 7}, {x: 0, y: -1, value: 5}],
     [{x: -1, y: -2, value: 3}, {x: -1, y: -1, value: 2}, {x: 0, y: -2, value: 1}, {x: 0, y: -1, value: 0}],
 ];
-// TODO manage file presence
-positionValuesMatrix = require('./workerProcessorCartesianQuality.gitignored.result.1693901411113.json').qualitySpeedMatrixContainer.flattenMatrices;
 
 // Factory
 const factory = new ElementsFactory(center, true);
@@ -186,7 +155,7 @@ const animationTimeInMs = 5000;
 let animationEnabled = false;
 const toggleAnimation = () => {
     animationEnabled = !animationEnabled;
-    console.log('toggleAnimation:', animationEnabled);
+    // console.log('toggleAnimation:', animationEnabled);
     if (animationEnabled) {
         switchTimeFramePolarRain0();
     }
@@ -213,13 +182,7 @@ const switchTimeFramePolarRain1 = () => {
 const switchTimeFramePolarWithoutOptimization = () => {
     mapManagement.compositeLayer.showTheFistMatchingId('polar_without_optimization_');
     if (animationEnabled) {
-        setTimeout(switchTimeFramePolarJson, animationTimeInMs);
-    }
-};
-const switchTimeFramePolarJson = () => {
-    mapManagement.compositeLayer.showTheFistMatchingId('polar_json_');
-    if (animationEnabled) {
-        setTimeout(switchTimeFrameCartesian1, animationTimeInMs);
+        setTimeout(switchTimeFrameCartesian0, animationTimeInMs);
     }
 };
 const switchTimeFrameCartesian0 = () => {
@@ -232,12 +195,6 @@ const switchTimeFrameCartesian1 = () => {
     allCartesianValues.showTimeframe(addMinutes(now, 10));
     if (animationEnabled) {
         setTimeout(switchTimeFrameCartesian2, animationTimeInMs);
-    }
-};
-const switchTimeFrameCartesian2 = () => {
-    allCartesianValues.showTimeframe(addMinutes(now, 20));
-    if (animationEnabled) {
-        setTimeout(switchTimeFramePolarRain0, animationTimeInMs);
     }
 };
 
@@ -258,9 +215,7 @@ window.switchTimeFramePolarRain0 = switchTimeFramePolarRain0;
 window.switchTimeFrameCartesian0 = switchTimeFrameCartesian0;
 window.switchTimeFramePolarRain1 = switchTimeFramePolarRain1;
 window.switchTimeFrameCartesian1 = switchTimeFrameCartesian1;
-window.switchTimeFrameCartesian2 = switchTimeFrameCartesian2;
 window.switchTimeFramePolarWithoutOptimization = switchTimeFramePolarWithoutOptimization;
-window.switchTimeFramePolarJson = switchTimeFramePolarJson;
 
 // #############
 

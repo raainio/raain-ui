@@ -5,6 +5,8 @@ import {MapLatLng} from './MapLatLng';
 
 export class PolarMapValue extends MapLatLng {
 
+    private center: LatLng;
+
     constructor(
         value: number,
         public polarAzimuthInDegrees: number,
@@ -17,8 +19,6 @@ export class PolarMapValue extends MapLatLng {
         this.center = new LatLng(0, 0);
         this.setLatLngConsistentWithPolar();
     }
-
-    private center: LatLng;
 
     static Duplicate(src: PolarMapValue): PolarMapValue {
         const value = new PolarMapValue(
@@ -34,6 +34,19 @@ export class PolarMapValue extends MapLatLng {
         return value;
     }
 
+    public static from(measureValuePolarContainers: MeasureValuePolarContainer[]): PolarMapValue[] {
+        const polarMapValues = [];
+        measureValuePolarContainers.forEach(measureValuePolarContainer => {
+            measureValuePolarContainer.polarEdges.forEach((edge, index) => {
+                polarMapValues.push(new PolarMapValue(
+                    edge,
+                    measureValuePolarContainer.azimuth,
+                    measureValuePolarContainer.distance * (index + 1)));
+            });
+        });
+        return polarMapValues;
+    }
+
     private static GetLatLngFromPolar(center: LatLng, polarAzimuthInDegrees: number, polarDistanceInMeters: number): {
         lat: number,
         lng: number
@@ -47,19 +60,6 @@ export class PolarMapValue extends MapLatLng {
             lat: dest.latitude,
             lng: dest.longitude
         };
-    }
-
-    public static from(measureValuePolarContainers: MeasureValuePolarContainer[]): PolarMapValue[] {
-        const polarMapValues = [];
-        measureValuePolarContainers.forEach(measureValuePolarContainer => {
-            measureValuePolarContainer.polarEdges.forEach((edge, index) => {
-                polarMapValues.push(new PolarMapValue(
-                    edge,
-                    measureValuePolarContainer.azimuth,
-                    measureValuePolarContainer.distance * index));
-            });
-        });
-        return polarMapValues;
     }
 
     setCenter(center: { latitude: number, longitude: number }): void {

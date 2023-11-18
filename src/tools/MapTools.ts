@@ -37,4 +37,10 @@ export class MapTools {
             Math.pow(centerPoint.x - points.p1.x, 2) + Math.pow(centerPoint.y - points.p1.y, 2)
         ) / distanceInMeters;
     }
+
+    static hexStringToNumber(hexString: string): number {
+        const hex = hexString.substring(1, 3) + hexString.substring(3, 5) + hexString.substring(5, 7);
+        // console.log('hex:', hex);
+        return parseInt(hex, 16);
+    }
 }

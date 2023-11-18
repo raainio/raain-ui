@@ -22,11 +22,16 @@ export class PolarDrawerOptimization {
     filteringValues(zoom: number,
                     geoValues: PolarMapValue[],
                     polarMap2Display: (mapValue: PolarMapValue) => boolean): PolarMapValue[] {
-        // TODO need to polarValue = PolarMapValue.Duplicate(polarValue); ??
-        let valuesToDisplay = geoValues.filter(v => v.value);
+
+        // non null values
+        let valuesToDisplay = geoValues.filter(v => v.value > 0);
+
+        // into the map
         if (polarMap2Display) {
             valuesToDisplay = valuesToDisplay.filter(polarMap2Display);
         }
+
+        // reduced in case of zoom
         if (this.considerZoom) {
             const zoomLimit = 10;
             if (zoom < zoomLimit) {

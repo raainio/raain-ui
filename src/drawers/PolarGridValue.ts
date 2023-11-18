@@ -1,52 +1,29 @@
 import {PolarMapValue} from '../tools/PolarMapValue';
 import {PolarDrawerOptimization} from './PolarDrawerOptimization';
 import {Point} from 'leaflet';
+import {MapTools} from '../tools/MapTools';
+import {GridValue} from './GridValue';
 
-export class PolarGridValue {
+export class PolarGridValue extends GridValue {
 
     constructor(
-        private color: number,
-        private transparency: number,
+        color: number,
+        transparency: number,
         public polarAzimuthInDegrees: number,
         private polarDistanceRelative: number,
-        public id?: string) {
+        id?: string) {
+        super(color, transparency, id);
     }
 
     static Create(src: PolarMapValue,
                   distanceRatio: number,
                   optimization: PolarDrawerOptimization): PolarGridValue {
 
-        let transparency = 1; // not visible
-        let value = 0x51CFF3;
+        // let transparency = 1; // not visible
+        // let value = 0x51CFF3;
+        let {transparency, value} = GridValue.translateColor(src.value);
 
-        if (optimization.type === 'rain') {
-            value = 0x000000;
-            if (0.2 <= src.value && src.value < 1) {
-                value = 0x0013C0;
-                transparency = 0.7;
-            } else if (1 <= src.value && src.value < 3) {
-                value = 0x00CEF9;
-                transparency = 0.65;
-            } else if (3 <= src.value && src.value < 10) {
-                value = 0x009A0F;
-                transparency = 0.6;
-            } else if (10 <= src.value && src.value < 20) {
-                value = 0x6DED00;
-                transparency = 0.55;
-            } else if (20 <= src.value && src.value < 30) {
-                value = 0xFFF300;
-                transparency = 0.50;
-            } else if (30 <= src.value && src.value < 50) {
-                value = 0xFF9200;
-                transparency = 0.45;
-            } else if (50 <= src.value && src.value < 100) {
-                value = 0xFF0000;
-                transparency = 0.4;
-            } else if (100 <= src.value) {
-                value = 0xA80000;
-                transparency = 0.3;
-            }
-        } else {
+        if (optimization.type !== 'rain') {
             const range = optimization.max - optimization.min + 1;
             const stepCount = Math.floor(range / optimization.step) + 1;
             for (let i = 0; i < stepCount; i++) {
@@ -57,9 +34,9 @@ export class PolarGridValue {
             }
         }
 
-
         if (optimization.bypass && 0.2 <= src.value) {
-            value = 0x0013C1;
+            value = '#000000';
+            transparency = 0.6;
         }
 
         const distance = Math.round(100 * src.polarDistanceInMeters * distanceRatio) / 100;
@@ -71,20 +48,12 @@ export class PolarGridValue {
         // }
 
         return new PolarGridValue(
-            value,
+            MapTools.hexStringToNumber(value),
             transparency,
             src.polarAzimuthInDegrees,
             distance,
             src.id
         );
-    }
-
-    public getColor(forcedColor?: number): number {
-        return forcedColor ? forcedColor : this.color;
-    }
-
-    public getTransparency(forcedOpacity?: number): number {
-        return forcedOpacity ? forcedOpacity : this.transparency;
     }
 
     public getPolarDistanceRelative(): number {

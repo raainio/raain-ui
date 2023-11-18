@@ -1,7 +1,7 @@
 // @ts-ignore
 import {CartesianMapValue, PolarMapValue} from '../../src';
 import {expect} from 'chai';
-import {ConverterFromPolar, LatLng} from 'raain-quality';
+import {Converter, LatLng} from 'raain-quality';
 import {MeasureValuePolarContainer, PolarMeasureValue} from 'raain-model';
 
 describe('CartesianMapValue', () => {
@@ -15,7 +15,7 @@ describe('CartesianMapValue', () => {
             new MeasureValuePolarContainer(180, 1000, [1, 2]),
         ];
         const polarMeasureValue = new PolarMeasureValue(measureValuePolarContainers);
-        const converterFromPolar = new ConverterFromPolar(center, polarMeasureValue);
+        const converterFromPolar = new Converter(center, polarMeasureValue);
 
         // test
         const cartesianMapValues = CartesianMapValue.ConvertFromPolar(converterFromPolar, 4);
@@ -47,7 +47,7 @@ describe('CartesianMapValue', () => {
             new MeasureValuePolarContainer(180, 1000, [1, 2]),
         ];
         const polarMeasureValue = new PolarMeasureValue(measureValuePolarContainers);
-        const converterFromPolar = new ConverterFromPolar(center, polarMeasureValue);
+        const converterFromPolar = new Converter(center, polarMeasureValue);
 
         // test
         const cartesianMapValues = CartesianMapValue.ConvertFromPolar(converterFromPolar, 40);
@@ -72,7 +72,7 @@ describe('CartesianMapValue', () => {
             measureValuePolarContainers.push(new MeasureValuePolarContainer(azimuth, 1000, polarEdges));
         }
         const polarMeasureValue = new PolarMeasureValue(measureValuePolarContainers);
-        const converterFromPolar = new ConverterFromPolar(center, polarMeasureValue);
+        const converterFromPolar = new Converter(center, polarMeasureValue);
 
         // test
         const cartesianMapValues = CartesianMapValue.ConvertFromPolar(converterFromPolar, distanceInKm);

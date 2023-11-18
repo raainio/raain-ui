@@ -11,6 +11,7 @@ import {getRelativePosition} from 'chart.js/helpers';
 import chartDragData from 'chartjs-plugin-dragdata';
 import {MapLatLng} from '../tools/MapLatLng';
 import {Application, Graphics, Text} from 'pixi.js';
+import {MapTools} from '../tools/MapTools';
 
 const CHART_COLORS = {
     red: 'rgb(255, 99, 132)',
@@ -28,12 +29,6 @@ export enum FocusRange {
     MONTH,
     DAY,
     HOUR
-}
-
-function hexStringToNumber(hexString: string): number {
-    const hex = hexString.substring(1, 3) + hexString.substring(3, 5) + hexString.substring(5, 7);
-    // console.log('hex:', hex);
-    return parseInt(hex, 16);
 }
 
 export class ElementsFactory {
@@ -304,9 +299,9 @@ export class ElementsFactory {
             compositeLayer.setCurrentHeight(height);
 
             let firstLayerIdPushed;
-            timeframeContainers.containers.forEach(timeFrameContainer => {
+            for (const timeFrameContainer of timeframeContainers.containers) {
                 timeFrameContainer.setCompositeLayer(compositeLayer);
-                timeFrameContainer.timeframe.forEach((frameContainer, timeframeIndex) => {
+                for (const frameContainer of timeFrameContainer.timeframe) {
                     const layerId = timeFrameContainer.getFrameId(frameContainer);
                     const values: any = frameContainer.values;
 
@@ -323,8 +318,8 @@ export class ElementsFactory {
                         firstLayerIdPushed = layerId;
                     }
                     compositeLayer.addLayer(layer);
-                });
-            });
+                }
+            }
             compositeLayer.addToMap(mapLeaflet);
             compositeLayer.showTheFistMatchingId(firstLayerIdPushed);
         }
@@ -718,7 +713,7 @@ export class ElementsFactory {
             height: height * wh,
             view: element,
             // antialias: true,
-            backgroundColor: hexStringToNumber('#FFFFFF')
+            backgroundColor: MapTools.hexStringToNumber('#FFFFFF')
         });
         app.stage.removeChildren();
 
@@ -756,7 +751,7 @@ export class ElementsFactory {
         const pixiGraphic = new Graphics();
         pixiGraphic.lineStyle(0); // 2, hexStringToNumber('#FEEB77'), 1);
         for (const value of positionValuesMatrix) {
-            pixiGraphic.beginFill(hexStringToNumber(translateColor(value.value)));
+            pixiGraphic.beginFill(MapTools.hexStringToNumber(translateColor(value.value)));
             pixiGraphic.drawRect(translateX(value.x), translateY(value.y), wh, wh);
             pixiGraphic.endFill();
         }

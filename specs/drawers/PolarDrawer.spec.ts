@@ -8,10 +8,14 @@ describe('PolarDrawer', () => {
     const polarMapValues: PolarMapValue[] = [];
     const width = 10;
     const azimuthStep = 10;
+    const isOdd = (num) => {
+        return num % 2;
+    };
     for (let azimuthInDegrees = 0; azimuthInDegrees < 360; azimuthInDegrees += azimuthStep) {
         for (let distance = 0; distance < width; distance++) {
+            const value = isOdd(distance) ? distance : 0;
             polarMapValues.push(new PolarMapValue(
-                distance, azimuthInDegrees, distance * 1000, 0,
+                value, azimuthInDegrees, distance * 1000, 0,
                 `${distance * azimuthInDegrees}`, `${distance * azimuthInDegrees}`));
         }
     }
