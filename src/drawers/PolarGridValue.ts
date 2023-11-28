@@ -19,8 +19,6 @@ export class PolarGridValue extends GridValue {
                   distanceRatio: number,
                   optimization: PolarDrawerOptimization): PolarGridValue {
 
-        // let transparency = 1; // not visible
-        // let value = 0x51CFF3;
         let {transparency, value} = GridValue.translateColor(src.value);
 
         if (optimization.type !== 'rain') {

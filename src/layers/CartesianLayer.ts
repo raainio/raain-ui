@@ -1,4 +1,4 @@
-import {LatLng, Map} from 'leaflet';
+import {LatLng, Map, Point} from 'leaflet';
 import {Container, Graphics, Text} from 'pixi.js';
 import {IPixiUniqueLayer} from './IPixiUniqueLayer';
 import {CartesianMapValue} from '../tools/CartesianMapValue';
@@ -41,10 +41,15 @@ export class CartesianLayer implements IPixiUniqueLayer {
         this.center = new LatLng(center.lat, center.lng);
         this.cartesianDrawer = new CartesianDrawer(
             (mapValue: CartesianMapValue) => {
-                return {
-                    p1: this.gridMap.latLngToContainerPoint({lat: mapValue.latitude, lng: mapValue.longitude}),
-                    p2: this.gridMap.latLngToContainerPoint({lat: mapValue.latitude2, lng: mapValue.longitude2}),
-                };
+                try {
+                    return {
+                        p1: this.gridMap.latLngToContainerPoint({lat: mapValue.latitude, lng: mapValue.longitude}),
+                        p2: this.gridMap.latLngToContainerPoint({lat: mapValue.latitude2, lng: mapValue.longitude2}),
+                    };
+                } catch (e) {
+                    console.log(mapValue, e);
+                    return {p1: new Point(0, 0), p2: new Point(0, 0)};
+                }
             }, (mapValue: CartesianMapValue) => {
                 return this.gridMap.getBounds().contains(mapValue);
             },
@@ -71,7 +76,7 @@ export class CartesianLayer implements IPixiUniqueLayer {
         // Debug purpose :
         if (this.addSomeDebugInfos) {
             const optimization = this.cartesianDrawer.getOptimization();
-            const pixiText = new Text('PixiCartesian_' + optimization?.type + '_' + this.getId(), {
+            const pixiText = new Text('Cart_' + optimization?.type + '_' + this.getId(), {
                 fontFamily: 'Arial',
                 fontSize: 14,
                 fill: 0xff1010,
@@ -84,10 +89,22 @@ export class CartesianLayer implements IPixiUniqueLayer {
             (gridValue: CartesianGridValue) => {
                 const pixiGraphic = new Graphics();
                 pixiGraphic.beginFill(gridValue.getColor(), 1 - gridValue.getTransparency());
-                pixiGraphic.drawRect(gridValue.x, gridValue.y, gridValue.width, gridValue.height);
+                pixiGraphic.drawRect(0, 0, gridValue.width, gridValue.height);
                 pixiGraphic.endFill();
+                pixiGraphic.x = gridValue.x;
+                pixiGraphic.y = gridValue.y;
                 // console.log('renderCartesianMapValues:', gridValue);
+
+                // const pixiText = new Text('  ' + gridValue.id, {
+                //     fontFamily: 'Arial',
+                //     fontSize: 13,
+                //     fill: MapTools.hexStringToNumber('#000000'),
+                //     align: 'center',
+                // });
+                // pixiGraphic.addChild(pixiText);
+
                 this.mapGraph.addChild(pixiGraphic);
+
                 return true;
             });
 

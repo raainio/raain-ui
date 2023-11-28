@@ -28,7 +28,9 @@ export class TimeframeContainers {
                 let values: CartesianMapValue[] = [];
                 rm.values.forEach(v => {
                     const cartesianValues = typeof v.cartesianValues === 'string' ? JSON.parse(v.cartesianValues) : v.cartesianValues;
-                    values = values.concat(CartesianMapValue.From(cartesianValues));
+                    const cartesianPixelWidth = typeof v.cartesianPixelWidth === 'string' ?
+                        JSON.parse(v.cartesianPixelWidth) : v.cartesianPixelWidth;
+                    values = values.concat(CartesianMapValue.From(cartesianValues, cartesianPixelWidth));
                 });
                 return new FrameContainer(rm.date, values, false, true);
             });
@@ -55,7 +57,7 @@ export class TimeframeContainers {
             frames = rainMeasures.map(rm => {
                 let values: CartesianMapValue[] = [];
                 rm.values.forEach(v => {
-                    values = values.concat(CartesianMapValue.From(v.cartesianValues));
+                    values = values.concat(CartesianMapValue.From(v.cartesianValues, v.cartesianPixelWidth));
                 });
                 return new FrameContainer(rm.date, values, false, true);
             });

@@ -90,7 +90,7 @@ export class PolarLayer implements IPixiUniqueLayer {
         // Debug purpose :
         if (this.addSomeDebugInfos) {
             const optimization = this.polarDrawer.getOptimization();
-            const pixiText = new Text('PixiPolar_' + optimization?.type + '_' + this.getId(), {
+            const pixiText = new Text('Pol_' + optimization?.type + '_' + this.getId(), {
                 fontFamily: 'Arial',
                 fontSize: 14,
                 fill: 0xff1010,

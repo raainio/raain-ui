@@ -28,13 +28,7 @@ export class CartesianMapValue extends MapLatLng {
         );
     }
 
-    public static From(cartesianValues: CartesianValue[], width?: LatLng): CartesianMapValue[] {
-
-        let widthForMap = width;
-        if (!widthForMap) {
-            widthForMap = Converter.ComputeLatLngWidth(cartesianValues);
-        }
-
+    public static From(cartesianValues: CartesianValue[], widthForMap: LatLng): CartesianMapValue[] {
         const cartesianMapValues = [];
         cartesianValues.forEach(cartesianValue => {
             cartesianMapValues.push(new CartesianMapValue(
@@ -49,18 +43,9 @@ export class CartesianMapValue extends MapLatLng {
     }
 
     public static ConvertFromPolar(converterFromPolar: Converter, widthInKm: number): CartesianMapValue[] {
-
-        const center = converterFromPolar.getCenter();
-        const pointToGetLatWidth = Converter.GetLatLngFromDistances(center, 0, 1000);
-        const pointToGetLngWidth = Converter.GetLatLngFromDistances(center, 1000, 0);
-
-        const width = new LatLng(pointToGetLatWidth.lat - center.lat, pointToGetLngWidth.lng - center.lng);
-        converterFromPolar.setWidth(width.lat, width.lng);
         const cartesianMeasureValue = converterFromPolar.getCartesianMeasureValue(widthInKm);
-
         const cartesianValues = cartesianMeasureValue.getCartesianValues();
-
-        return CartesianMapValue.From(cartesianValues, width);
+        return CartesianMapValue.From(cartesianValues, converterFromPolar.getCartesianPixelWidth());
     }
 
 }

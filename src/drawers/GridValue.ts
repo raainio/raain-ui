@@ -12,9 +12,9 @@ export class GridValue {
         let transparency = 1;
 
 
-        if (srcValue < 0.2) {
-            value = '#ba00c0';
-            transparency = 0.7;
+        if (srcValue < 0.4) {
+            value = '#000e98';
+            transparency = 0.9;
         } else if (0.2 <= srcValue && srcValue < 1) {
             value = '#0013C0';
             transparency = 0.7;
@@ -31,13 +31,25 @@ export class GridValue {
             value = '#FFF300';
             transparency = 0.50;
         } else if (30 <= srcValue && srcValue < 50) {
-            value = '#FF9200';
+            value = '#aa72f3';
             transparency = 0.45;
         } else if (50 <= srcValue && srcValue < 100) {
-            value = '#FF0000';
+            value = '#f67bec';
             transparency = 0.4;
-        } else if (100 <= srcValue) {
-            value = '#A80000';
+        } else if (100 <= srcValue && srcValue < 150) {
+            value = '#ff23cd';
+            transparency = 0.3;
+        } else if (150 <= srcValue && srcValue < 200) {
+            value = '#ff0707';
+            transparency = 0.3;
+        } else if (200 <= srcValue && srcValue < 250) {
+            value = '#c2042f';
+            transparency = 0.3;
+        } else if (250 <= srcValue && srcValue < 300) {
+            value = '#7e0321';
+            transparency = 0.3;
+        } else if (300 <= srcValue) {
+            value = '#000000';
             transparency = 0.3;
         }
 

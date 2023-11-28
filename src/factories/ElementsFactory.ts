@@ -723,7 +723,7 @@ export class ElementsFactory {
             return v;
         };
         const translateY = y => {
-            const v = (y - minY) * wh;
+            const v = (maxY - minY - (y - minY)) * wh;
             // console.log('y:', v);
             return v;
         };

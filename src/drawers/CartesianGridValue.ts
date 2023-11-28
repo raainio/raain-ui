@@ -23,10 +23,7 @@ export class CartesianGridValue extends GridValue {
                   ratio: number,
                   optimization: CartesianDrawerOptimization): CartesianGridValue {
 
-        // let transparency = 1; // not visible
-        // let value = 0x51CFF3;
         let {transparency, value} = GridValue.translateColor(src.value);
-
 
         if (optimization?.bypass && 0.2 <= src.value) {
             value = '#000000';
@@ -45,7 +42,7 @@ export class CartesianGridValue extends GridValue {
             y,
             width,
             height,
-            src.id
+            '' + Math.round(src.value * 100) / 100, // src.id,
         );
     }
 

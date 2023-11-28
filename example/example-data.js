@@ -7,9 +7,8 @@ import {
     TimeframeContainer,
     TimeframeContainers,
 } from 'raain-ui';
-import {Converter} from 'raain-quality';
 import {CartesianMapValue} from '../src';
-import {cartesianRainHistories, rainComputationQualities, rainPolarMeasureValues} from './data/require.js';
+import {cartesianRainHistories, rainComputationQualities, rainPolarMeasureValues} from './data/require.gitignored.js';
 
 const center = {latitude: 48.774569, longitude: 2.008407};
 const now = new Date();
@@ -30,20 +29,14 @@ const createPolarFromJson = (rpmv) => {
     return polarMapValues;
 }
 
-const createCartesianMapFromJson = (cartesianRainHistory) => {
-
-    console.log(cartesianRainHistory[0]);
-    const cartesianValues = cartesianRainHistory.map(c => c.computedValue);
-    const widthForMap = Converter.ComputeLatLngWidth(cartesianValues);
-    console.log(widthForMap);
-
-    const cartesianMapValues = cartesianRainHistory.map(crh => {
+const createCartesianMapFromJson = (cartesianRainHistories) => {
+    const cartesianMapValues = cartesianRainHistories.map(crh => {
         const cmv = new CartesianMapValue(
             crh.computedValue.value,
             crh.computedValue.lat,
             crh.computedValue.lng,
-            crh.computedValue.lat + widthForMap.lat,
-            crh.computedValue.lng + widthForMap.lng);
+            crh.computedValue.lat + 0.008,
+            crh.computedValue.lng + 0.014);
         return cmv;
     });
     // console.log('cartesianMapValues:', cartesianMapValues.length, cartesianMapValues);
