@@ -9,8 +9,6 @@ import {
     TimeframeContainer,
     TimeframeContainers,
 } from 'raain-ui';
-import {Converter, LatLng} from 'raain-quality';
-import {MeasureValuePolarContainer, PolarMeasureValue} from 'raain-model';
 import {CartesianMapValue} from '../src';
 
 const center = {latitude: 51.505, longitude: -0.09};
@@ -48,28 +46,19 @@ const createPolarMapValues = (scenario) => {
     return values;
 };
 
+
 const createCartesianMapValues = (scenario) => {
-
-    const polarValues = createPolarMapValues(scenario);
-
-    const measureValuePolarContainers = [];
-    for (let azimuth = 0; azimuth < 360; azimuth += 10) {
-        const polarEdges = polarValues.filter(v => v.polarAzimuthInDegrees === azimuth).map(v => v.value);
-        measureValuePolarContainers.push(new MeasureValuePolarContainer(
-            {
-                azimuth,
-                distance: 1000,
-                polarEdges
-            }));
+    const values = [];
+    for (let latitude = center.latitude - 1; latitude < center.latitude + 1; latitude += 0.01) {
+        for (let longitude = center.longitude - 1; longitude < center.longitude + 1; longitude += 0.01) {
+            const value = 40 * Math.random();
+            const mapValue = new CartesianMapValue(value,
+                latitude, longitude,
+                latitude + 0.1, longitude + 0.1);
+            values.push(mapValue);
+        }
     }
-
-    const polarMeasureValue = new PolarMeasureValue(measureValuePolarContainers);
-    const converterFromPolar = new Converter(new LatLng(center.latitude, center.longitude), polarMeasureValue);
-    console.log('polar to cartesian');
-    const cartesianMapValues = CartesianMapValue.ConvertFromPolar(converterFromPolar, 100);
-    const cartesianMapValuesNotNull = cartesianMapValues.filter(v => v.value);
-    console.log('cartesianMapValues:', cartesianMapValues.length, cartesianMapValuesNotNull.length, cartesianMapValuesNotNull);
-    return cartesianMapValues;
+    return values;
 };
 
 const mapElement = document.getElementById('map');

@@ -42,7 +42,7 @@ export class CompositeLayer extends PixiGridLayer implements IPixiLayer {
         this.layers.push(layer);
     }
 
-    protected removeAllLayers() {
+    public removeAllLayers() {
         this.layers = [];
         if (this._pixiContainer) {
             this._pixiContainer.removeChildren();

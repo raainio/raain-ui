@@ -1,5 +1,5 @@
 import {TimeframeContainer} from './TimeframeContainer';
-import {RadarNodeMap, RainComputationMap} from 'raain-model';
+import {CartesianValue, MeasureValuePolarContainer, RadarNodeMap, RainComputationMap} from 'raain-model';
 import {FrameContainer} from './FrameContainer';
 import {PolarMapValue} from '../tools/PolarMapValue';
 import {CartesianMapValue} from '../tools/CartesianMapValue';
@@ -43,13 +43,18 @@ export class TimeframeContainers {
                                      isPolar: boolean) {
 
         const rainMeasures = rainComputationMap.getMapData();
-        let frames;
+        let frames: FrameContainer[];
 
         if (isPolar) {
             frames = rainMeasures.map(rm => {
                 let values: PolarMapValue[] = [];
                 rm.values.forEach(v => {
-                    values = values.concat(PolarMapValue.from(v.polars));
+                    let polars = v.polars;
+                    if (typeof polars === 'string') {
+                        polars = JSON.parse(polars);
+                    }
+                    polars = polars.map(p => new MeasureValuePolarContainer(p));
+                    values = values.concat(PolarMapValue.from(polars));
                 });
                 return new FrameContainer(rm.date, values, true, false);
             });
@@ -57,7 +62,12 @@ export class TimeframeContainers {
             frames = rainMeasures.map(rm => {
                 let values: CartesianMapValue[] = [];
                 rm.values.forEach(v => {
-                    values = values.concat(CartesianMapValue.From(v.cartesianValues, v.cartesianPixelWidth));
+                    let cartesianValues = v.cartesianValues;
+                    if (typeof cartesianValues === 'string') {
+                        cartesianValues = JSON.parse(cartesianValues);
+                    }
+                    cartesianValues = cartesianValues.map(cv => new CartesianValue(cv.value, cv.lat, cv.lng));
+                    values = values.concat(CartesianMapValue.From(cartesianValues, v.cartesianPixelWidth));
                 });
                 return new FrameContainer(rm.date, values, false, true);
             });

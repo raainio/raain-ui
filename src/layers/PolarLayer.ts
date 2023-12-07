@@ -56,7 +56,9 @@ export class PolarLayer implements IPixiUniqueLayer {
                 if (this.config.minValueToDisplay > polar.value) {
                     return false;
                 }
-                return this.gridMap.getBounds().contains(polar);
+                polar.setCenter({latitude: center.lat, longitude: center.lng});
+                const latLng = new LatLng(polar.getLatitude(), polar.getLongitude());
+                return this.gridMap.getBounds().contains(latLng);
             },
             (): number => {
                 return this.gridMap.getZoom();

@@ -234,7 +234,7 @@ export class ElementsFactory {
 
         let mapLeaflet: Map;
         let markersLayer: MarkersLayer;
-        let compositeLayer: CompositeLayer;
+        const compositeLayer = new CompositeLayer();
 
         mapLeaflet = map(element, {
             preferCanvas: true, zoomControl: true, zoomAnimation: true, trackResize: false, boxZoom: false,
@@ -284,6 +284,9 @@ export class ElementsFactory {
 
         const width = element.offsetWidth;
         const height = element.offsetHeight;
+        compositeLayer.setCurrentWidth(width);
+        compositeLayer.setCurrentHeight(height);
+
         let markersProduced = [];
         if (markers?.length) {
             markersLayer = new MarkersLayer();
@@ -293,12 +296,8 @@ export class ElementsFactory {
             markersLayer.addToMap(mapLeaflet);
         }
 
+        let firstLayerIdPushed;
         if (timeframeContainers?.containers.length) {
-            compositeLayer = new CompositeLayer();
-            compositeLayer.setCurrentWidth(width);
-            compositeLayer.setCurrentHeight(height);
-
-            let firstLayerIdPushed;
             for (const timeFrameContainer of timeframeContainers.containers) {
                 timeFrameContainer.setCompositeLayer(compositeLayer);
                 for (const frameContainer of timeFrameContainer.timeframe) {
@@ -320,12 +319,56 @@ export class ElementsFactory {
                     compositeLayer.addLayer(layer);
                 }
             }
-            compositeLayer.addToMap(mapLeaflet);
+        }
+
+        compositeLayer.addToMap(mapLeaflet);
+        if (firstLayerIdPushed) {
             compositeLayer.showTheFistMatchingId(firstLayerIdPushed);
         }
 
         mapLeaflet.invalidateSize({animate: true});
         return {mapLeaflet, markersLayer, compositeLayer, markersProduced};
+    }
+
+    public updateMapTimeframe(
+        mapLeaflet: Map,
+        compositeLayer: CompositeLayer,
+        timeframeContainers: TimeframeContainers): void {
+
+        // let compositeLayer: CompositeLayer;
+
+        if (!compositeLayer || !timeframeContainers?.containers.length) {
+            return;
+        }
+
+        compositeLayer.removeAllLayers();
+
+        let firstLayerIdPushed;
+        for (const timeFrameContainer of timeframeContainers.containers) {
+            timeFrameContainer.setCompositeLayer(compositeLayer);
+            for (const frameContainer of timeFrameContainer.timeframe) {
+                const layerId = timeFrameContainer.getFrameId(frameContainer);
+                const values: any = frameContainer.values;
+
+                let layer;
+                if (frameContainer.isPolar) {
+                    layer = new PolarLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
+                    layer.setPolarValues(this.center, values, new PolarLayerConfig());
+                } else if (frameContainer.isCartesian) {
+                    layer = new CartesianLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
+                    layer.setCartesianGridValues(this.center, values);
+                }
+
+                if (!firstLayerIdPushed) {
+                    firstLayerIdPushed = layerId;
+                }
+                compositeLayer.addLayer(layer);
+            }
+        }
+        compositeLayer.showTheFistMatchingId(firstLayerIdPushed);
+
+        compositeLayer.redraw();
+        mapLeaflet.invalidateSize({animate: true});
     }
 
     public createCompare(element: HTMLCanvasElement,
@@ -679,7 +722,7 @@ export class ElementsFactory {
     }
 
     public createSpeedMatrixIndicator(element: HTMLCanvasElement,
-                                      positionValuesMatrix: [{ x: number, y: number, value: number }],
+                                      positionValuesMatrix: { x: number, y: number, value: number }[],
                                       trustIndicator: number = 1): void {
 
         const wh = 10;

@@ -1,5 +1,5 @@
 import {CartesianValue} from 'raain-model';
-import {Converter, LatLng} from 'raain-quality';
+import {LatLng} from 'raain-quality';
 import {MapLatLng} from './MapLatLng';
 
 export class CartesianMapValue extends MapLatLng {
@@ -40,12 +40,6 @@ export class CartesianMapValue extends MapLatLng {
             ));
         });
         return cartesianMapValues;
-    }
-
-    public static ConvertFromPolar(converterFromPolar: Converter, widthInKm: number): CartesianMapValue[] {
-        const cartesianMeasureValue = converterFromPolar.getCartesianMeasureValue(widthInKm);
-        const cartesianValues = cartesianMeasureValue.getCartesianValues();
-        return CartesianMapValue.From(cartesianValues, converterFromPolar.getCartesianPixelWidth());
     }
 
 }
