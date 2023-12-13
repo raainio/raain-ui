@@ -6,7 +6,8 @@ export class TimeframeContainer {
     protected compositeLayer: CompositeLayer;
 
     constructor(public name: string,
-                public timeframe: FrameContainer[]) {
+                public timeframe: FrameContainer[],
+                public version: string) {
     }
 
     setCompositeLayer(compositeLayer) {

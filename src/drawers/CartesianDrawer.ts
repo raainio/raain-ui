@@ -8,6 +8,7 @@ import {CartesianDrawerOptimization} from './CartesianDrawerOptimization';
 export class CartesianDrawer {
 
     private geoValues: CartesianMapValue[];
+    private version: string;
     private optimizations: CartesianDrawerOptimization[];
     private distanceRatio: number;
     private centerPoint: Point;
@@ -20,6 +21,10 @@ export class CartesianDrawer {
         this.distanceRatio = 0;
         this.centerPoint = new Point(0, 0);
         this.optimizations = CartesianDrawerOptimization.Defaults();
+    }
+
+    public getVersion() {
+        return this.version;
     }
 
     public setConfiguration(theme: number,
@@ -40,8 +45,10 @@ export class CartesianDrawer {
         return CartesianDrawerOptimization.Defaults()[0];
     }
 
-    public updateValues(geoValues: CartesianMapValue[]): void {
+    public updateValues(geoValues: CartesianMapValue[], version: string): void {
+        console.log('updateValues', version);
         this.geoValues = geoValues;
+        this.version = version;
     }
 
     public hasChanged(center: LatLng, centerPoint: Point) {

@@ -36,7 +36,7 @@ export class TimeframeContainers {
             });
         }
 
-        this.containers.push(new TimeframeContainer(radarNodeMap.name, frames));
+        this.containers.push(new TimeframeContainer(radarNodeMap.name, frames, radarNodeMap.getVersion()));
     }
 
     public addFromRainComputationMap(rainComputationMap: RainComputationMap,
@@ -73,7 +73,7 @@ export class TimeframeContainers {
             });
         }
 
-        this.containers.push(new TimeframeContainer(rainComputationMap.name, frames));
+        this.containers.push(new TimeframeContainer(rainComputationMap.name, frames, rainComputationMap.getVersion()));
     }
 
     showTimeframe(name: string, date: Date): boolean {

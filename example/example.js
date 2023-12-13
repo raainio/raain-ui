@@ -79,12 +79,12 @@ const markers = [
 const allCartesianValues = new TimeframeContainer('allCartesianValuesZoomSensitive', [
     new FrameContainer(now, createCartesianMapValues(0), false, true),
     new FrameContainer(addMinutes(now, 10), createCartesianMapValues(1), false, true),
-]);
+], 'cartExample');
 
 const timeframeContainers = new TimeframeContainers([
-    new TimeframeContainer('polar_with_Rain0_', [new FrameContainer(now, createPolarMapValues(0), true, false)]),
-    new TimeframeContainer('polar_with_Radar0_', [new FrameContainer(addMinutes(now, 10), createPolarMapValues(0), true, false)]),
-    new TimeframeContainer('polar_Rain1_', [new FrameContainer(addMinutes(now, 20), createPolarMapValues(1), true, false)]),
+    new TimeframeContainer('polar_with_Rain0_', [new FrameContainer(now, createPolarMapValues(0), true, false)], 'polarExample1'),
+    new TimeframeContainer('polar_with_Radar0_', [new FrameContainer(addMinutes(now, 10), createPolarMapValues(0), true, false)], 'polarExample2'),
+    new TimeframeContainer('polar_Rain1_', [new FrameContainer(addMinutes(now, 20), createPolarMapValues(1), true, false)], 'polarExample3'),
     new TimeframeContainer('polar_without_optimization_', [new FrameContainer(addMinutes(now, 30), createPolarMapValues(1), true, false)]),
     allCartesianValues,
 ]);

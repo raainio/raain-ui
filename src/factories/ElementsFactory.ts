@@ -306,11 +306,13 @@ export class ElementsFactory {
 
                     let layer;
                     if (frameContainer.isPolar) {
-                        layer = new PolarLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
-                        layer.setPolarValues(this.center, values, new PolarLayerConfig());
+                        layer = new PolarLayer(layerId, timeFrameContainer.name, mapLeaflet,
+                            this.addSomeDebugInfos);
+                        layer.setPolarValues(this.center, values, new PolarLayerConfig(), timeFrameContainer.version);
                     } else if (frameContainer.isCartesian) {
-                        layer = new CartesianLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
-                        layer.setCartesianGridValues(this.center, values);
+                        layer = new CartesianLayer(layerId, timeFrameContainer.name, mapLeaflet,
+                            this.addSomeDebugInfos);
+                        layer.setCartesianGridValues(this.center, values, timeFrameContainer.version);
                     }
 
                     if (!firstLayerIdPushed) {
@@ -353,10 +355,10 @@ export class ElementsFactory {
                 let layer;
                 if (frameContainer.isPolar) {
                     layer = new PolarLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
-                    layer.setPolarValues(this.center, values, new PolarLayerConfig());
+                    layer.setPolarValues(this.center, values, new PolarLayerConfig(), timeFrameContainer.version);
                 } else if (frameContainer.isCartesian) {
                     layer = new CartesianLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
-                    layer.setCartesianGridValues(this.center, values);
+                    layer.setCartesianGridValues(this.center, values, timeFrameContainer.version);
                 }
 
                 if (!firstLayerIdPushed) {

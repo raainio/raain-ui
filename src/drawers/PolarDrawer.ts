@@ -7,6 +7,7 @@ import {MapTools} from '../tools/MapTools';
 export class PolarDrawer {
 
     private geoValues: PolarMapValue[];
+    private version: string;
     private optimizations: PolarDrawerOptimization[];
     private possibleDrawing: number;
     private distanceRatio: number;
@@ -21,6 +22,10 @@ export class PolarDrawer {
         this.distanceRatio = 0;
         this.centerPoint = new Point(0, 0);
         this.optimizations = PolarDrawerOptimization.Defaults();
+    }
+
+    public getVersion() {
+        return this.version;
     }
 
     public setConfiguration(theme: number,
@@ -41,8 +46,10 @@ export class PolarDrawer {
         return PolarDrawerOptimization.Defaults()[0];
     }
 
-    public updateValues(geoValues: PolarMapValue[]): void {
+    public updateValues(geoValues: PolarMapValue[], version: string): void {
+        console.log('updateValues', version);
         this.geoValues = geoValues;
+        this.version = version;
     }
 
     public hasChanged(center: LatLng, centerPoint: Point) {

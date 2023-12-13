@@ -4,6 +4,7 @@ import {IPixiUniqueLayer} from './IPixiUniqueLayer';
 import {CartesianMapValue} from '../tools/CartesianMapValue';
 import {CartesianGridValue} from '../drawers/CartesianGridValue';
 import {CartesianDrawer} from '../drawers/CartesianDrawer';
+import {MapTools} from '../tools/MapTools';
 
 export class CartesianLayer implements IPixiUniqueLayer {
 
@@ -37,7 +38,7 @@ export class CartesianLayer implements IPixiUniqueLayer {
         return this.mapGraph.alpha === 1;
     }
 
-    public setCartesianGridValues(center: LatLng | { lat: number, lng: number }, values: CartesianMapValue[]): void {
+    public setCartesianGridValues(center: LatLng | { lat: number, lng: number }, values: CartesianMapValue[], version: string): void {
         this.center = new LatLng(center.lat, center.lng);
         this.cartesianDrawer = new CartesianDrawer(
             (mapValue: CartesianMapValue) => {
@@ -58,7 +59,7 @@ export class CartesianLayer implements IPixiUniqueLayer {
             },
             this.type);
 
-        this.cartesianDrawer.updateValues(values);
+        this.cartesianDrawer.updateValues(values, version);
     }
 
     public render(pixiContainer: Container): number {
@@ -76,10 +77,11 @@ export class CartesianLayer implements IPixiUniqueLayer {
         // Debug purpose :
         if (this.addSomeDebugInfos) {
             const optimization = this.cartesianDrawer.getOptimization();
-            const pixiText = new Text('Cart_' + optimization?.type + '_' + this.getId(), {
+            const pixiText = new Text('Cart_' + optimization?.type + '_' + this.cartesianDrawer.getVersion(), {
                 fontFamily: 'Arial',
-                fontSize: 14,
-                fill: 0xff1010,
+                fontSize: 16,
+                fontWeight: 'bold',
+                fill: MapTools.hexStringToNumber('#ff1010'),
                 align: 'center',
             });
             this.mapGraph.addChild(pixiText);

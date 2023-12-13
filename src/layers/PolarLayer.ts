@@ -6,6 +6,7 @@ import {PolarGridValue} from '../drawers/PolarGridValue';
 import {PolarLayerConfig} from './PolarLayerConfig';
 import {PolarDrawerOptimization} from '../drawers/PolarDrawerOptimization';
 import {IPixiUniqueLayer} from './IPixiUniqueLayer';
+import {MapTools} from '../tools/MapTools';
 
 export class PolarLayer implements IPixiUniqueLayer {
 
@@ -43,7 +44,8 @@ export class PolarLayer implements IPixiUniqueLayer {
 
     public setPolarValues(center: LatLng | { lat: number, lng: number },
                           geoValues: PolarMapValue[],
-                          config: PolarLayerConfig) {
+                          config: PolarLayerConfig,
+                          version: string) {
         this.center = new LatLng(center.lat, center.lng);
         this.config.copy(config);
         this.polarDrawer = new PolarDrawer(
@@ -68,7 +70,7 @@ export class PolarLayer implements IPixiUniqueLayer {
         const optimizations = PolarDrawerOptimization.Defaults();
 
         this.polarDrawer.setConfiguration(this.config.theme, this.config.range, optimizations);
-        this.polarDrawer.updateValues(geoValues);
+        this.polarDrawer.updateValues(geoValues, version);
     }
 
     public render(pixiContainer: Container): number {
@@ -92,10 +94,11 @@ export class PolarLayer implements IPixiUniqueLayer {
         // Debug purpose :
         if (this.addSomeDebugInfos) {
             const optimization = this.polarDrawer.getOptimization();
-            const pixiText = new Text('Pol_' + optimization?.type + '_' + this.getId(), {
+            const pixiText = new Text('Pol_' + optimization?.type + '_' + this.polarDrawer.getVersion(), {
                 fontFamily: 'Arial',
-                fontSize: 14,
-                fill: 0xff1010,
+                fontSize: 16,
+                fontWeight: 'bold',
+                fill: MapTools.hexStringToNumber('#3cff10'),
                 align: 'center',
             });
             this.mapGraph.addChild(pixiText);
