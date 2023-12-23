@@ -12,7 +12,7 @@ export class CartesianDrawerOptimization {
         return [
             new CartesianDrawerOptimization('default', 40001, false, false),
             new CartesianDrawerOptimization('radar', 40001, true, true),
-            new CartesianDrawerOptimization('rain', 40001, false, true),
+            new CartesianDrawerOptimization('rain', 40001, false, false),
             new CartesianDrawerOptimization('zoom', 40001, false, true),
         ];
     }
@@ -21,7 +21,7 @@ export class CartesianDrawerOptimization {
                     geoValues: CartesianMapValue[],
                     cartesianMap2Display: (mapValue: CartesianMapValue) => boolean
     ): CartesianMapValue[] {
-        let valuesToDisplay = geoValues.filter(v => v.value);
+        let valuesToDisplay = geoValues.filter(v => v.value > 0.4);
         if (cartesianMap2Display) {
             valuesToDisplay = valuesToDisplay.filter(cartesianMap2Display);
         }

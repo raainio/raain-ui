@@ -9,10 +9,9 @@ export class GridValue {
     protected static translateColor(srcValue) {
 
         let value = '#000000';
-        let transparency = 1;
+        let transparency = 1; // 1 => invisible
 
-
-        if (srcValue < 0.4) {
+        if (0 < srcValue && srcValue < 0.4) {
             value = '#000e98';
             transparency = 0.9;
         } else if (srcValue < 1) {

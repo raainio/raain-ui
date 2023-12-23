@@ -74,19 +74,6 @@ export class CartesianLayer implements IPixiUniqueLayer {
 
         this.mapGraph.removeChildren();
 
-        // Debug purpose :
-        if (this.addSomeDebugInfos) {
-            const optimization = this.cartesianDrawer.getOptimization();
-            const pixiText = new Text('Cart_' + optimization?.type + '_' + this.cartesianDrawer.getVersion(), {
-                fontFamily: 'Arial',
-                fontSize: 16,
-                fontWeight: 'bold',
-                fill: MapTools.hexStringToNumber('#ff1010'),
-                align: 'center',
-            });
-            this.mapGraph.addChild(pixiText);
-        }
-
         this.cartesianDrawer.renderCartesianMapValues(this.center, centerPoint,
             (gridValue: CartesianGridValue) => {
                 const pixiGraphic = new Graphics();
@@ -113,6 +100,19 @@ export class CartesianLayer implements IPixiUniqueLayer {
         if (!this.addedInContainer) {
             pixiContainer.addChild(this.mapGraph);
             this.addedInContainer = true;
+        }
+
+        // Debug purpose :
+        if (this.addSomeDebugInfos) {
+            const optimization = this.cartesianDrawer.getOptimization();
+            const pixiText = new Text('Car-' + optimization?.type + '-' + this.cartesianDrawer.getVersion(), {
+                fontFamily: 'Arial',
+                fontSize: 16,
+                fontWeight: 'bold',
+                fill: MapTools.hexStringToNumber('#ff1010'),
+                align: 'center',
+            });
+            this.mapGraph.addChild(pixiText);
         }
 
         return drawCount;

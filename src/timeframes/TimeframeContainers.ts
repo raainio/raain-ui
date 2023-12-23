@@ -76,7 +76,7 @@ export class TimeframeContainers {
         this.containers.push(new TimeframeContainer(rainComputationMap.name, frames, rainComputationMap.getVersion()));
     }
 
-    showTimeframe(name: string, date: Date): boolean {
+    showTimeframe(name: string, date?: Date): boolean {
         for (const container of this.containers) {
             if (container.name === name) {
                 container.showTimeframe(date);

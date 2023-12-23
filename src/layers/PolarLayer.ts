@@ -91,19 +91,6 @@ export class PolarLayer implements IPixiUniqueLayer {
             return degrees * (Math.PI / 180);
         };
 
-        // Debug purpose :
-        if (this.addSomeDebugInfos) {
-            const optimization = this.polarDrawer.getOptimization();
-            const pixiText = new Text('Pol_' + optimization?.type + '_' + this.polarDrawer.getVersion(), {
-                fontFamily: 'Arial',
-                fontSize: 16,
-                fontWeight: 'bold',
-                fill: MapTools.hexStringToNumber('#3cff10'),
-                align: 'center',
-            });
-            this.mapGraph.addChild(pixiText);
-        }
-
         const drawPolarSharp = (polar1: PolarGridValue, polar2?: PolarGridValue) => {
 
             const pixiGraphic = new Graphics();
@@ -152,6 +139,19 @@ export class PolarLayer implements IPixiUniqueLayer {
             // console.log(this.id, ' addedInContainer.');
             pixiContainer.addChild(this.mapGraph);
             this.addedInContainer = true;
+        }
+
+        // Debug purpose :
+        if (this.addSomeDebugInfos) {
+            const optimization = this.polarDrawer.getOptimization();
+            const pixiText = new Text('Pol-' + optimization?.type + '-' + this.polarDrawer.getVersion(), {
+                fontFamily: 'Arial',
+                fontSize: 16,
+                fontWeight: 'bold',
+                fill: MapTools.hexStringToNumber('#3cff10'),
+                align: 'center',
+            });
+            this.mapGraph.addChild(pixiText);
         }
 
         return drawCount;

@@ -39,12 +39,6 @@ export class PolarGridValue extends GridValue {
 
         const distance = Math.round(100 * src.polarDistanceInMeters * distanceRatio) / 100;
 
-        // hack to see limits:
-        // if (src.polarDistanceInMeters > (250 * 1000)) {
-        //    transparency = 0.8;
-        //    value = 0x9836FF;
-        // }
-
         return new PolarGridValue(
             MapTools.hexStringToNumber(value),
             transparency,

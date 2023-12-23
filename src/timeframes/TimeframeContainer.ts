@@ -14,17 +14,17 @@ export class TimeframeContainer {
         this.compositeLayer = compositeLayer;
     }
 
-    showTimeframe(date: Date) {
+    showTimeframe(date?: Date) {
 
         if (!this.compositeLayer) {
             return;
         }
 
         let index = 0;
-        let frameContainerFound = null;
+        let frameContainerFound = this.timeframe.length ? this.timeframe[0] : null;
         this.timeframe.forEach(c => {
             index++;
-            if (new Date(c.date).getTime() === date.getTime()) {
+            if (new Date(c.date).getTime() === date?.getTime()) {
                 frameContainerFound = c;
             }
         });
