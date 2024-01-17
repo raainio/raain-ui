@@ -1,0 +1,49 @@
+{
+  "name": "raain-ui",
+  "version": "1.0.14",
+  "author": "contact@raain.io",
+  "homepage": "https://github.com/raainio/raain-ui",
+  "description": "raain.io ui layers",
+  "keywords": [
+    "raain.io",
+    "pixi"
+  ],
+  "private": false,
+  "license": "MIT",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "dependencies": {
+    "chart.js": "^4.2.1",
+    "chartjs-plugin-dragdata": "^2.2.5",
+    "geolib": "^3.3.3",
+    "leaflet": "^1.9.3",
+    "pixi.js": "^5.3.12",
+    "raain-model": "file:../raain-model/dist"
+  },
+  "peerDependencies": {
+    "chart.js": "^4.2.1",
+    "chartjs-plugin-dragdata": "^2.2.5",
+    "leaflet": "^1.9.3",
+    "pixi.js": "^5.3.12"
+  },
+  "devDependencies": {
+    "@testdeck/mocha": "^0.3.3",
+    "@types/leaflet": "^1.9.3",
+    "@types/mocha": "^10.0.1",
+    "assert": "^2.0.0",
+    "chai": "4.3.4",
+    "chai-as-promised": "^7.1.1",
+    "chai-spies": "^1.0.0",
+    "mocha": "^10.2.0",
+    "mock-browser": "^0.92.14",
+    "nyc": "^15.1.0",
+    "ts-mockito": "^2.6.1",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.20.1",
+    "typescript": "^5.0.3"
+  },
+  "scripts": {
+    "build": "rm -rf dist/ && npm version patch --no-git-tag-version && tsc --project tsconfig.json && cp *.md dist/ && cp package.json dist/",
+    "test": "nyc ./node_modules/.bin/_mocha --require ./tools/register.js 'specs/**/**.spec.ts'"
+  }
+}

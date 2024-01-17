@@ -1,0 +1,7 @@
+
+.leaflet-layer,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-attribution {
+    filter: brightness(50%) contrast(100%);
+}

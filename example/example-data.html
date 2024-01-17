@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>raain-ui-example</title>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+
+<a href="example.html">example1</a>
+<a href="example-data.html">example2</a>
+
+<a onclick="animateCartesian(true)"> >> animateCartesian</a>
+<a onclick="animatePolar(true)"> >> animatePolar</a>
+<a onclick="toggleAnimation()"> >> toggleAnimation</a>
+<a onclick="backward()"> << backward</a>
+<a onclick="forward()"> forward >></a>
+
+
+<div style="float:left;">
+    <div id="map" style="height: 650px; width: 650px;float:left;"></div>
+
+    <div style="height: 300px; width: 300px;float:left; padding-left: 30px;">
+        <h5 id="speedTitle">...</h5>
+        <canvas id="speedMatrix"></canvas>
+    </div>
+</div>
+
+<script src="./example-data.js" type="module"></script>
+</body>
+</html>
