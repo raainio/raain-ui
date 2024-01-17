@@ -288,13 +288,11 @@ export class ElementsFactory {
         compositeLayer.setCurrentHeight(height);
 
         let markersProduced = [];
-        if (markers?.length) {
-            markersLayer = new MarkersLayer();
-            markersLayer.setCurrentWidth(width);
-            markersLayer.setCurrentHeight(height);
-            markersProduced = markersLayer.render(markers, iconOptions).markers;
-            markersLayer.addToMap(mapLeaflet);
-        }
+        markersLayer = new MarkersLayer();
+        markersLayer.setCurrentWidth(width);
+        markersLayer.setCurrentHeight(height);
+        markersProduced = markersLayer.render(markers, iconOptions).markers;
+        markersLayer.addToMap(mapLeaflet);
 
         let firstLayerIdPushed;
         if (timeframeContainers?.containers.length) {
@@ -378,7 +376,8 @@ export class ElementsFactory {
                          topPoint: { x: number, y: number } = {
                              x: 100,
                              y: 100
-                         }): Chart<any> {
+                         },
+                         clickCallback): Chart<any> {
 
         const bijectivePoints = [{x: 0, y: 0}, {x: topPoint.x, y: topPoint.y}];
         const data = {
@@ -400,6 +399,7 @@ export class ElementsFactory {
                     borderDash: [2, 2],
                 },
             ],
+            selectedPoint: undefined,
         };
 
         const config: any = {
@@ -417,19 +417,37 @@ export class ElementsFactory {
                         // },
                         callbacks: {
                             label: (context) => {
-                                let label = points[context.dataIndex]?.name;
-                                if (!label) {
-                                    label = '';
+                                let label = '';
+                                console.log('label', context.dataIndex);
+                                if (context.dataset.data[context.dataIndex]) {
+                                    data.selectedPoint = context.dataset.data[context.dataIndex];
+                                    label = context.dataset.data[context.dataIndex].name;
+                                    if (!label) {
+                                        label = '';
+                                    }
                                 }
                                 return label;
                             }
                         }
+                    },
+
+                },
+
+                onClick(e) {
+                    const eChart = e.chart;
+                    const canvasPosition = getRelativePosition(e, eChart);
+                    console.log('canvasPosition', canvasPosition);
+                    const posX = chart.scales.x.getValueForPixel(canvasPosition.x);
+                    const posY = chart.scales.y.getValueForPixel(canvasPosition.y);
+                    if (data.selectedPoint) {
+                        clickCallback(data.selectedPoint);
                     }
-                }
+                },
             },
         };
 
-        return new Chart(element, config);
+        const chart = new Chart(element, config);
+        return chart;
     }
 
     public createConfiguration(element: HTMLCanvasElement,

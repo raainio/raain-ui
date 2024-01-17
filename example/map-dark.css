@@ -3,5 +3,5 @@
 .leaflet-control-zoom-in,
 .leaflet-control-zoom-out,
 .leaflet-control-attribution {
-    filter: brightness(30%) contrast(90%);
+    filter: brightness(50%) contrast(100%);
 }

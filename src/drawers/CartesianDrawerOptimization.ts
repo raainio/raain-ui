@@ -10,10 +10,10 @@ export class CartesianDrawerOptimization {
 
     static Defaults(): CartesianDrawerOptimization[] {
         return [
-            new CartesianDrawerOptimization('default', 40001, false, false),
-            new CartesianDrawerOptimization('radar', 40001, true, true),
-            new CartesianDrawerOptimization('rain', 40001, false, false),
-            new CartesianDrawerOptimization('zoom', 40001, false, true),
+            new CartesianDrawerOptimization('default', 60000, false, false),
+            new CartesianDrawerOptimization('radar', 60000, true, true),
+            new CartesianDrawerOptimization('rain', 60000, false, false),
+            new CartesianDrawerOptimization('zoom', 60000, false, true),
         ];
     }
 

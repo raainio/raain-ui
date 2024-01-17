@@ -147,7 +147,7 @@ export class PolarLayer implements IPixiUniqueLayer {
             const pixiText = new Text('Pol-' + optimization?.type + '-' + this.polarDrawer.getVersion(), {
                 fontFamily: 'Arial',
                 fontSize: 16,
-                fontWeight: 'bold',
+                // fontWeight: 'bold',
                 fill: MapTools.hexStringToNumber('#3cff10'),
                 align: 'center',
             });

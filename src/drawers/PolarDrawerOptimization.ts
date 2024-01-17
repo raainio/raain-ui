@@ -13,7 +13,7 @@ export class PolarDrawerOptimization {
     static Defaults(): PolarDrawerOptimization[] {
         return [
             new PolarDrawerOptimization('default', 40001, 0, 100, 10, false, false),
-            new PolarDrawerOptimization('radar', 40002, 0.2, 100, 3, true, true),
+            new PolarDrawerOptimization('radar', 40002, 0.2, 100, 5, true, true),
             new PolarDrawerOptimization('rain', 40003, 0, 76, 10, false, true),
             new PolarDrawerOptimization('zoom', 40003, 0, 76, 10, false, true),
         ];

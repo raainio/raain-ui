@@ -108,7 +108,7 @@ export class CartesianLayer implements IPixiUniqueLayer {
             const pixiText = new Text('Car-' + optimization?.type + '-' + this.cartesianDrawer.getVersion(), {
                 fontFamily: 'Arial',
                 fontSize: 16,
-                fontWeight: 'bold',
+                // fontWeight: 'bold',
                 fill: MapTools.hexStringToNumber('#ff1010'),
                 align: 'center',
             });

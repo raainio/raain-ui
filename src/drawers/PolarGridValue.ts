@@ -34,7 +34,8 @@ export class PolarGridValue extends GridValue {
 
         if (optimization.bypass && 0.2 <= src.value) {
             value = '#000000';
-            transparency = 0.6;
+            // transparency = 0.6;
+            transparency = Math.min(1, transparency * 2);
         }
 
         const distance = Math.round(100 * src.polarDistanceInMeters * distanceRatio) / 100;
