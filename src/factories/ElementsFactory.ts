@@ -20,7 +20,8 @@ const CHART_COLORS = {
     green: 'rgb(75, 192, 192)',
     blue: 'rgb(54, 162, 235)',
     purple: 'rgb(153, 102, 255)',
-    grey: 'rgb(201, 203, 207)',
+    grey: 'rgb(163,163,164)',
+    dark: 'rgb(68,72,80)',
 };
 
 export enum FocusRange {
@@ -237,7 +238,12 @@ export class ElementsFactory {
         const compositeLayer = new CompositeLayer();
 
         mapLeaflet = map(element, {
-            preferCanvas: true, zoomControl: true, zoomAnimation: true, trackResize: false, boxZoom: false,
+            preferCanvas: true,
+            zoomControl: true,
+            zoomAnimation: true,
+            trackResize: false,
+            boxZoom: false,
+            scrollWheelZoom: false,
             renderer: canvas(),
         }).setView([this.center.lat, this.center.lng], 10);
 
@@ -385,8 +391,8 @@ export class ElementsFactory {
                 {
                     type: 'bubble',
                     data: points,
-                    borderColor: CHART_COLORS.grey,
-                    backgroundColor: ElementsFactory.getTransparency(CHART_COLORS.grey, 0.5),
+                    borderColor: CHART_COLORS.dark,
+                    backgroundColor: ElementsFactory.getTransparency(CHART_COLORS.grey, 0.2),
                     pointStyle: 'circle',
                     pointHoverRadius: 15,
                 },
@@ -658,6 +664,7 @@ export class ElementsFactory {
                         newTitle
                     } = ElementsFactory.getFocusDateAndTitle(eChart['focusDate'], eFocusRange, pos, eChart['focusDateMin'], eChart['focusDateMax']);
                     // console.log('newFocusDate:', eFocusRange, newFocusDate.toISOString(), newTitle);
+                    eChart['focusPos'] = pos;
                     eChart['focusRange'] = eFocusRange + 1;
                     eChart['focusDate'] = new Date(newFocusDate);
                     eChart.config['_config'].options.plugins.title.text = '' + newTitle;
@@ -692,6 +699,60 @@ export class ElementsFactory {
             });
             chart.data.labels = ElementsFactory.focusLabels(chart['focusDate'], chart['focusRange'],
                 chart['focusDateMin'], chart['focusDateMax'], setOfData);
+            chart.update();
+        };
+
+        chart['focusPrevious'] = () => {
+
+            const eFocusRange = chart['focusRange'] - 1;
+            let eFocusPos = chart['focusPos'] ? chart['focusPos'] : 0;
+            eFocusPos = eFocusPos - 1;
+
+            const {
+                newFocusDate,
+                newTitle
+            } = ElementsFactory.getFocusDateAndTitle(chart['focusDate'], eFocusRange, eFocusPos,
+                chart['focusDateMin'], chart['focusDateMax']);
+
+            chart['focusPos'] = eFocusPos;
+            chart['focusDate'] = new Date(newFocusDate);
+            chart.config['_config'].options.plugins.title.text = '' + newTitle;
+
+            chart.data.datasets.forEach((dataset, index) => {
+                const newFocusData = ElementsFactory.groupFocus(setOfData[index].values, chart['focusDate'], chart['focusRange'],
+                    chart['focusDateMin'], chart['focusDateMax']);
+                dataset.data = newFocusData;
+            });
+            chart.data.labels = ElementsFactory.focusLabels(chart['focusDate'], chart['focusRange'],
+                chart['focusDateMin'], chart['focusDateMax'], setOfData);
+
+            chart.update();
+        };
+
+        chart['focusNext'] = () => {
+
+            const eFocusRange = chart['focusRange'] - 1;
+            let eFocusPos = chart['focusPos'] ? chart['focusPos'] : 0;
+            eFocusPos = eFocusPos + 1;
+
+            const {
+                newFocusDate,
+                newTitle
+            } = ElementsFactory.getFocusDateAndTitle(chart['focusDate'], eFocusRange, eFocusPos,
+                chart['focusDateMin'], chart['focusDateMax']);
+
+            chart['focusPos'] = eFocusPos;
+            chart['focusDate'] = new Date(newFocusDate);
+            chart.config['_config'].options.plugins.title.text = '' + newTitle;
+
+            chart.data.datasets.forEach((dataset, index) => {
+                const newFocusData = ElementsFactory.groupFocus(setOfData[index].values, chart['focusDate'], chart['focusRange'],
+                    chart['focusDateMin'], chart['focusDateMax']);
+                dataset.data = newFocusData;
+            });
+            chart.data.labels = ElementsFactory.focusLabels(chart['focusDate'], chart['focusRange'],
+                chart['focusDateMin'], chart['focusDateMax'], setOfData);
+
             chart.update();
         };
         return chart;
