@@ -43,7 +43,7 @@ describe('CartesianDrawer', () => {
                 return 0.5;
             },
             'without optim');
-        cartesianDrawer.updateValues(cartesianMapValues);
+        cartesianDrawer.updateValues(cartesianMapValues, 'version');
         const spy = {drawn: 0, values: []};
         const spyDrawing = (gridValue: CartesianGridValue) => {
             spy.drawn++;
@@ -58,15 +58,15 @@ describe('CartesianDrawer', () => {
             spyDrawing);
 
         // verify
-        expect(rendered).eq(cartesianMapValues.length);
-        expect(spy.drawn).eq(121);
-        expect(spy.values.length).eq(121);
+        expect(rendered).eq(18);
+        expect(spy.drawn).eq(18);
+        expect(spy.values.length).eq(18);
 
         expect(spy.values[0]).deep.equal({
             gridValue: {
                 color: 52985,
                 height: 1,
-                id: 'id_-1_-1',
+                id: '1',
                 transparency: 0.65,
                 width: 1,
                 x: -1000,
@@ -90,7 +90,7 @@ describe('CartesianDrawer', () => {
                 return 9;
             },
             'withOptim');
-        cartesianDrawer.updateValues(cartesianMapValues);
+        cartesianDrawer.updateValues(cartesianMapValues, 'version');
         const spy = {drawn: 0, values: []};
         const spyDrawing = (gridValue: CartesianGridValue) => {
             spy.drawn++;
@@ -104,18 +104,18 @@ describe('CartesianDrawer', () => {
         const rendered = cartesianDrawer.renderCartesianMapValues(new LatLng(0.001, 0.001), new Point(0, 0), spyDrawing);
 
         // verify
-        expect(spy.drawn).eq(60);
-        expect(spy.values.length).eq(60);
+        expect(spy.drawn).eq(18);
+        expect(spy.values.length).eq(18);
 
         expect(spy.values[0]).deep.equal({
             gridValue: {
-                color: 5057,
-                transparency: 0.7,
-                x: -1000,
-                y: -800,
-                width: 0,
+                color: 52985,
                 height: 0,
-                id: 'id_-1_-0.8'
+                id: '1',
+                transparency: 0.65,
+                width: 0,
+                x: -1000,
+                y: -1000,
             }
         });
     });

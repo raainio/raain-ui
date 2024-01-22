@@ -205,11 +205,13 @@ window.switchTimeFrameCartesian0 = switchTimeFrameCartesian0;
 window.switchTimeFramePolarRain1 = switchTimeFramePolarRain1;
 window.switchTimeFrameCartesian1 = switchTimeFrameCartesian1;
 window.switchTimeFramePolarWithoutOptimization = switchTimeFramePolarWithoutOptimization;
+window.focusReset = dateStatusChart.focusReset;
+window.focusPrevious = dateStatusChart.focusPrevious;
+window.focusNext = dateStatusChart.focusNext;
 
 // #############
 
 mapManagement.compositeLayer.showTheFistMatchingId('polar_with_Rain0_');
 // setTimeout(switchTimeFramePolarRain0, animationTimeInMs);
 switchMatrix();
-setTimeout(dateStatusChart.focusReset, 10000);
 

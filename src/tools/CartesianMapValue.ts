@@ -1,5 +1,4 @@
 import {CartesianValue} from 'raain-model';
-import {LatLng} from 'raain-quality';
 import {MapLatLng} from './MapLatLng';
 
 export class CartesianMapValue extends MapLatLng {
@@ -28,7 +27,7 @@ export class CartesianMapValue extends MapLatLng {
         );
     }
 
-    public static From(cartesianValues: CartesianValue[], widthForMap: LatLng): CartesianMapValue[] {
+    public static From(cartesianValues: CartesianValue[], widthForMap: MapLatLng): CartesianMapValue[] {
         const cartesianMapValues = [];
         cartesianValues.forEach(cartesianValue => {
             cartesianMapValues.push(new CartesianMapValue(
