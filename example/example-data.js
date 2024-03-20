@@ -25,7 +25,6 @@ const createPolarFromJson = (rpmv) => {
         }
     }
 
-    // console.log('polarMapValues:', polarMapValues.length);
     return polarMapValues;
 }
 
@@ -39,7 +38,7 @@ const createCartesianMapFromJson = (cartesianRainHistories) => {
             crh.computedValue.lng + 0.014);
         return cmv;
     });
-    // console.log('cartesianMapValues:', cartesianMapValues.length, cartesianMapValues);
+
     return cartesianMapValues;
 }
 
@@ -83,7 +82,10 @@ const iconsOptions = {
     iconUrl: './my-marker-icon.png',
     shadowUrl: './my-marker-shadow.png',
 };
-const mapManagement = factory.createMap(mapElement, markers, timeframeContainers, iconsOptions);
+const mapManagement = factory.createMap(mapElement, {
+    timeframeContainers,
+    markers: [{iconsLatLng: markers, iconsOptions}]
+});
 
 // Matrices
 // let positionValuesMatrix = rainComputationQualities[0].qualitySpeedMatrixContainer.flattenMatrices;
@@ -140,10 +142,8 @@ const animatePolar = (toggle) => {
 };
 
 const animateMatrix = () => {
-    console.log('animateMatrix', indexAnimation);
     speedMatrixElement.innerHTML = '';
     speedTitle.innerHTML = '<p>' + indexAnimation + ' - ' + rainComputationQualities[indexAnimation].periodEnd + '</p>';
-    console.log('rainComputationQualities:', indexAnimation, rainComputationQualities[indexAnimation]);
     factory.createSpeedMatrixIndicator(speedMatrixElement,
         rainComputationQualities[indexAnimation].qualitySpeedMatrixContainer.flattenMatrices[0],
         rainComputationQualities[indexAnimation].qualitySpeedMatrixContainer.trustedIndicators[0]);
@@ -154,7 +154,6 @@ const forward = () => {
     if (indexAnimation > Math.max(indexCartesian, indexPolar)) {
         indexAnimation = indexStart;
     }
-    console.log('forward', indexAnimation);
     if (cartesianModeToggle) {
         animateCartesian(true);
     } else {
@@ -167,7 +166,6 @@ const backward = () => {
     if (indexAnimation < indexStart) {
         indexAnimation = Math.max(indexCartesian, indexPolar);
     }
-    console.log('backward', indexAnimation);
     if (cartesianModeToggle) {
         animateCartesian(true);
     } else {

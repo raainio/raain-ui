@@ -9,7 +9,7 @@ export class CompositeLayer extends PixiGridLayer implements IPixiLayer {
     protected initialized: boolean;
 
     constructor(public id?: string) {
-        super(id);
+        super(id); // @PixiGridLayer
         this.removeAllLayers();
         this.setRenderFn(this.renderVisibleLayers.bind(this));
     }
@@ -49,9 +49,10 @@ export class CompositeLayer extends PixiGridLayer implements IPixiLayer {
         }
     }
 
-    public showTheFistMatchingId(layerId: string) {
+    public showTheFistMatchingId(layerId: string): IPixiUniqueLayer {
         let firstFound = false;
         let hideEverythingElse = false;
+        let layerShown: IPixiUniqueLayer = null;
         for (const layer of this.layers) {
             if (!firstFound) {
                 firstFound = layer.getId().indexOf(layerId) >= 0;
@@ -60,12 +61,14 @@ export class CompositeLayer extends PixiGridLayer implements IPixiLayer {
             if (firstFound && !hideEverythingElse) {
                 layer.show();
                 hideEverythingElse = true;
+                layerShown = layer;
             } else {
                 layer.hide();
             }
         }
 
         this.renderVisibleLayers();
+        return layerShown;
     }
 
     private renderVisibleLayers(): number {
@@ -75,7 +78,6 @@ export class CompositeLayer extends PixiGridLayer implements IPixiLayer {
                 count += layer.render(this._pixiContainer);
             }
         }
-        // console.log('renderVisibleLayers draw count:', count);
         return count;
     }
 }

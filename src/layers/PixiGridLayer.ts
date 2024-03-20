@@ -1,5 +1,6 @@
-import {Browser, DomUtil, GridLayer, latLng, Map} from 'leaflet';
+import {Browser, DomUtil, GridLayer, Map} from 'leaflet';
 import {Application, Container} from 'pixi.js';
+import {MapLatLng} from '../tools/MapLatLng';
 
 export type renderFnType = (pixiContainer: Container) => void;
 
@@ -103,7 +104,6 @@ export class PixiGridLayer extends GridLayer {
 
     // @Override
     public onAdd(targetMap: Map) {
-        // console.log('PIGL onAdd New: ', this._id);
         super.onAdd(targetMap);
 
         this._setMap(targetMap);
@@ -115,7 +115,7 @@ export class PixiGridLayer extends GridLayer {
         this._addContainer();
         this._setEvents();
         this._gridInitialZoom = this._gridOptions.projectionZoom(this._gridMap);
-        this._gridWgsOrigin = latLng([0, 0]);
+        this._gridWgsOrigin = new MapLatLng(0, 0);
         this._gridWgsInitialShift = this._gridMap.project(this._gridWgsOrigin, this._gridInitialZoom);
         this._gridMapInitialZoom = this._gridMap.getZoom();
         return this;
@@ -123,7 +123,6 @@ export class PixiGridLayer extends GridLayer {
 
     // @Override
     public onRemove(targetMap) {
-        // console.log('PIGL onRemove New', this._id);
         super.onRemove(targetMap);
 
         const pane = this._gridMap.getPanes()[this._getPaneName()];
@@ -158,7 +157,6 @@ export class PixiGridLayer extends GridLayer {
 
     protected _initializeLayer() {
 
-        // console.log('_initializeLayer');
         this._gridRendererOptions = {
             // backgroundAlpha: 0.5,
             transparent: true,
@@ -184,9 +182,8 @@ export class PixiGridLayer extends GridLayer {
         if (!this._gridMap || !this._gridContainer) {
             return;
         }
-        // console.log('PIGL _update', this._gridMap.getPixelOrigin(), this._gridMap.getPixelBounds().min);
+
         const pt = this._gridMap.getPixelBounds().min.subtract(this._gridMap.getPixelOrigin());
-        // console.log('pt:', pt);
         DomUtil.setPosition(this._gridContainer, pt);
 
         this._layerRedraw();
@@ -195,7 +192,6 @@ export class PixiGridLayer extends GridLayer {
     protected setMeAsFirst(): void {
         // const mapNode = this._gridMap.getPanes()[this._getPaneName()];
         // this._gridContainer.parentNode.insertBefore(this._gridContainer, mapNode.childNodes[0]);
-        // console.log('setMeAsFirst', this._getPaneName());
         for (const paneName of Object.getOwnPropertyNames(this._gridMap.getPanes())) {
             const pane = this._gridMap.getPanes()[paneName];
             if (paneName === this._getPaneName()) {
@@ -244,7 +240,6 @@ export class PixiGridLayer extends GridLayer {
         // }
         // this._lastUpdate = now;
 
-        //  console.log('_layerRedraw', offset, this._gridWgsOrigin);
         this.renderFn(this._pixiContainer);
     }
 }

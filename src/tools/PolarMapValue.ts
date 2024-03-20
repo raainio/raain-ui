@@ -1,11 +1,10 @@
-import {LatLng} from 'leaflet';
 import {computeDestinationPoint} from 'geolib';
 import {MeasureValuePolarContainer} from 'raain-model';
 import {MapLatLng} from './MapLatLng';
 
 export class PolarMapValue extends MapLatLng {
 
-    private center: LatLng;
+    private center: MapLatLng;
 
     constructor(
         value: number,
@@ -16,7 +15,7 @@ export class PolarMapValue extends MapLatLng {
         name?: string) {
 
         super(0, 0, altitude, id, name, value);
-        this.center = new LatLng(0, 0);
+        this.center = new MapLatLng(0, 0);
         this.setLatLngConsistentWithPolar();
     }
 
@@ -34,7 +33,7 @@ export class PolarMapValue extends MapLatLng {
         return value;
     }
 
-    public static from(measureValuePolarContainers: MeasureValuePolarContainer[]): PolarMapValue[] {
+    public static From(measureValuePolarContainers: MeasureValuePolarContainer[]): PolarMapValue[] {
         const polarMapValues = [];
         measureValuePolarContainers.forEach(measureValuePolarContainer => {
             measureValuePolarContainer.polarEdges.forEach((edge, index) => {
@@ -47,7 +46,7 @@ export class PolarMapValue extends MapLatLng {
         return polarMapValues;
     }
 
-    private static GetLatLngFromPolar(center: LatLng, polarAzimuthInDegrees: number, polarDistanceInMeters: number): {
+    private static GetLatLngFromPolar(center: MapLatLng, polarAzimuthInDegrees: number, polarDistanceInMeters: number): {
         lat: number,
         lng: number
     } {
@@ -63,7 +62,7 @@ export class PolarMapValue extends MapLatLng {
     }
 
     setCenter(center: { latitude: number, longitude: number }): void {
-        this.center = new LatLng(center.latitude, center.longitude);
+        this.center = new MapLatLng(center.latitude, center.longitude);
         this.setLatLngConsistentWithPolar();
     }
 

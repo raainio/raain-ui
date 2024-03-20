@@ -1,8 +1,9 @@
-import {LatLng, Point} from 'leaflet';
+import {Point} from 'leaflet';
 import {PolarGridValue} from './PolarGridValue';
 import {PolarMapValue} from '../tools/PolarMapValue';
 import {PolarDrawerOptimization} from './PolarDrawerOptimization';
 import {MapTools} from '../tools/MapTools';
+import {MapLatLng} from '../tools/MapLatLng';
 
 export class PolarDrawer {
 
@@ -47,12 +48,11 @@ export class PolarDrawer {
     }
 
     public updateValues(geoValues: PolarMapValue[], version: string): void {
-        console.log('updateValues', version);
         this.geoValues = geoValues;
         this.version = version;
     }
 
-    public hasChanged(center: LatLng, centerPoint: Point) {
+    public hasChanged(center: MapLatLng, centerPoint: Point) {
         if (!centerPoint.equals(this.centerPoint)) {
             return true;
         }
@@ -62,7 +62,7 @@ export class PolarDrawer {
         return this.possibleDrawing !== this.getPossibleDrawing();
     }
 
-    public renderPolarMapValues(center: LatLng, centerPoint: Point,
+    public renderPolarMapValues(center: MapLatLng, centerPoint: Point,
                                 drawPolarSharp: (polar1: PolarGridValue, polar2?: PolarGridValue) => boolean): number {
 
         let done = 0;
@@ -93,7 +93,6 @@ export class PolarDrawer {
 
             polarValue = PolarMapValue.Duplicate(polarValue);
             polarValue.setCenter({latitude: center.lat, longitude: center.lng});
-            // console.log('rendered polarValue : ', polarValue);
 
             if (optimization.groupAzimuths()) {
                 const drawValue = (x1: PolarGridValue, pv2: PolarMapValue, forceDraw?: boolean): boolean => {
@@ -177,7 +176,6 @@ export class PolarDrawer {
         const distanceRatio = MapTools.getPolarDistanceRatio(centerPoint,
             this.geoValues[this.geoValues.length - 1],
             this.polarMap2Point);
-        // console.log('distanceRatio: ', distanceRatio);
         return distanceRatio;
     }
 
@@ -195,7 +193,6 @@ export class PolarDrawer {
                 break;
             }
         }
-        // console.log('azimuthStepInDegrees: ', azimuthDiff);
         return azimuthDiff;
     }
 
@@ -212,7 +209,6 @@ export class PolarDrawer {
             }
             sameEdgeValuesCount++;
         }
-        // console.log('sameEdgeValuesCount: ', sameEdgeValuesCount);
         return sameEdgeValuesCount;
     }
 }

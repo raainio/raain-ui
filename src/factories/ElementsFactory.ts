@@ -1,4 +1,4 @@
-import {canvas, IconOptions, LatLng, map, Map, Marker, tileLayer} from 'leaflet';
+import {canvas, IconOptions, map, Map, Marker, tileLayer} from 'leaflet';
 import {CartesianLayer} from '../layers/CartesianLayer';
 import {TimeframeContainers} from '../timeframes/TimeframeContainers';
 import {PolarLayer} from '../layers/PolarLayer';
@@ -12,6 +12,7 @@ import chartDragData from 'chartjs-plugin-dragdata';
 import {MapLatLng} from '../tools/MapLatLng';
 import {Application, Graphics, Text} from 'pixi.js';
 import {MapTools} from '../tools/MapTools';
+import {TimeframeContainer} from '../timeframes/TimeframeContainer';
 
 const CHART_COLORS = {
     red: 'rgb(255, 99, 132)',
@@ -35,12 +36,12 @@ export enum FocusRange {
 export class ElementsFactory {
 
     constructor(
-        public center: LatLng | { lat: number, lng: number } | { latitude: number, longitude: number } | any = {lat: 0, lng: 0},
+        public center: MapLatLng | { lat: number, lng: number } | { latitude: number, longitude: number } | any = {lat: 0, lng: 0},
         protected addSomeDebugInfos = false,
     ) {
         const lat = typeof this.center.lat !== 'undefined' ? this.center.lat : this.center.latitude;
         const lng = typeof this.center.lng !== 'undefined' ? this.center.lng : this.center.longitude;
-        this.center = new LatLng(lat, lng);
+        this.center = new MapLatLng(lat, lng);
     }
 
     static focusLabel(focusDate: Date, focusRange: FocusRange, index: number, min: Date, max: Date, data) {
@@ -84,9 +85,7 @@ export class ElementsFactory {
         min: Date,
         max: Date) {
 
-        // console.log('groupFocus', focusDate, focusRange);
         const filteredAndSorted = this.filterFocus(mapToFilter, focusDate, focusRange);
-        // console.log('groupFocus filteredAndSorted', filteredAndSorted);
 
         if (focusRange === FocusRange.CENTURY) {
             const groupedByYear = [];
@@ -151,7 +150,7 @@ export class ElementsFactory {
             for (let i = min.getFullYear(); i <= max.getFullYear(); i++) {
                 const yearDate = new Date(focusDate);
                 yearDate.setFullYear(i);
-                groupedByYear.push(yearDate.toISOString().substring(0, 4));
+                groupedByYear.push(yearDate.toLocaleString('sv', {timeZoneName: 'short'}).substring(0, 4));
             }
             return groupedByYear;
         }
@@ -161,7 +160,7 @@ export class ElementsFactory {
             for (let i = 0; i < 12; i++) {
                 const monthDate = new Date(focusDate);
                 monthDate.setMonth(i);
-                groupedByMonth.push(monthDate.toISOString().substring(0, 7));
+                groupedByMonth.push(monthDate.toLocaleString('sv', {timeZoneName: 'short'}).substring(0, 7));
             }
             return groupedByMonth;
         }
@@ -172,7 +171,7 @@ export class ElementsFactory {
             for (let i = 0; i < daysInMonth; i++) {
                 const dayDate = new Date(focusDate);
                 dayDate.setDate(i);
-                groupedByDay.push(dayDate.toISOString().substring(0, 10));
+                groupedByDay.push(dayDate.toLocaleString('sv', {timeZoneName: 'short'}).substring(0, 10));
             }
             return groupedByDay;
         }
@@ -182,7 +181,7 @@ export class ElementsFactory {
             for (let i = 0; i < 24; i++) {
                 const hourDate = new Date(focusDate);
                 hourDate.setHours(i);
-                groupedByHour.push(hourDate.toISOString().substring(0, 13));
+                groupedByHour.push(hourDate.toLocaleString('sv', {timeZoneName: 'short'}).substring(0, 13));
             }
             return groupedByHour;
         }
@@ -193,7 +192,7 @@ export class ElementsFactory {
             allDates = allDates.concat(d.values);
         });
         const filteredHourDates = this.filterFocus(allDates, focusDate, FocusRange.HOUR);
-        const filteredHourDatesISO = filteredHourDates.map(v => v.date.toISOString());
+        const filteredHourDatesISO = filteredHourDates.map(v => v.date.toLocaleString('sv', {timeZoneName: 'short'}));
         return filteredHourDatesISO.filter((item, pos, self) => {
             return self.indexOf(item) === pos;
         });
@@ -206,33 +205,37 @@ export class ElementsFactory {
 
         if (focusRange === FocusRange.CENTURY) {
             newFocusDate.setFullYear(min.getFullYear() + index);
-            newTitle = newFocusDate.toISOString().substring(0, 4);
+            newTitle = newFocusDate.toLocaleString('sv', {timeZoneName: 'short'}).substring(0, 4);
         } else if (focusRange === FocusRange.YEAR) {
             newFocusDate.setMonth(index);
-            newTitle = newFocusDate.toISOString().substring(0, 7);
+            newTitle = newFocusDate.toLocaleString('sv', {timeZoneName: 'short'}).substring(0, 7);
         } else if (focusRange === FocusRange.MONTH) {
             newFocusDate.setDate(index);
-            newTitle = newFocusDate.toISOString().substring(0, 10);
+            newTitle = newFocusDate.toLocaleString('sv', {timeZoneName: 'short'}).substring(0, 10);
         } else if (focusRange === FocusRange.DAY) {
             newFocusDate.setHours(index);
-            newTitle = newFocusDate.toISOString().substring(0, 13);
+            newTitle = newFocusDate.toLocaleString('sv', {timeZoneName: 'short'}).substring(0, 13);
         } else if (focusRange === FocusRange.HOUR) {
-            newTitle = newFocusDate.toISOString();
+            newTitle = newFocusDate.toLocaleString('sv', {timeZoneName: 'short'});
         }
 
         return {newFocusDate, newTitle};
     }
 
-    public createMap(element: HTMLElement,
-                     markers: MapLatLng[] = [],
-                     timeframeContainers: TimeframeContainers = null,
-                     iconOptions?: IconOptions): {
+    public createMap(element: HTMLElement, inputs?: {
+        timeframeContainers?: TimeframeContainers,
+        markers?: {
+            iconsLatLng: MapLatLng[],
+            iconsOptions?: IconOptions
+        }[]
+    }): {
         mapLeaflet: Map,
-        markersLayer: MarkersLayer,
-        compositeLayer: CompositeLayer,
-        markersProduced: Marker[]
+        markersLayer?: MarkersLayer,
+        compositeLayer?: CompositeLayer,
+        markersProduced?: Marker[]
     } {
 
+        // Map default
         let mapLeaflet: Map;
         let markersLayer: MarkersLayer;
         const compositeLayer = new CompositeLayer();
@@ -251,78 +254,19 @@ export class ElementsFactory {
             attribution: '&copy;<a href="https://www.openstreetmap.org/copyright">osm</a>',
         }).addTo(mapLeaflet);
 
-        // tileLayer('https://{s}.tile.jawg.io/jawg-dark/{z}/{x}/{y}{r}.png?access-token={accessToken}', {
-        //    attribution: '<a href="http://jawg.io" target="_blank">&copy; jawg</a>
-        //    &copy; <a href="https://www.openstreetmap.org/copyright">osm</a>'
-        // }).addTo(mapLeaflet);
-
-        // tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
-        //     maxZoom: 20,
-        //     attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy;
-        //     <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy;
-        //     <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-        // });
-
-        //   // https://leaflet-extras.github.io/leaflet-providers/preview/
-        //     const OpenTopoMap = tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-        //       maxZoom: 17,
-        //       attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-        //    '<a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> ' +
-        //         '(<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-        //     });
-        //  const Stamen_TerrainBackground = tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}{r}.{ext}',
-        //       {
-        //         attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
-        //           '<a href="http://creativecommons.org/licenses/by/3.0">' +
-        //           'CC BY 3.0</a> &mdash; Map data &copy; ' +
-        //           '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        //         subdomains: 'abcd',
-        //         minZoom: 0,
-        //         maxZoom: 18,
-        //         // ext: 'png'
-        //       });
-        //  const Esri_WorldTopoMap = tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile' +
-        //      '/{z}/{y}/{x}',
-        //      {
-        //          attribution: '&copy;arcgis',
-        //      });
-        //  Esri_WorldTopoMap.addTo(mapLeaflet);
-
+        // Composite timeframes
         const width = element.offsetWidth;
         const height = element.offsetHeight;
         compositeLayer.setCurrentWidth(width);
         compositeLayer.setCurrentHeight(height);
 
-        let markersProduced = [];
-        markersLayer = new MarkersLayer();
-        markersLayer.setCurrentWidth(width);
-        markersLayer.setCurrentHeight(height);
-        markersProduced = markersLayer.render(markers, iconOptions).markers;
-        markersLayer.addToMap(mapLeaflet);
+        let firstLayerIdPushed: string;
+        if (inputs?.timeframeContainers?.containers.length) {
+            for (const timeFrameContainer of inputs.timeframeContainers.containers) {
 
-        let firstLayerIdPushed;
-        if (timeframeContainers?.containers.length) {
-            for (const timeFrameContainer of timeframeContainers.containers) {
-                timeFrameContainer.setCompositeLayer(compositeLayer);
-                for (const frameContainer of timeFrameContainer.timeframe) {
-                    const layerId = timeFrameContainer.getFrameId(frameContainer);
-                    const values: any = frameContainer.values;
-
-                    let layer;
-                    if (frameContainer.isPolar) {
-                        layer = new PolarLayer(layerId, timeFrameContainer.name, mapLeaflet,
-                            this.addSomeDebugInfos);
-                        layer.setPolarValues(this.center, values, new PolarLayerConfig(), timeFrameContainer.version);
-                    } else if (frameContainer.isCartesian) {
-                        layer = new CartesianLayer(layerId, timeFrameContainer.name, mapLeaflet,
-                            this.addSomeDebugInfos);
-                        layer.setCartesianGridValues(this.center, values, timeFrameContainer.version);
-                    }
-
-                    if (!firstLayerIdPushed) {
-                        firstLayerIdPushed = layerId;
-                    }
-                    compositeLayer.addLayer(layer);
+                const layerId = this.addCompositeLayer(mapLeaflet, timeFrameContainer, compositeLayer);
+                if (!firstLayerIdPushed) {
+                    firstLayerIdPushed = layerId;
                 }
             }
         }
@@ -332,7 +276,16 @@ export class ElementsFactory {
             compositeLayer.showTheFistMatchingId(firstLayerIdPushed);
         }
 
+        // Markers
+        let markersProduced = [];
+        markersLayer = new MarkersLayer();
+        markersLayer.setCurrentWidth(width);
+        markersLayer.setCurrentHeight(height);
+        markersProduced = markersLayer.render(inputs.markers).markers;
+        markersLayer.addToMap(mapLeaflet);
+
         mapLeaflet.invalidateSize({animate: true});
+
         return {mapLeaflet, markersLayer, compositeLayer, markersProduced};
     }
 
@@ -341,35 +294,20 @@ export class ElementsFactory {
         compositeLayer: CompositeLayer,
         timeframeContainers: TimeframeContainers): void {
 
-        // let compositeLayer: CompositeLayer;
-
         if (!compositeLayer || !timeframeContainers?.containers.length) {
             return;
         }
 
         compositeLayer.removeAllLayers();
 
-        let firstLayerIdPushed;
+        let firstLayerIdPushed: string;
         for (const timeFrameContainer of timeframeContainers.containers) {
-            timeFrameContainer.setCompositeLayer(compositeLayer);
-            for (const frameContainer of timeFrameContainer.timeframe) {
-                const layerId = timeFrameContainer.getFrameId(frameContainer);
-                const values: any = frameContainer.values;
+            const layerId = this.addCompositeLayer(mapLeaflet, timeFrameContainer, compositeLayer);
 
-                let layer;
-                if (frameContainer.isPolar) {
-                    layer = new PolarLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
-                    layer.setPolarValues(this.center, values, new PolarLayerConfig(), timeFrameContainer.version);
-                } else if (frameContainer.isCartesian) {
-                    layer = new CartesianLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
-                    layer.setCartesianGridValues(this.center, values, timeFrameContainer.version);
-                }
-
-                if (!firstLayerIdPushed) {
-                    firstLayerIdPushed = layerId;
-                }
-                compositeLayer.addLayer(layer);
+            if (!firstLayerIdPushed) {
+                firstLayerIdPushed = layerId;
             }
+
         }
         compositeLayer.showTheFistMatchingId(firstLayerIdPushed);
 
@@ -383,7 +321,8 @@ export class ElementsFactory {
                              x: 100,
                              y: 100
                          },
-                         clickCallback): Chart<any> {
+                         clickCallback?: any): Chart<any> {
+
 
         const bijectivePoints = [{x: 0, y: 0}, {x: topPoint.x, y: topPoint.y}];
         const data = {
@@ -412,6 +351,7 @@ export class ElementsFactory {
             data,
             options: {
                 responsive: true,
+                aspectRatio: 2,
                 plugins: {
                     legend: {
                         display: false,
@@ -424,7 +364,6 @@ export class ElementsFactory {
                         callbacks: {
                             label: (context) => {
                                 let label = '';
-                                console.log('label', context.dataIndex);
                                 if (context.dataset.data[context.dataIndex]) {
                                     data.selectedPoint = context.dataset.data[context.dataIndex];
                                     label = context.dataset.data[context.dataIndex].name;
@@ -442,10 +381,9 @@ export class ElementsFactory {
                 onClick(e) {
                     const eChart = e.chart;
                     const canvasPosition = getRelativePosition(e, eChart);
-                    console.log('canvasPosition', canvasPosition);
                     const posX = chart.scales.x.getValueForPixel(canvasPosition.x);
                     const posY = chart.scales.y.getValueForPixel(canvasPosition.y);
-                    if (data.selectedPoint) {
+                    if (data.selectedPoint && clickCallback) {
                         clickCallback(data.selectedPoint);
                     }
                 },
@@ -459,7 +397,8 @@ export class ElementsFactory {
     public createConfiguration(element: HTMLCanvasElement,
                                points: { x: number, y: number }[] = [],
                                minPoint: { x: number, y: number } = {x: 0, y: 0},
-                               maxPoint: { x: number, y: number } = {x: 100, y: 100}): Chart {
+                               maxPoint: { x: number, y: number } = {x: 100, y: 100},
+                               dragCallback?: any): Chart {
 
         const data = {
             datasets: [
@@ -493,7 +432,11 @@ export class ElementsFactory {
                             }
                         },
                         showTooltip: false, // show the tooltip while dragging [default = true]
-                        // dragX: true // also enable dragging along the x-axis.
+                        dragX: true, // also enable dragging along the x-axis.
+                        onDrag: (e, datasetIndex, index, value) => {
+                            const done = dragCallback ? dragCallback(e) : null;
+                            return true;
+                        },
                         // this solely works for continous, numerical x-axis scales (no categories or dates)!
                         // onDrag: (e, datasetIndex, index, value) => {
                         //     console.log('onDrag : ', e, datasetIndex, index, value);
@@ -525,25 +468,20 @@ export class ElementsFactory {
                     y: {
                         display: true,
                         suggestedMin: minPoint.y, suggestedMax: maxPoint.y,
-                        type: 'logarithmic',
+                        // type: 'logarithmic',
                     },
                 },
 
                 onClick(e) {
                     // console.log('onClick ', e);
-
                     // const canvasPosition = Chart.helpers.getRelativePosition(e, chart);
-
                     // Substitute the appropriate scale IDs
                     // const dataX = chart.scales.x.getValueForPixel(canvasPosition.x);
                     // const dataY = chart.scales.y.getValueForPixel(canvasPosition.y);
                 },
 
             },
-
             plugins: [chartDragData],
-
-
         };
 
         //   window.removePoint = (x, y) => {
@@ -663,7 +601,7 @@ export class ElementsFactory {
                         newFocusDate,
                         newTitle
                     } = ElementsFactory.getFocusDateAndTitle(eChart['focusDate'], eFocusRange, pos, eChart['focusDateMin'], eChart['focusDateMax']);
-                    // console.log('newFocusDate:', eFocusRange, newFocusDate.toISOString(), newTitle);
+
                     eChart['focusPos'] = pos;
                     eChart['focusRange'] = eFocusRange + 1;
                     eChart['focusDate'] = new Date(newFocusDate);
@@ -672,7 +610,6 @@ export class ElementsFactory {
                     eChart.data.datasets.forEach((dataset, index) => {
                         const newFocusData = ElementsFactory.groupFocus(setOfData[index].values, eChart['focusDate'], eChart['focusRange'],
                             eChart['focusDateMin'], eChart['focusDateMax']);
-                        // console.log('newFocusData:', newFocusData);
                         dataset.data = newFocusData;
                     });
                     eChart.data.labels = ElementsFactory.focusLabels(eChart['focusDate'], eChart['focusRange'],
@@ -690,7 +627,6 @@ export class ElementsFactory {
         chart['focusDateMin'] = min;
         chart['focusDateMax'] = max;
         chart['focusReset'] = () => {
-            // console.log('focusReset');
             chart.config['_config'].options.plugins.title.text = '...';
             chart['focusDate'] = focusDate;
             chart['focusRange'] = FocusRange.CENTURY;
@@ -701,7 +637,6 @@ export class ElementsFactory {
                 chart['focusDateMin'], chart['focusDateMax'], setOfData);
             chart.update();
         };
-
         chart['focusPrevious'] = () => {
 
             const eFocusRange = chart['focusRange'] - 1;
@@ -728,7 +663,6 @@ export class ElementsFactory {
 
             chart.update();
         };
-
         chart['focusNext'] = () => {
 
             const eFocusRange = chart['focusRange'] - 1;
@@ -808,7 +742,8 @@ export class ElementsFactory {
 
         const wh = 10;
         let minX, maxX, minY, maxY, minValue, maxValue;
-        for (const value of positionValuesMatrix) {
+        for (const value of positionValuesMatrix
+            ) {
             if (!minX || minX !== Math.min(value.x, minX)) {
                 minX = value.x;
             }
@@ -843,17 +778,14 @@ export class ElementsFactory {
 
         const translateX = x => {
             const v = (x - minX) * wh;
-            // console.log('x:', v);
             return v;
         };
         const translateY = y => {
             const v = (maxY - minY - (y - minY)) * wh;
-            // console.log('y:', v);
             return v;
         };
         const translateColor = value => {
             const valueOpt = maxValue ? value / maxValue : 0;
-            // console.log('valueOpt:', valueOpt, value, range);
             if (valueOpt >= 1) {
                 return '#01d331';
             } else if (valueOpt >= 0.85) {
@@ -939,6 +871,25 @@ export class ElementsFactory {
 
         return new Chart(element, config);
 
+    }
+
+    private addCompositeLayer(mapLeaflet: Map, timeFrameContainer: TimeframeContainer, compositeLayer: CompositeLayer): string {
+        timeFrameContainer.setCompositeLayer(compositeLayer);
+        for (const frameContainer of timeFrameContainer.timeframe) {
+            const layerId = timeFrameContainer.getFrameId(frameContainer);
+            const values: any = frameContainer.values;
+
+            let layer;
+            if (frameContainer.isPolar) {
+                layer = new PolarLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
+                layer.setPolarValues(this.center, values, new PolarLayerConfig(), timeFrameContainer.version);
+            } else if (frameContainer.isCartesian) {
+                layer = new CartesianLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
+                layer.setCartesianGridValues(this.center, values, timeFrameContainer.version);
+            }
+            compositeLayer.addLayer(layer);
+            return layerId;
+        }
     }
 
 }

@@ -1,9 +1,10 @@
-import {LatLng, Point} from 'leaflet';
+import {Point} from 'leaflet';
 
 import {CartesianMapValue} from '../tools/CartesianMapValue';
 import {CartesianGridValue} from './CartesianGridValue';
 import {MapTools} from '../tools/MapTools';
 import {CartesianDrawerOptimization} from './CartesianDrawerOptimization';
+import {MapLatLng} from '../tools/MapLatLng';
 
 export class CartesianDrawer {
 
@@ -46,19 +47,18 @@ export class CartesianDrawer {
     }
 
     public updateValues(geoValues: CartesianMapValue[], version: string): void {
-        console.log('updateValues', version);
         this.geoValues = geoValues;
         this.version = version;
     }
 
-    public hasChanged(center: LatLng, centerPoint: Point) {
+    public hasChanged(center: MapLatLng, centerPoint: Point) {
         if (!centerPoint.equals(this.centerPoint)) {
             return true;
         }
         return this.distanceRatio !== this.getDistanceRatio(center);
     }
 
-    public renderCartesianMapValues(center: LatLng, centerPoint: Point,
+    public renderCartesianMapValues(center: MapLatLng, centerPoint: Point,
                                     drawShape: (gridValue: CartesianGridValue) => boolean): number {
 
         let done = 0;
@@ -85,12 +85,11 @@ export class CartesianDrawer {
         return done;
     }
 
-    private getDistanceRatio(centerPoint: LatLng): number {
+    private getDistanceRatio(centerPoint: MapLatLng): number {
         const distanceRatio = MapTools.getCartesianDistanceRatio(
             centerPoint,
             this.geoValues,
             this.cartesianMap2Points);
-        // console.log('distanceRatio: ', distanceRatio);
         return distanceRatio;
     }
 

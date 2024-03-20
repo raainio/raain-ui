@@ -71,9 +71,13 @@ const speedMatrixElement = document.getElementById('speedMatrix');
 const speedTitle = document.getElementById('speedTitle');
 
 // Values
-const markers = [
+const markers1 = [
     new MapLatLng(center.latitude, center.longitude, 0, 'centerId', 'center'),
     new MapLatLng(center.latitude + 0.1, center.longitude - 0.1, 0, '2', 'near center'),
+];
+const markers2 = [
+    new MapLatLng(center.latitude + 0.3, center.longitude + 0.1, 0, 'centerId2', 'center2'),
+    new MapLatLng(center.latitude + 0.4, center.longitude + 0.1, 0, '2', 'near center2'),
 ];
 
 const allCartesianValues = new TimeframeContainer('allCartesianValuesZoomSensitive', [
@@ -129,7 +133,10 @@ const iconsOptions = {
     iconUrl: './my-marker-icon.png',
     shadowUrl: './my-marker-shadow.png',
 };
-const mapManagement = factory.createMap(mapElement, markers, timeframeContainers, iconsOptions);
+const mapManagement = factory.createMap(mapElement, {
+    timeframeContainers,
+    markers: [{iconsLatLng: markers1, iconsOptions}, {iconsLatLng: markers2}]
+});
 factory.createCompare(compareElement, comparePoints);
 const dateStatusChart = factory.createDateStatus(dateFocusElement, setOfData, new Date('2023-06-02 13:15'), FocusRange.HOUR);
 factory.createConfiguration(configurationElement, configurationPoints);
@@ -144,14 +151,12 @@ const animationTimeInMs = 5000;
 let animationEnabled = false;
 const toggleAnimation = () => {
     animationEnabled = !animationEnabled;
-    // console.log('toggleAnimation:', animationEnabled);
     if (animationEnabled) {
         switchTimeFramePolarRain0();
     }
 }
 const switchTimeFramePolarRain0 = () => {
     timeframeContainers.showTimeframe('polar_with_Rain0_', now);
-    // console.log('configurationPoints:', configurationPoints);
     if (animationEnabled) {
         setTimeout(switchTimeFrameCartesian0, animationTimeInMs);
     }

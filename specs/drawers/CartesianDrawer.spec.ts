@@ -1,8 +1,8 @@
-import {LatLng, Point} from 'leaflet';
+import {Point} from 'leaflet';
 
 import {expect} from 'chai';
-import {CartesianDrawer, CartesianGridValue, CartesianMapValue} from '../../src';
-import {CartesianDrawerOptimization} from '../../src/drawers/CartesianDrawerOptimization';
+import {CartesianDrawer, CartesianDrawerOptimization, CartesianGridValue, CartesianMapValue, MapLatLng} from '../../src';
+
 
 describe('CartesianDrawer', () => {
 
@@ -26,7 +26,7 @@ describe('CartesianDrawer', () => {
             },
             'basic');
 
-        expect(cartesianDrawer.renderCartesianMapValues(new LatLng(0, 0), new Point(0, 0), null)).eq(0);
+        expect(cartesianDrawer.renderCartesianMapValues(new MapLatLng(0, 0), new Point(0, 0), null)).eq(0);
     });
 
     it('should render a basic CartesianMapValue without optimization', async () => {
@@ -53,7 +53,7 @@ describe('CartesianDrawer', () => {
 
         // render
         const rendered = cartesianDrawer.renderCartesianMapValues(
-            new LatLng(0.001, 0.001),
+            new MapLatLng(0.001, 0.001),
             new Point(0, 0),
             spyDrawing);
 
@@ -101,7 +101,7 @@ describe('CartesianDrawer', () => {
             [new CartesianDrawerOptimization('optim', 40001, false, true)]);
 
         // render
-        const rendered = cartesianDrawer.renderCartesianMapValues(new LatLng(0.001, 0.001), new Point(0, 0), spyDrawing);
+        const rendered = cartesianDrawer.renderCartesianMapValues(new MapLatLng(0.001, 0.001), new Point(0, 0), spyDrawing);
 
         // verify
         expect(spy.drawn).eq(18);

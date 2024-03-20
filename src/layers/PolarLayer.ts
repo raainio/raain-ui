@@ -1,4 +1,4 @@
-import {LatLng, Map} from 'leaflet';
+import {Map} from 'leaflet';
 import {Container, Graphics, Text} from 'pixi.js';
 import {PolarMapValue} from '../tools/PolarMapValue';
 import {PolarDrawer} from '../drawers/PolarDrawer';
@@ -7,12 +7,13 @@ import {PolarLayerConfig} from './PolarLayerConfig';
 import {PolarDrawerOptimization} from '../drawers/PolarDrawerOptimization';
 import {IPixiUniqueLayer} from './IPixiUniqueLayer';
 import {MapTools} from '../tools/MapTools';
+import {MapLatLng} from '../tools/MapLatLng';
 
 export class PolarLayer implements IPixiUniqueLayer {
 
     private readonly mapGraph: Graphics;
     private polarDrawer: PolarDrawer;
-    private center: LatLng;
+    private center: MapLatLng;
     private readonly config: PolarLayerConfig;
     private addedInContainer: boolean;
 
@@ -30,28 +31,26 @@ export class PolarLayer implements IPixiUniqueLayer {
 
     public hide() {
         this.mapGraph.alpha = 0;
-        // console.log('hide ', this.getId());
     }
 
     public show() {
         this.mapGraph.alpha = 1;
-        // console.log('show ', this.getId());
     }
 
     public isVisible(): boolean {
         return this.mapGraph.alpha === 1;
     }
 
-    public setPolarValues(center: LatLng | { lat: number, lng: number },
+    public setPolarValues(center: MapLatLng | { lat: number, lng: number },
                           geoValues: PolarMapValue[],
                           config: PolarLayerConfig,
                           version: string) {
-        this.center = new LatLng(center.lat, center.lng);
+        this.center = new MapLatLng(center.lat, center.lng);
         this.config.copy(config);
         this.polarDrawer = new PolarDrawer(
             (polar: PolarMapValue) => {
                 polar.setCenter({latitude: center.lat, longitude: center.lng});
-                const latLng = new LatLng(polar.getLatitude(), polar.getLongitude());
+                const latLng = new MapLatLng(polar.getLatitude(), polar.getLongitude());
                 return this.gridMap.latLngToContainerPoint(latLng);
             },
             (polar: PolarMapValue) => {
@@ -59,7 +58,7 @@ export class PolarLayer implements IPixiUniqueLayer {
                     return false;
                 }
                 polar.setCenter({latitude: center.lat, longitude: center.lng});
-                const latLng = new LatLng(polar.getLatitude(), polar.getLongitude());
+                const latLng = new MapLatLng(polar.getLatitude(), polar.getLongitude());
                 return this.gridMap.getBounds().contains(latLng);
             },
             (): number => {
@@ -75,7 +74,6 @@ export class PolarLayer implements IPixiUniqueLayer {
 
     public render(pixiContainer: Container): number {
         const centerPoint = this.gridMap.latLngToContainerPoint(this.center);
-        // console.log('Polar render ', this.polarDrawer.hasChanged(this.center, centerPoint), this.getId());
 
         if (!this.polarDrawer || !this.polarDrawer.hasChanged(this.center, centerPoint)) {
             return 0;
@@ -125,7 +123,6 @@ export class PolarLayer implements IPixiUniqueLayer {
             pixiGraphic.arc(0, 0, width / 2, rad1, rad2);
             pixiGraphic.position.x = centerPoint.x;
             pixiGraphic.position.y = centerPoint.y;
-            // console.log('polar:', centerPoint, point1, point2);
 
             this.mapGraph.addChild(pixiGraphic);
 
@@ -134,9 +131,7 @@ export class PolarLayer implements IPixiUniqueLayer {
 
         const drawCount = this.polarDrawer.renderPolarMapValues(this.center, centerPoint, drawPolarSharp);
 
-        // console.log(this.id, ' drawCount : ', drawCount);
         if (!this.addedInContainer) {
-            // console.log(this.id, ' addedInContainer.');
             pixiContainer.addChild(this.mapGraph);
             this.addedInContainer = true;
         }

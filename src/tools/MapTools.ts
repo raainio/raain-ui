@@ -1,6 +1,7 @@
-import {LatLng, Point} from 'leaflet';
+import {Point} from 'leaflet';
 import {PolarMapValue} from './PolarMapValue';
 import {CartesianMapValue} from './CartesianMapValue';
+import {MapLatLng} from './MapLatLng';
 
 export class MapTools {
 
@@ -17,7 +18,7 @@ export class MapTools {
         ) / lastGeoValueDuplicated.polarDistanceInMeters;
     }
 
-    static getCartesianDistanceRatio(center: LatLng,
+    static getCartesianDistanceRatio(center: MapLatLng,
                                      geoValues: CartesianMapValue[],
                                      cartesianMap2Points: (mapValue: CartesianMapValue) => {
                                          p1: Point,
@@ -40,7 +41,6 @@ export class MapTools {
 
     static hexStringToNumber(hexString: string): number {
         const hex = hexString.substring(1, 3) + hexString.substring(3, 5) + hexString.substring(5, 7);
-        // console.log('hex:', hex);
         return parseInt(hex, 16);
     }
 }

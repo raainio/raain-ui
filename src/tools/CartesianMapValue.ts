@@ -27,7 +27,7 @@ export class CartesianMapValue extends MapLatLng {
         );
     }
 
-    public static From(cartesianValues: CartesianValue[], widthForMap: MapLatLng): CartesianMapValue[] {
+    public static From(cartesianValues: CartesianValue[], widthForMap: MapLatLng | { lat: number, lng: number }): CartesianMapValue[] {
         const cartesianMapValues = [];
         cartesianValues.forEach(cartesianValue => {
             cartesianMapValues.push(new CartesianMapValue(

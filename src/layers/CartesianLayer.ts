@@ -1,17 +1,18 @@
-import {LatLng, Map, Point} from 'leaflet';
+import {Map, Point} from 'leaflet';
 import {Container, Graphics, Text} from 'pixi.js';
 import {IPixiUniqueLayer} from './IPixiUniqueLayer';
 import {CartesianMapValue} from '../tools/CartesianMapValue';
 import {CartesianGridValue} from '../drawers/CartesianGridValue';
 import {CartesianDrawer} from '../drawers/CartesianDrawer';
 import {MapTools} from '../tools/MapTools';
+import {MapLatLng} from '../tools/MapLatLng';
 
 export class CartesianLayer implements IPixiUniqueLayer {
 
     private readonly mapGraph: Graphics;
     private addedInContainer: boolean;
     private cartesianDrawer: CartesianDrawer;
-    private center: LatLng;
+    private center: MapLatLng;
 
     constructor(protected id: string,
                 protected type: string,
@@ -26,32 +27,31 @@ export class CartesianLayer implements IPixiUniqueLayer {
 
     public hide(): void {
         this.mapGraph.alpha = 0;
-        // console.log('hide ', this.getId());
     }
 
     public show(): void {
         this.mapGraph.alpha = 1;
-        // console.log('show ', this.getId());
     }
 
     public isVisible(): boolean {
         return this.mapGraph.alpha === 1;
     }
 
-    public setCartesianGridValues(center: LatLng | { lat: number, lng: number }, values: CartesianMapValue[], version: string): void {
-        this.center = new LatLng(center.lat, center.lng);
+    public setCartesianGridValues(center: MapLatLng | { lat: number, lng: number }, values: CartesianMapValue[], version: string): void {
+        this.center = new MapLatLng(center.lat, center.lng);
         this.cartesianDrawer = new CartesianDrawer(
             (mapValue: CartesianMapValue) => {
                 try {
-                    return {
-                        p1: this.gridMap.latLngToContainerPoint({lat: mapValue.latitude, lng: mapValue.longitude}),
-                        p2: this.gridMap.latLngToContainerPoint({lat: mapValue.latitude2, lng: mapValue.longitude2}),
-                    };
+                    const p1 = this.gridMap.latLngToContainerPoint({lat: mapValue.latitude, lng: mapValue.longitude});
+                    const p2 = this.gridMap.latLngToContainerPoint({lat: mapValue.latitude2, lng: mapValue.longitude2});
+                    return {p1, p2};
                 } catch (e) {
-                    console.log(mapValue, e);
-                    return {p1: new Point(0, 0), p2: new Point(0, 0)};
+                    return {
+                        p1: new Point(0, 0),
+                        p2: new Point(10, 10)
+                    };
                 }
-            }, (mapValue: CartesianMapValue) => {
+            }, (mapValue: CartesianMapValue): boolean => {
                 return this.gridMap.getBounds().contains(mapValue);
             },
             (): number => {
@@ -65,7 +65,6 @@ export class CartesianLayer implements IPixiUniqueLayer {
     public render(pixiContainer: Container): number {
 
         const centerPoint = this.gridMap.latLngToContainerPoint({lat: this.center.lat, lng: this.center.lng});
-        // console.log('Cartesian render ', this.cartesianDrawer.hasChanged(this.center, centerPoint), this.getId());
 
         const drawCount = 0;
         if (!this.cartesianDrawer.hasChanged(this.center, centerPoint)) {
@@ -82,15 +81,16 @@ export class CartesianLayer implements IPixiUniqueLayer {
                 pixiGraphic.endFill();
                 pixiGraphic.x = gridValue.x;
                 pixiGraphic.y = gridValue.y;
-                // console.log('renderCartesianMapValues:', gridValue);
 
-                // const pixiText = new Text('  ' + gridValue.id, {
-                //     fontFamily: 'Arial',
-                //     fontSize: 13,
-                //     fill: MapTools.hexStringToNumber('#000000'),
-                //     align: 'center',
-                // });
-                // pixiGraphic.addChild(pixiText);
+                if (this.addSomeDebugInfos) {
+                    //  const pixiText = new Text('  ' + gridValue.id, {
+                    //      fontFamily: 'Arial',
+                    //      fontSize: 13,
+                    //      fill: MapTools.hexStringToNumber('#000000'),
+                    //      align: 'center',
+                    //  });
+                    //  pixiGraphic.addChild(pixiText);
+                }
 
                 this.mapGraph.addChild(pixiGraphic);
 

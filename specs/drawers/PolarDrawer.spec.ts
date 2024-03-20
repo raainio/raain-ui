@@ -1,7 +1,7 @@
-import {LatLng, Point} from 'leaflet';
+import {Point} from 'leaflet';
 
 import {expect} from 'chai';
-import {PolarDrawer, PolarDrawerOptimization, PolarGridValue, PolarMapValue} from '../../src';
+import {MapLatLng, PolarDrawer, PolarDrawerOptimization, PolarGridValue, PolarMapValue} from '../../src';
 
 describe('PolarDrawer', () => {
 
@@ -31,7 +31,7 @@ describe('PolarDrawer', () => {
             },
             'rain');
 
-        expect(polarDrawer.renderPolarMapValues(new LatLng(0, 0), new Point(0, 0), null)).eq(0);
+        expect(polarDrawer.renderPolarMapValues(new MapLatLng(0, 0), new Point(0, 0), null)).eq(0);
     });
 
     it('should getNextOffset', async () => {
@@ -85,7 +85,7 @@ describe('PolarDrawer', () => {
 
         // render
         const rendered = polarDrawer.renderPolarMapValues(
-            new LatLng(0.001, 0.001),
+            new MapLatLng(0.001, 0.001),
             new Point(0.1, 0.1),
             spyDrawing);
 
@@ -127,7 +127,7 @@ describe('PolarDrawer', () => {
 
         // render
         const rendered = polarDrawer.renderPolarMapValues(
-            new LatLng(0.001, 0.001),
+            new MapLatLng(0.001, 0.001),
             new Point(0.1, 0.1),
             spyDrawing);
 

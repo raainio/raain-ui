@@ -1,4 +1,4 @@
-import {icon, IconOptions, layerGroup, LayerGroup, Map, Marker, marker, MarkerOptions} from 'leaflet';
+import {Icon, icon as leafletIcon, IconOptions, layerGroup, LayerGroup, Map, Marker, marker as leafletMarker, MarkerOptions} from 'leaflet';
 import {IPixiLayer} from './IPixiLayer';
 import {MapLatLng} from '../tools/MapLatLng';
 
@@ -43,44 +43,44 @@ export class MarkersLayer implements IPixiLayer {
         this._height = height;
     }
 
-    public render(markers: MapLatLng[], iconOptions?: IconOptions): { markers: Marker[] } {
+    public render(markers: { iconsLatLng: MapLatLng[], iconOptions?: IconOptions }[]): { markers: Marker[] } {
         if (this._layerGroup) {
             this._layerGroup.clearLayers();
         }
 
-        let iconOption;
-        if (iconOptions) {
-            iconOption = icon(iconOptions);
+        if (!markers) {
+            return {markers: []};
         }
 
         // Add markers
-        const n: number = markers.length;
-        let i: number;
         const ms: Marker[] = [];
         let x: number;
         let y: number;
-        for (i = 0; i < n; ++i) {
-            const markerToDisplay = markers[i];
+        for (const marker of markers) {
 
-            x = markerToDisplay.lat;
-            y = markerToDisplay.lng;
+            let iconOption: Icon;
+            if (marker.iconOptions) {
+                iconOption = leafletIcon(marker.iconOptions);
+            }
 
-            if (x !== undefined && !isNaN(x) && y !== undefined && !isNaN(y)) {
-                const options: MarkerOptions = {
-                    title: markerToDisplay.name,
-                    alt: markerToDisplay.id
-                };
-                if (iconOption) {
-                    options.icon = iconOption;
+            for (const iconsLatLng of marker.iconsLatLng) {
+                x = iconsLatLng.lat;
+                y = iconsLatLng.lng;
+                if (x !== undefined && !isNaN(x) && y !== undefined && !isNaN(y)) {
+                    const options: MarkerOptions = {
+                        title: iconsLatLng.name,
+                        alt: iconsLatLng.id
+                    };
+                    if (iconOption) {
+                        options.icon = iconOption;
+                    }
+                    ms.push(leafletMarker([x, y], options));
+                } else {
+                    // implement your own error handling
+                    console.error('MARKER ERROR: ', iconsLatLng.id, 'x: ', x, ' y: ', y);
                 }
-                ms.push(marker([x, y], options));
-            } else {
-                // implement your own error handling
-                console.error('MARKER ERROR, Marker number: ', (i + 1), 'x: ', x, ' y: ', y);
             }
         }
-        // this.markerGroup = layerGroup(ms);
-        // this.markerGroup.addTo(this.map);
 
         this._layerGroup = layerGroup(ms);
         return {markers: ms};

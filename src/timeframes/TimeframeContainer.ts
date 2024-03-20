@@ -1,5 +1,6 @@
 import {FrameContainer} from './FrameContainer';
 import {CompositeLayer} from '../layers/CompositeLayer';
+import {IPixiUniqueLayer} from '../layers/IPixiUniqueLayer';
 
 export class TimeframeContainer {
 
@@ -10,28 +11,29 @@ export class TimeframeContainer {
                 public version: string) {
     }
 
-    setCompositeLayer(compositeLayer) {
+    setCompositeLayer(compositeLayer: CompositeLayer) {
         this.compositeLayer = compositeLayer;
     }
 
-    showTimeframe(date?: Date) {
+    showTimeframe(date?: Date): { layer: IPixiUniqueLayer, frameContainer: FrameContainer } {
 
         if (!this.compositeLayer) {
-            return;
+            return {layer: null, frameContainer: null};
         }
 
-        let index = 0;
+        let layerShown: IPixiUniqueLayer = null;
         let frameContainerFound = this.timeframe.length ? this.timeframe[0] : null;
         this.timeframe.forEach(c => {
-            index++;
             if (new Date(c.date).getTime() === date?.getTime()) {
                 frameContainerFound = c;
             }
         });
 
         if (!!frameContainerFound) {
-            this.compositeLayer.showTheFistMatchingId(this.getFrameId(frameContainerFound));
+            layerShown = this.compositeLayer.showTheFistMatchingId(this.getFrameId(frameContainerFound));
         }
+
+        return {layer: layerShown, frameContainer: frameContainerFound};
     }
 
     getFrameId(frameContainer: FrameContainer): string {
