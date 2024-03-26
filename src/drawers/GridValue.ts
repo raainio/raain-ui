@@ -30,19 +30,19 @@ export class GridValue {
             value = '#FFF300';
             transparency = 0.50;
         } else if (srcValue < 50) {
-            value = '#aa72f3';
+            value = '#ffc022';
             transparency = 0.45;
         } else if (srcValue < 100) {
-            value = '#f67bec';
+            value = '#fe8a1f';
             transparency = 0.4;
         } else if (srcValue < 150) {
-            value = '#ff23cd';
+            value = '#ff531f';
             transparency = 0.3;
         } else if (srcValue < 200) {
-            value = '#ff0707';
+            value = '#db1f26';
             transparency = 0.3;
         } else if (srcValue < 250) {
-            value = '#c2042f';
+            value = '#821d37';
             transparency = 0.3;
         } else if (srcValue < 300) {
             value = '#7e0321';
