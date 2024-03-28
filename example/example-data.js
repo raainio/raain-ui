@@ -1,13 +1,15 @@
 import 'leaflet/dist/leaflet.css';
 import {
+    CartesianMapValue,
     ElementsFactory,
     FrameContainer,
+    MapElementInput,
     MapLatLng,
     PolarMapValue,
+    SpeedMatrixElementInput,
     TimeframeContainer,
     TimeframeContainers,
 } from 'raain-ui';
-import {CartesianMapValue} from '../src';
 import {cartesianRainHistories, rainComputationQualities, rainPolarMeasureValues} from './data/require.gitignored.js';
 
 const center = {latitude: 48.774569, longitude: 2.008407};
@@ -42,9 +44,9 @@ const createCartesianMapFromJson = (cartesianRainHistories) => {
     return cartesianMapValues;
 }
 
-const mapElement = document.getElementById('map');
-const speedMatrixElement = document.getElementById('speedMatrix');
-const speedTitle = document.getElementById('speedTitle');
+const mapHtmlElement = document.getElementById('map');
+const speedMatrixHtmlElement = document.getElementById('speedMatrix');
+const speedHtmlTitle = document.getElementById('speedTitle');
 
 // Values
 const markers = [
@@ -82,10 +84,8 @@ const iconsOptions = {
     iconUrl: './my-marker-icon.png',
     shadowUrl: './my-marker-shadow.png',
 };
-const mapManagement = factory.createMap(mapElement, {
-    timeframeContainers,
-    markers: [{iconsLatLng: markers, iconsOptions}]
-});
+const mapElement = factory.createMap(mapHtmlElement,
+    new MapElementInput(timeframeContainers, [{iconsLatLng: markers, iconsOptions}]));
 
 // Matrices
 // let positionValuesMatrix = rainComputationQualities[0].qualitySpeedMatrixContainer.flattenMatrices;
@@ -142,11 +142,11 @@ const animatePolar = (toggle) => {
 };
 
 const animateMatrix = () => {
-    speedMatrixElement.innerHTML = '';
-    speedTitle.innerHTML = '<p>' + indexAnimation + ' - ' + rainComputationQualities[indexAnimation].periodEnd + '</p>';
-    factory.createSpeedMatrixIndicator(speedMatrixElement,
+    speedMatrixHtmlElement.innerHTML = '';
+    speedHtmlTitle.innerHTML = '<p>' + indexAnimation + ' - ' + rainComputationQualities[indexAnimation].periodEnd + '</p>';
+    factory.createSpeedMatrixIndicator(speedMatrixHtmlElement, new SpeedMatrixElementInput(
         rainComputationQualities[indexAnimation].qualitySpeedMatrixContainer.flattenMatrices[0],
-        rainComputationQualities[indexAnimation].qualitySpeedMatrixContainer.trustedIndicators[0]);
+        rainComputationQualities[indexAnimation].qualitySpeedMatrixContainer.trustedIndicators[0]));
 };
 
 const forward = () => {
@@ -182,6 +182,6 @@ window.backward = backward;
 
 // #############
 
-mapManagement.compositeLayer.showTheFistMatchingId('Cartesian');
+mapElement.compositeLayer.showTheFistMatchingId('Cartesian');
 setTimeout(animateCartesian, animationTimeInMs);
 

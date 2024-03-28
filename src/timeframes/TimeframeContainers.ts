@@ -14,7 +14,7 @@ import {CartesianMapValue} from '../tools/CartesianMapValue';
 import {IPixiUniqueLayer} from '../layers/IPixiUniqueLayer';
 
 export class TimeframeContainers {
-    constructor(public containers: TimeframeContainer[]) {
+    constructor(public containers: Array<TimeframeContainer>) {
     }
 
     public addFromRadarNodeMap(radarNodeMap: RadarNodeMap,

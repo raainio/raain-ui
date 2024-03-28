@@ -1,15 +1,19 @@
 import 'leaflet/dist/leaflet.css';
 import './map-dark.css';
 import {
+    CartesianMapValue,
+    CompareElementInput,
+    ConfigurationElementInput,
+    DateStatusElementInput,
     ElementsFactory,
-    FocusRange,
     FrameContainer,
+    MapElementInput,
     MapLatLng,
     PolarMapValue,
+    SpeedMatrixElementInput,
     TimeframeContainer,
     TimeframeContainers,
 } from 'raain-ui';
-import {CartesianMapValue} from '../src';
 
 const center = {latitude: 51.505, longitude: -0.09};
 const now = new Date();
@@ -61,14 +65,12 @@ const createCartesianMapValues = (scenario) => {
     return values;
 };
 
-const mapElement = document.getElementById('map');
-const compareElement = document.getElementById('compare');
-const dateFocusElement = document.getElementById('dateFocus');
-const configurationElement = document.getElementById('configuration');
-const speedElement = document.getElementById('speed');
-const indicatorElement = document.getElementById('indicator');
-const speedMatrixElement = document.getElementById('speedMatrix');
-const speedTitle = document.getElementById('speedTitle');
+const mapHtmlElement = document.getElementById('map');
+const compareHtmlElement = document.getElementById('compare');
+const dateFocusHtmlElement = document.getElementById('dateFocus');
+const configurationHtmlElement = document.getElementById('configuration');
+const speedMatrixHtmlElement = document.getElementById('speedMatrix');
+const speedHtmlTitle = document.getElementById('speedTitle');
 
 // Values
 const markers1 = [
@@ -133,18 +135,18 @@ const iconsOptions = {
     iconUrl: './my-marker-icon.png',
     shadowUrl: './my-marker-shadow.png',
 };
-const mapManagement = factory.createMap(mapElement, {
+const mapElement = factory.createMap(mapHtmlElement, new MapElementInput(
     timeframeContainers,
-    markers: [{iconsLatLng: markers1, iconsOptions}, {iconsLatLng: markers2}]
-});
-factory.createCompare(compareElement, comparePoints);
-const dateStatusChart = factory.createDateStatus(dateFocusElement, setOfData, new Date('2023-06-02 13:15'), FocusRange.HOUR);
-factory.createConfiguration(configurationElement, configurationPoints);
-factory.createSpeedIndicator(speedElement, 20.6, 13);
-factory.createQualityIndicator(indicatorElement, 34);
+    [{iconsLatLng: markers1, iconsOptions}, {iconsLatLng: markers2}]
+));
+const compareElement = factory.createCompare(compareHtmlElement,
+    new CompareElementInput(comparePoints));
+const dateStatusElement = factory.createDateStatus(dateFocusHtmlElement,
+    new DateStatusElementInput(setOfData));
+const configurationElement = factory.createConfiguration(configurationHtmlElement,
+    new ConfigurationElementInput(configurationPoints));
 
 let matrixIndex = 0;
-// factory.createSpeedMatrixIndicator(speedMatrixElement, positionValuesMatrix[matrixIndex]);
 
 // switching timeframes
 const animationTimeInMs = 5000;
@@ -162,19 +164,19 @@ const switchTimeFramePolarRain0 = () => {
     }
 };
 const switchTimeFramePolarRadar0 = () => {
-    mapManagement.compositeLayer.showTheFistMatchingId('polar_with_Radar0_');
+    mapElement.compositeLayer.showTheFistMatchingId('polar_with_Radar0_');
     if (animationEnabled) {
         setTimeout(switchTimeFramePolarRain1, animationTimeInMs);
     }
 };
 const switchTimeFramePolarRain1 = () => {
-    mapManagement.compositeLayer.showTheFistMatchingId('polar_Rain1_');
+    mapElement.compositeLayer.showTheFistMatchingId('polar_Rain1_');
     if (animationEnabled) {
         setTimeout(switchTimeFramePolarWithoutOptimization, animationTimeInMs);
     }
 };
 const switchTimeFramePolarWithoutOptimization = () => {
-    mapManagement.compositeLayer.showTheFistMatchingId('polar_without_optimization_');
+    mapElement.compositeLayer.showTheFistMatchingId('polar_without_optimization_');
     if (animationEnabled) {
         setTimeout(switchTimeFrameCartesian0, animationTimeInMs);
     }
@@ -185,21 +187,16 @@ const switchTimeFrameCartesian0 = () => {
         setTimeout(switchTimeFramePolarRadar0, animationTimeInMs);
     }
 };
-const switchTimeFrameCartesian1 = () => {
-    allCartesianValues.showTimeframe(addMinutes(now, 10));
-    if (animationEnabled) {
-        setTimeout(switchTimeFrameCartesian2, animationTimeInMs);
-    }
-};
 
 const switchMatrix = () => {
-    speedMatrixElement.innerHTML = '';
+    speedMatrixHtmlElement.innerHTML = '';
     if (positionValuesMatrix.length === matrixIndex) {
         matrixIndex = 0;
     }
-    speedTitle.innerHTML = '<p>matrixIndex:' + matrixIndex + '</p>';
+    speedHtmlTitle.innerHTML = '<p>matrixIndex:' + matrixIndex + '</p>';
 
-    factory.createSpeedMatrixIndicator(speedMatrixElement, positionValuesMatrix[matrixIndex], Math.random());
+    factory.createSpeedMatrixIndicator(speedMatrixHtmlElement,
+        new SpeedMatrixElementInput(positionValuesMatrix[matrixIndex], Math.random()));
     matrixIndex++;
     setTimeout(switchMatrix, animationTimeInMs);
 };
@@ -208,15 +205,15 @@ window.toggleAnimation = toggleAnimation;
 window.switchTimeFramePolarRain0 = switchTimeFramePolarRain0;
 window.switchTimeFrameCartesian0 = switchTimeFrameCartesian0;
 window.switchTimeFramePolarRain1 = switchTimeFramePolarRain1;
-window.switchTimeFrameCartesian1 = switchTimeFrameCartesian1;
 window.switchTimeFramePolarWithoutOptimization = switchTimeFramePolarWithoutOptimization;
-window.focusReset = dateStatusChart.focusReset;
-window.focusPrevious = dateStatusChart.focusPrevious;
-window.focusNext = dateStatusChart.focusNext;
+
+window.focusReset = dateStatusElement.focusReset;
+window.focusPrevious = dateStatusElement.focusPrevious;
+window.focusNext = dateStatusElement.focusNext;
 
 // #############
 
-mapManagement.compositeLayer.showTheFistMatchingId('polar_with_Rain0_');
+mapElement.compositeLayer.showTheFistMatchingId('polar_with_Rain0_');
 // setTimeout(switchTimeFramePolarRain0, animationTimeInMs);
 switchMatrix();
 
