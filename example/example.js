@@ -134,7 +134,8 @@ let positionValuesMatrix = [
 ];
 
 let perfBarsPoints =
-    [{label: '#1', percentage: 23}, {label: '#2', percentage: 56}, {label: '#3', percentage: 0}];
+    [{label: '#1', percentage: 23}//, {label: '#2', percentage: 56}, {label: '#3', percentage: 0}
+    ];
 let perfLinesPoints = [
     {date: addMinutes(now, -10), percentage: 23}, {date: addMinutes(now, -5), percentage: 45},]
 
@@ -214,7 +215,8 @@ const switchMatrix = () => {
 };
 
 const animatePerf = () => {
-    perfBarElement.add([{percentage: Math.random() * 100}, {percentage: Math.random() * 100}, {percentage: Math.random() * 100}]);
+    perfBarElement.add([{percentage: Math.random() * 100}//, {percentage: Math.random() * 100}, {percentage: Math.random() * 100}
+    ]);
     perfLineElement.add(Math.random() * 100);
 
     setTimeout(animatePerf, animationTimeInMs);
