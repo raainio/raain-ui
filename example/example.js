@@ -1,5 +1,4 @@
 import 'leaflet/dist/leaflet.css';
-import './map-dark.css';
 import {
     CartesianMapValue,
     CompareElementInput,
@@ -9,12 +8,26 @@ import {
     FrameContainer,
     MapElementInput,
     MapLatLng,
+    MonitoringBarsElementInput,
+    MonitoringLinesElementInput,
     PolarMapValue,
     SpeedMatrixElementInput,
     TimeframeContainer,
-    TimeframeContainers,
+    TimeframeContainers
 } from 'raain-ui';
 
+// 1) HTML Elements
+const mapHtmlElement = document.getElementById('map');
+const compareHtmlElement = document.getElementById('compare');
+const dateFocusHtmlElement = document.getElementById('dateFocus');
+const speedHtmlTitle = document.getElementById('speedTitle');
+const speedMatrixHtmlElement = document.getElementById('speedMatrix');
+const configurationHtmlElement = document.getElementById('configuration');
+const perfBarHtmlElement = document.getElementById('perfBar');
+const perfLineHtmlElement = document.getElementById('perfLine');
+
+
+// 2) Values
 const center = {latitude: 51.505, longitude: -0.09};
 const now = new Date();
 
@@ -50,7 +63,6 @@ const createPolarMapValues = (scenario) => {
     return values;
 };
 
-
 const createCartesianMapValues = (scenario) => {
     const values = [];
     for (let latitude = center.latitude - 1; latitude < center.latitude + 1; latitude += 0.01) {
@@ -65,14 +77,6 @@ const createCartesianMapValues = (scenario) => {
     return values;
 };
 
-const mapHtmlElement = document.getElementById('map');
-const compareHtmlElement = document.getElementById('compare');
-const dateFocusHtmlElement = document.getElementById('dateFocus');
-const configurationHtmlElement = document.getElementById('configuration');
-const speedMatrixHtmlElement = document.getElementById('speedMatrix');
-const speedHtmlTitle = document.getElementById('speedTitle');
-
-// Values
 const markers1 = [
     new MapLatLng(center.latitude, center.longitude, 0, 'centerId', 'center'),
     new MapLatLng(center.latitude + 0.1, center.longitude - 0.1, 0, '2', 'near center'),
@@ -115,7 +119,7 @@ const dateStatusPoints2 = [
     {date: new Date('2023-06-02 14:19'), value: 8},
     {date: new Date('2023-06-12 13:22'), value: 3},
     {date: new Date('2024-06-12 13:22'), value: 3}];
-const setOfData = [
+const setOfDates = [
     {label: 'data 1', style: 'bar', values: dateStatusPoints1},
     {label: 'data 2', style: 'bar', values: dateStatusPoints2},
     {label: 'data 2 with lines', style: 'line', values: dateStatusPoints2},
@@ -129,26 +133,34 @@ let positionValuesMatrix = [
     [{x: -1, y: -2, value: 3}, {x: -1, y: -1, value: 2}, {x: 0, y: -2, value: 1}, {x: 0, y: -1, value: 0}],
 ];
 
-// Factory
-const factory = new ElementsFactory(center, true);
+let perfBarsPoints =
+    [{label: '#1', percentage: 23}, {label: '#2', percentage: 56}, {label: '#3', percentage: 0}];
+let perfLinesPoints = [
+    {date: addMinutes(now, -10), percentage: 23}, {date: addMinutes(now, -5), percentage: 45},]
+
+// 3) Configurations
 const iconsOptions = {
     iconUrl: './my-marker-icon.png',
     shadowUrl: './my-marker-shadow.png',
 };
-const mapElement = factory.createMap(mapHtmlElement, new MapElementInput(
-    timeframeContainers,
-    [{iconsLatLng: markers1, iconsOptions}, {iconsLatLng: markers2}]
-));
+
+// 4) Factory
+const factory = new ElementsFactory(center, true);
+const mapElement = factory.createMap(mapHtmlElement,
+    new MapElementInput(timeframeContainers, [{iconsLatLng: markers1, iconsOptions}, {iconsLatLng: markers2}]));
 const compareElement = factory.createCompare(compareHtmlElement,
     new CompareElementInput(comparePoints));
 const dateStatusElement = factory.createDateStatus(dateFocusHtmlElement,
-    new DateStatusElementInput(setOfData));
+    new DateStatusElementInput(setOfDates));
 const configurationElement = factory.createConfiguration(configurationHtmlElement,
     new ConfigurationElementInput(configurationPoints));
+const perfBarElement = factory.createMonitoringBars(perfBarHtmlElement,
+    new MonitoringBarsElementInput(perfBarsPoints));
+const perfLineElement = factory.createMonitoringLines(perfLineHtmlElement,
+    new MonitoringLinesElementInput(perfLinesPoints, 10));
 
+// 5) animations (switching timeframes, moving perf data...)
 let matrixIndex = 0;
-
-// switching timeframes
 const animationTimeInMs = 5000;
 let animationEnabled = false;
 const toggleAnimation = () => {
@@ -201,6 +213,13 @@ const switchMatrix = () => {
     setTimeout(switchMatrix, animationTimeInMs);
 };
 
+const animatePerf = () => {
+    perfBarElement.add([{percentage: Math.random() * 100}, {percentage: Math.random() * 100}, {percentage: Math.random() * 100}]);
+    perfLineElement.add(Math.random() * 100);
+
+    setTimeout(animatePerf, animationTimeInMs);
+}
+
 window.toggleAnimation = toggleAnimation;
 window.switchTimeFramePolarRain0 = switchTimeFramePolarRain0;
 window.switchTimeFrameCartesian0 = switchTimeFrameCartesian0;
@@ -216,4 +235,5 @@ window.focusNext = dateStatusElement.focusNext;
 mapElement.compositeLayer.showTheFistMatchingId('polar_with_Rain0_');
 // setTimeout(switchTimeFramePolarRain0, animationTimeInMs);
 switchMatrix();
+animatePerf();
 

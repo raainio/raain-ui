@@ -4,6 +4,8 @@ import {CompareElement, CompareElementInput} from './CompareElement';
 import {ConfigurationElement, ConfigurationElementInput} from './ConfigurationElement';
 import {DateStatusElement, DateStatusElementInput} from './DateStatusElement';
 import {SpeedMatrixElement, SpeedMatrixElementInput} from './SpeedMatrixElement';
+import {MonitoringBarsElement, MonitoringBarsElementInput} from './MonitoringBarsElement';
+import {MonitoringLinesElement, MonitoringLinesElementInput} from './MonitoringLinesElement';
 
 export class ElementsFactory {
 
@@ -44,6 +46,18 @@ export class ElementsFactory {
         const speedMatrixElement = new SpeedMatrixElement(this.addSomeDebugInfos);
         speedMatrixElement.build(element, inputs);
         return speedMatrixElement;
+    }
+
+    public createMonitoringBars(element: HTMLCanvasElement, inputs: MonitoringBarsElementInput): MonitoringBarsElement {
+        const el = new MonitoringBarsElement(this.addSomeDebugInfos);
+        el.build(element, inputs);
+        return el;
+    }
+
+    public createMonitoringLines(element: HTMLCanvasElement, inputs: MonitoringLinesElementInput): MonitoringLinesElement {
+        const el = new MonitoringLinesElement(this.addSomeDebugInfos);
+        el.build(element, inputs);
+        return el;
     }
 
 }

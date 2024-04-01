@@ -1,4 +1,5 @@
 import 'leaflet/dist/leaflet.css';
+import './map-dark.css';
 import {
     CartesianMapValue,
     ElementsFactory,
@@ -12,6 +13,12 @@ import {
 } from 'raain-ui';
 import {cartesianRainHistories, rainComputationQualities, rainPolarMeasureValues} from './data/require.gitignored.js';
 
+// 1) HTML elements
+const mapHtmlElement = document.getElementById('map');
+const speedMatrixHtmlElement = document.getElementById('speedMatrix');
+const speedHtmlTitle = document.getElementById('speedTitle');
+
+// 2) Data
 const center = {latitude: 48.774569, longitude: 2.008407};
 const now = new Date();
 
@@ -31,7 +38,7 @@ const createPolarFromJson = (rpmv) => {
 }
 
 const createCartesianMapFromJson = (cartesianRainHistories) => {
-    const cartesianMapValues = cartesianRainHistories.map(crh => {
+    return cartesianRainHistories.map(crh => {
         const cmv = new CartesianMapValue(
             crh.computedValue.value,
             crh.computedValue.lat,
@@ -40,15 +47,8 @@ const createCartesianMapFromJson = (cartesianRainHistories) => {
             crh.computedValue.lng + 0.014);
         return cmv;
     });
-
-    return cartesianMapValues;
 }
 
-const mapHtmlElement = document.getElementById('map');
-const speedMatrixHtmlElement = document.getElementById('speedMatrix');
-const speedHtmlTitle = document.getElementById('speedTitle');
-
-// Values
 const markers = [
     new MapLatLng(center.latitude, center.longitude, 0, 'centerId', 'center'),
 ];
@@ -78,7 +78,7 @@ for (let cartesianRainHistory of cartesianRainHistories) {
 const allCartesianValues = new TimeframeContainer('allCartesianRain', frameContainers);
 const timeframeContainers = new TimeframeContainers([allPolarValues, allCartesianValues,]);
 
-// Factory
+// 3) Factory
 const factory = new ElementsFactory(center, true);
 const iconsOptions = {
     iconUrl: './my-marker-icon.png',
@@ -92,7 +92,7 @@ const mapElement = factory.createMap(mapHtmlElement,
 // let matrixIndex = indexStart;
 // factory.createSpeedMatrixIndicator(speedMatrixElement, positionValuesMatrix[matrixIndex]);
 
-// switching timeframes
+// 4) Animations (switching timeframes)
 const animationTimeInMs = 3000;
 let animationEnabled = true;
 let cartesianModeToggle = true;
@@ -178,9 +178,6 @@ window.animatePolar = animatePolar;
 window.toggleAnimation = toggleAnimation;
 window.forward = forward;
 window.backward = backward;
-
-
-// #############
 
 mapElement.compositeLayer.showTheFistMatchingId('Cartesian');
 setTimeout(animateCartesian, animationTimeInMs);

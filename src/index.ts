@@ -5,6 +5,8 @@ export * from './factories/CompareElement';
 export * from './factories/ConfigurationElement';
 export * from './factories/DateStatusElement';
 export * from './factories/SpeedMatrixElement';
+export * from './factories/MonitoringBarsElement';
+export * from './factories/MonitoringLinesElement';
 
 export * from './tools/PolarMapValue';
 export * from './tools/CartesianMapValue';

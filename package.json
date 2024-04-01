@@ -1,6 +1,6 @@
 {
   "name": "raain-ui",
-  "version": "1.11.2",
+  "version": "1.11.33",
   "author": "contact@raain.io",
   "homepage": "https://github.com/raainio/raain-ui",
   "description": "raain.io ui layers",
@@ -43,7 +43,8 @@
     "typescript": "^5.0.3"
   },
   "scripts": {
-    "build": "rm -rf dist/ && npm version patch --no-git-tag-version && tsc --project tsconfig.json && cp *.md dist/ && cp package.json dist/",
-    "test": "nyc ./node_modules/.bin/_mocha --require ./tools/register.js 'specs/**/**.spec.ts'"
+    "clean": "rm -rf dist .coverage .nyc_output",
+    "test": "nyc ./node_modules/.bin/_mocha --require ./tools/register.js 'specs/**/**.spec.ts'",
+    "build": "rm -rf dist/ && npm version patch --no-git-tag-version && tsc --project tsconfig.json && cp *.md dist/ && cp package.json dist/"
   }
 }
