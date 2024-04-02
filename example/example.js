@@ -150,7 +150,7 @@ const factory = new ElementsFactory(center, true);
 const mapElement = factory.createMap(mapHtmlElement,
     new MapElementInput(timeframeContainers, [{iconsLatLng: markers1, iconsOptions}, {iconsLatLng: markers2}]));
 const compareElement = factory.createCompare(compareHtmlElement,
-    new CompareElementInput(comparePoints));
+    new CompareElementInput(comparePoints, {x: 80, y: 80}, console.log));
 const dateStatusElement = factory.createDateStatus(dateFocusHtmlElement,
     new DateStatusElementInput(setOfDates));
 const configurationElement = factory.createConfiguration(configurationHtmlElement,

@@ -1,5 +1,4 @@
 import Chart from 'chart.js/auto';
-import {getRelativePosition} from 'chart.js/helpers';
 import {ChartColors, Tools} from './Tools';
 
 export class CompareElementInput {
@@ -59,7 +58,7 @@ export class CompareElement {
                         //     return a.dataIndex === 0;
                         // },
                         callbacks: {
-                            label: (context) => {
+                            label: (context: any) => {
                                 let label = '';
                                 if (context.dataset.data[context.dataIndex]) {
                                     data.selectedPoint = context.dataset.data[context.dataIndex];
@@ -74,11 +73,7 @@ export class CompareElement {
                     },
 
                 },
-                onClick(e) {
-                    const eChart = e.chart;
-                    const canvasPosition = getRelativePosition(e, eChart);
-                    const posX = new Chart(element, config).scales.x.getValueForPixel(canvasPosition.x);
-                    const posY = new Chart(element, config).scales.y.getValueForPixel(canvasPosition.y);
+                onClick(e: any) {
                     if (data.selectedPoint && inputs.clickCallback) {
                         inputs.clickCallback(data.selectedPoint);
                     }
