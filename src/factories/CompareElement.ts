@@ -3,7 +3,7 @@ import {ChartColors, Tools} from './Tools';
 
 export class CompareElementInput {
     constructor(
-        public points: { x: number, y: number, r: number, name: string }[] = [],
+        public points: { x: number, y: number, r: number, name: string, id: string }[] = [],
         public topPoint: { x: number, y: number } = {
             x: 100,
             y: 100
