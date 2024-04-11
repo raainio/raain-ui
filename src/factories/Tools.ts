@@ -12,18 +12,42 @@ export const ChartColors = {
     dark: 'rgb(68,72,80)',
 };
 
-export enum FocusRange {
+export enum DateRange {
     CENTURY,
     YEAR,
     MONTH,
     DAY,
-    HOUR
+    HOUR,
+    MINUTE
 }
 
 export class Tools {
 
+
     public static getTransparency(value: string, opacity: number) {
         const alpha = opacity === undefined ? 0.5 : 1 - opacity;
         return colorLib(value).alpha(alpha).rgbString();
+    }
+
+    static formatDate(date: Date, dateRange: number) {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const hh = String(date.getHours()).padStart(2, '0');
+        const min = String(date.getMinutes()).padStart(2, '0');
+
+        if (dateRange === DateRange.CENTURY) {
+            return `${yyyy}`;
+        } else if (dateRange === DateRange.YEAR) {
+            return `${yyyy}`;
+        } else if (dateRange === DateRange.MONTH) {
+            return `${yyyy}-${mm}`;
+        } else if (dateRange === DateRange.DAY) {
+            return `${yyyy}-${mm}-${dd}`;
+        } else if (dateRange === DateRange.HOUR) {
+            return `${yyyy}-${mm}-${dd} ${hh}h`;
+        }
+
+        return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
     }
 }

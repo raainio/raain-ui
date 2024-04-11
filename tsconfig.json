@@ -3,7 +3,7 @@
     "./src/index.ts"
   ],
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2017",
     "module": "commonjs",
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -11,7 +11,7 @@
     "inlineSourceMap": true,
     "outDir": "./dist/",
     "lib": [
-      "es6",
+      "es2017",
       "dom"
     ]
     /*

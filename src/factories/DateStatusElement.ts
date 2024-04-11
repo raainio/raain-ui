@@ -1,5 +1,5 @@
 import Chart from 'chart.js/auto';
-import {ChartColors, FocusRange, Tools} from './Tools';
+import {ChartColors, DateRange, Tools} from './Tools';
 import {getRelativePosition} from 'chart.js/helpers';
 
 export class DateStatusElementInput {
@@ -10,7 +10,7 @@ export class DateStatusElementInput {
             values: { date: Date, value: number }[],
         }[] = [],
         public focusDate: Date = new Date(),
-        public focusRange: FocusRange = FocusRange.CENTURY
+        public focusRange: DateRange = DateRange.CENTURY
     ) {
     }
 }
@@ -31,7 +31,7 @@ export class DateStatusElement {
         };
     }
 
-    protected static filterFocus(mapToFilter: Array<{ date: Date, value: number }>, focusDate: Date, focusRange: FocusRange): Array<{
+    protected static filterFocus(mapToFilter: Array<{ date: Date, value: number }>, focusDate: Date, focusRange: DateRange): Array<{
         date: Date,
         value: number
     }> {
@@ -39,16 +39,16 @@ export class DateStatusElement {
         return mapToFilter
             .filter(e => {
                 let isIn = true;
-                if (isIn && focusRange >= FocusRange.YEAR) {
+                if (isIn && focusRange >= DateRange.YEAR) {
                     isIn = e.date.getFullYear() === focusDate.getFullYear();
                 }
-                if (isIn && focusRange >= FocusRange.MONTH) {
+                if (isIn && focusRange >= DateRange.MONTH) {
                     isIn = e.date.getMonth() === focusDate.getMonth();
                 }
-                if (isIn && focusRange >= FocusRange.DAY) {
+                if (isIn && focusRange >= DateRange.DAY) {
                     isIn = e.date.getDate() === focusDate.getDate();
                 }
-                if (isIn && focusRange >= FocusRange.HOUR) {
+                if (isIn && focusRange >= DateRange.HOUR) {
                     isIn = e.date.getHours() === focusDate.getHours();
                 }
                 return isIn;
@@ -59,91 +59,91 @@ export class DateStatusElement {
     protected static groupFocus(
         mapToFilter: Array<{ date: Date, value: number }>,
         focusDate: Date,
-        focusRange: FocusRange,
+        focusRange: DateRange,
         min: Date,
         max: Date) {
 
         console.log('groupFocus:', mapToFilter.length, focusDate, focusRange);
         const filteredAndSorted = DateStatusElement.filterFocus(mapToFilter, focusDate, focusRange);
 
-        if (focusRange === FocusRange.CENTURY) {
+        if (focusRange === DateRange.CENTURY) {
             const groupedByYear = [];
             for (let i = min.getFullYear(); i <= max.getFullYear(); i++) {
                 const yearDate = new Date(focusDate);
                 yearDate.setFullYear(i);
-                const sum = DateStatusElement.filterFocus(filteredAndSorted, yearDate, FocusRange.YEAR)
+                const sum = DateStatusElement.filterFocus(filteredAndSorted, yearDate, DateRange.YEAR)
                     .reduce((partialSum, a) => partialSum + a.value, 0);
                 groupedByYear.push(sum);
             }
             return groupedByYear;
         }
 
-        if (focusRange === FocusRange.YEAR) {
+        if (focusRange === DateRange.YEAR) {
             const groupedByMonth = [];
             for (let i = 0; i < 12; i++) {
                 const monthDate = new Date(focusDate);
                 monthDate.setMonth(i);
-                const sum = DateStatusElement.filterFocus(filteredAndSorted, monthDate, FocusRange.MONTH)
+                const sum = DateStatusElement.filterFocus(filteredAndSorted, monthDate, DateRange.MONTH)
                     .reduce((partialSum, a) => partialSum + a.value, 0);
                 groupedByMonth.push(sum);
             }
             return groupedByMonth;
         }
 
-        if (focusRange === FocusRange.MONTH) {
+        if (focusRange === DateRange.MONTH) {
             const groupedByDay = [];
             const daysInMonth = new Date(focusDate.getFullYear(), focusDate.getMonth(), 0).getDate();
             for (let i = 0; i < daysInMonth; i++) {
                 const dayDate = new Date(focusDate);
                 dayDate.setDate(i);
-                const sum = DateStatusElement.filterFocus(filteredAndSorted, dayDate, FocusRange.DAY)
+                const sum = DateStatusElement.filterFocus(filteredAndSorted, dayDate, DateRange.DAY)
                     .reduce((partialSum, a) => partialSum + a.value, 0);
                 groupedByDay.push(sum);
             }
             return groupedByDay;
         }
 
-        if (focusRange === FocusRange.DAY) {
+        if (focusRange === DateRange.DAY) {
             const groupedByHour = [];
             for (let i = 0; i < 24; i++) {
                 const hourDate = new Date(focusDate);
                 hourDate.setHours(i);
-                const sum = DateStatusElement.filterFocus(filteredAndSorted, hourDate, FocusRange.HOUR)
+                const sum = DateStatusElement.filterFocus(filteredAndSorted, hourDate, DateRange.HOUR)
                     .reduce((partialSum, a) => partialSum + a.value, 0);
                 groupedByHour.push(sum);
             }
             return groupedByHour;
         }
 
-        // if (focusRange === FocusRange.HOUR) {
+        // if (focusRange === DateRange.HOUR) {
         return filteredAndSorted.map(e => e.value);
     }
 
-    protected static focusLabels(focusDate: Date, focusRange: FocusRange, min: Date, max: Date, data: {
+    protected static focusLabels(focusDate: Date, focusRange: DateRange, min: Date, max: Date, data: {
         label: string,
         style: string,
         values: { date: Date, value: number }[],
     }[]) {
-        if (focusRange === FocusRange.CENTURY) {
+        if (focusRange === DateRange.CENTURY) {
             const groupedByYear = [];
             for (let i = min.getFullYear(); i <= max.getFullYear(); i++) {
                 groupedByYear.push(DateStatusElement.buildLabelYear(new Date(focusDate), i));
             }
             return groupedByYear;
-        } else if (focusRange === FocusRange.YEAR) {
+        } else if (focusRange === DateRange.YEAR) {
             const groupedByMonth = [];
             for (let i = 0; i < 12; i++) {
                 groupedByMonth.push(DateStatusElement.buildLabelMonth(new Date(focusDate), i));
             }
             return groupedByMonth;
-        } else if (focusRange === FocusRange.MONTH) {
+        } else if (focusRange === DateRange.MONTH) {
             const groupedByDay = [];
             const daysInMonth = new Date(focusDate.getFullYear(), focusDate.getMonth(), 0).getDate();
             for (let i = 0; i < daysInMonth; i++) {
                 groupedByDay.push(DateStatusElement.buildLabelDay(new Date(focusDate), i));
             }
             return groupedByDay;
-        } else if (focusRange === FocusRange.DAY) {
+        } else if (focusRange === DateRange.DAY) {
             const groupedByHour = [];
             for (let i = 0; i < 24; i++) {
                 groupedByHour.push(DateStatusElement.buildLabelHour(new Date(focusDate), i));
@@ -156,7 +156,7 @@ export class DateStatusElement {
         data.forEach(d => {
             allDates = allDates.concat(d.values);
         });
-        const filteredHourDates = DateStatusElement.filterFocus(allDates, focusDate, FocusRange.HOUR);
+        const filteredHourDates = DateStatusElement.filterFocus(allDates, focusDate, DateRange.HOUR);
         const filteredHourDatesISO = filteredHourDates
             .map(v => DateStatusElement.buildLabel(v.date));
         return filteredHourDatesISO.filter((item, pos, self) => {
@@ -164,20 +164,20 @@ export class DateStatusElement {
         });
     }
 
-    protected static getFocusDateAndTitle(oldFocusDate: Date, focusRange: FocusRange, index: number, min: Date, max: Date) {
+    protected static getFocusDateAndTitle(oldFocusDate: Date, focusRange: DateRange, index: number, min: Date, max: Date) {
 
         const newFocusDate = new Date(oldFocusDate);
         let newTitle = '....';
 
-        if (focusRange === FocusRange.CENTURY) {
+        if (focusRange === DateRange.CENTURY) {
             newTitle = DateStatusElement.buildLabelYear(newFocusDate, min.getFullYear() + index);
-        } else if (focusRange === FocusRange.YEAR) {
+        } else if (focusRange === DateRange.YEAR) {
             newTitle = DateStatusElement.buildLabelMonth(newFocusDate, index);
-        } else if (focusRange === FocusRange.MONTH) {
+        } else if (focusRange === DateRange.MONTH) {
             newTitle = DateStatusElement.buildLabelDay(newFocusDate, index);
-        } else if (focusRange === FocusRange.DAY) {
+        } else if (focusRange === DateRange.DAY) {
             newTitle = DateStatusElement.buildLabelHour(newFocusDate, index);
-        } else if (focusRange === FocusRange.HOUR) {
+        } else if (focusRange === DateRange.HOUR) {
             newTitle = DateStatusElement.buildLabel(newFocusDate);
         }
 
@@ -187,32 +187,27 @@ export class DateStatusElement {
 
     protected static buildLabel(date: Date): string {
         // "2024-03-28 13:02:48 CET"  l=23
-        const label = date.toLocaleString('sv', {timeZoneName: 'short'});
-        return label.substring(0, label.length - 4);
+        return Tools.formatDate(date, DateRange.MINUTE);
     }
 
     protected static buildLabelYear(date: Date, year: number): string {
         date.setFullYear(year);
-        const label = date.toLocaleString('sv', {timeZoneName: 'short'});
-        return label.substring(0, 4);
+        return Tools.formatDate(date, DateRange.YEAR);
     }
 
     protected static buildLabelMonth(date: Date, month: number): string {
         date.setMonth(month);
-        const label = date.toLocaleString('sv', {timeZoneName: 'short'});
-        return label.substring(0, 7);
+        return Tools.formatDate(date, DateRange.MONTH);
     }
 
     protected static buildLabelDay(date: Date, day: number): string {
         date.setDate(day + 1);
-        const label = date.toLocaleString('sv', {timeZoneName: 'short'});
-        return label.substring(0, 10);
+        return Tools.formatDate(date, DateRange.DAY);
     }
 
     protected static buildLabelHour(date: Date, hour: number): string {
         date.setHours(hour);
-        const label = date.toLocaleString('sv', {timeZoneName: 'short'});
-        return label.substring(0, label.length - 11) + 'h';
+        return Tools.formatDate(date, DateRange.HOUR);
     }
 
     public build(element: HTMLCanvasElement, inputs: DateStatusElementInput): void {
@@ -332,7 +327,7 @@ export class DateStatusElement {
         this.focusReset = () => {
             chart.config['_config'].options.plugins.title.text = '...';
             chart['focusDate'] = inputs.focusDate;
-            chart['focusRange'] = FocusRange.CENTURY;
+            chart['focusRange'] = DateRange.CENTURY;
             chart.data.datasets.forEach((dataset, index) => {
                 dataset.data = originalDataPoints[index];
             });
