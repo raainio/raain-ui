@@ -70,6 +70,12 @@ export class MonitoringLinesElement {
                     display: true,
                     // drawTicks: false,
                 },
+                elements: {
+                    point: {
+                        pointBorderWidth: 0,
+                        pointRadius: 0,
+                    },
+                },
                 plugins: {
                     legend: {
                         display: true,
@@ -93,12 +99,12 @@ export class MonitoringLinesElement {
 
         allLinesPoints.forEach((line, index) => {
             let allPoints = JSON.parse(JSON.stringify(line.data));
-            if (allLabels.length >= this.limit) {
+            if (allPoints.length >= this.limit) {
                 allPoints = allPoints.slice(1);
             }
             const found = linesPoint.filter(l => l.label === line.label);
             if (found.length === 1) {
-                allPoints.push(linesPoint[index].percentage);
+                allPoints.push(found[0].percentage);
             } else {
                 allPoints.push(0);
             }
