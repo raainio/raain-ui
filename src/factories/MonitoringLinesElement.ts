@@ -81,7 +81,8 @@ export class MonitoringLinesElement {
         this.chart = new Chart(element, config);
     }
 
-    public add(linesPoint: Array<{ percentage: number }>, date: Date = new Date()) {
+    public add(linesPoint: Array<{ percentage: number }>, date: Date = new Date())
+        : Array<{ label: string, points: Array<{ date: Date, percentage: number }> }> {
         let allLabels = JSON.parse(JSON.stringify(this.chart.data.labels));
         const allLinesPoints = this.chart.data.datasets;
 
@@ -101,6 +102,13 @@ export class MonitoringLinesElement {
 
         this.chart.data.labels = allLabels;
         this.chart.update();
+
+        return allLinesPoints.map(line => {
+            const points = line.data.map((data: any, index: number) => {
+                return {date: new Date(allLabels[index]), percentage: data.data};
+            });
+            return {label: line.label, points};
+        });
     }
 
 
