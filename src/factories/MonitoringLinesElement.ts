@@ -104,8 +104,8 @@ export class MonitoringLinesElement {
         this.chart.update();
 
         return allLinesPoints.map(line => {
-            const points = line.data.map((data: any, index: number) => {
-                return {date: new Date(allLabels[index]), percentage: data.data};
+            const points = line.data.map((data: number, index: number) => {
+                return {date: new Date(allLabels[index]), percentage: data};
             });
             return {label: line.label, points};
         });
