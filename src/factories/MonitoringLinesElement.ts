@@ -3,7 +3,7 @@ import {ChartColors} from './Tools';
 
 export class MonitoringLinesElementInput {
     constructor(
-        public points: Array<{ date: Date, percentage: number }> = [],
+        public pointsLines: Array<{ label: string, points: Array<{ date: Date, percentage: number }> }> = [],
         public limit = 100,
     ) {
     }
@@ -20,18 +20,26 @@ export class MonitoringLinesElement {
     public build(element: HTMLCanvasElement, inputs: MonitoringLinesElementInput): void {
 
         this.limit = inputs.limit;
-        const labels = inputs.points.map(b => b.date.toISOString());
-        const data = inputs.points.map(b => b.percentage);
+        if (inputs.pointsLines.length === 0) {
+            throw new Error('No point lines found.');
+        }
+
+        const labels = inputs.pointsLines[0].points.map(b => b.date.toISOString());
+        const datasets = inputs.pointsLines.map((pl, index) => {
+            const data = pl.points.map(b => b.percentage);
+            return {
+                label: pl.label,
+                data,
+                borderColor: ChartColors[index],
+                tension: 0.1,
+            };
+        });
 
         const config: any = {
             type: 'line',
             data: {
                 labels,
-                datasets: [{
-                    data,
-                    borderColor: ChartColors.greenCpu,
-                    tension: 0.1,
-                }]
+                datasets
             },
             options: {
                 responsive: true,
@@ -64,7 +72,7 @@ export class MonitoringLinesElement {
                 },
                 plugins: {
                     legend: {
-                        display: false,
+                        display: true,
                     },
                 },
             }
@@ -73,20 +81,25 @@ export class MonitoringLinesElement {
         this.chart = new Chart(element, config);
     }
 
-    public add(percentage: number, date: Date = new Date()) {
+    public add(linesPoint: Array<{ percentage: number }>, date: Date = new Date()) {
         let allLabels = JSON.parse(JSON.stringify(this.chart.data.labels));
-        let allPoints = JSON.parse(JSON.stringify(this.chart.data.datasets[0].data));
+        const allLinesPoints = this.chart.data.datasets;
 
         if (allLabels.length >= this.limit) {
             allLabels = allLabels.slice(1);
-            allPoints = allPoints.slice(1);
         }
-
         allLabels.push(date.toISOString());
-        allPoints.push(percentage);
+
+        allLinesPoints.forEach((line, index) => {
+            let allPoints = JSON.parse(JSON.stringify(line.data));
+            if (allLabels.length >= this.limit) {
+                allPoints = allPoints.slice(1);
+            }
+            allPoints.push(linesPoint[index].percentage);
+            line.data = allPoints;
+        });
 
         this.chart.data.labels = allLabels;
-        this.chart.data.datasets[0].data = allPoints;
         this.chart.update();
     }
 

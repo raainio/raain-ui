@@ -48,13 +48,13 @@ export class ConfigurationElement {
                     dragData: {
                         // round: 1, // rounds the values to n decimal places; in this case 1, e.g 0.1234 => 0.1)
                         magnet: {
-                            to: (value) => {
+                            to: (value: { x: number, y: number }) => {
                                 return {x: value.x, y: Math.round(value.y * 10) / 10};
                             }
                         },
                         showTooltip: false, // show the tooltip while dragging [default = true]
                         dragX: true, // also enable dragging along the x-axis.
-                        onDrag: (e, datasetIndex, index, value) => {
+                        onDrag: (e: any, datasetIndex: number, index: number, value: { x: number, y: number }) => {
                             const done = inputs.dragCallback ? inputs.dragCallback(e) : null;
                             return true;
                         },
@@ -77,7 +77,10 @@ export class ConfigurationElement {
                         // },
                     },
                     tooltip: {
-                        enabled: false
+                        enabled: true,
+                        filter: (t) => {
+                            return t.datasetIndex === 0;
+                        }
                     },
                 },
 
@@ -93,13 +96,13 @@ export class ConfigurationElement {
                     },
                 },
 
-                onClick(e) {
-                    // console.log('onClick ', e);
-                    // const canvasPosition = Chart.helpers.getRelativePosition(e, chart);
-                    // Substitute the appropriate scale IDs
-                    // const dataX = chart.scales.x.getValueForPixel(canvasPosition.x);
-                    // const dataY = chart.scales.y.getValueForPixel(canvasPosition.y);
-                },
+                // onClick(e) {
+                // console.log('onClick ', e);
+                // const canvasPosition = Chart.helpers.getRelativePosition(e, chart);
+                // Substitute the appropriate scale IDs
+                // const dataX = chart.scales.x.getValueForPixel(canvasPosition.x);
+                // const dataY = chart.scales.y.getValueForPixel(canvasPosition.y);
+                //  },
 
             },
             plugins: [chartDragData],
