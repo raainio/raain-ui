@@ -81,7 +81,7 @@ export class MonitoringLinesElement {
         this.chart = new Chart(element, config);
     }
 
-    public add(linesPoint: Array<{ percentage: number }>, date: Date = new Date())
+    public add(linesPoint: Array<{ label: string, percentage: number }>, date: Date = new Date())
         : Array<{ label: string, points: Array<{ date: Date, percentage: number }> }> {
         let allLabels = JSON.parse(JSON.stringify(this.chart.data.labels));
         const allLinesPoints = this.chart.data.datasets;
@@ -96,7 +96,12 @@ export class MonitoringLinesElement {
             if (allLabels.length >= this.limit) {
                 allPoints = allPoints.slice(1);
             }
-            allPoints.push(linesPoint[index].percentage);
+            const found = linesPoint.filter(l => l.label === line.label);
+            if (found.length === 1) {
+                allPoints.push(linesPoint[index].percentage);
+            } else {
+                allPoints.push(0);
+            }
             line.data = allPoints;
         });
 

@@ -221,7 +221,10 @@ const animatePerf = () => {
     const p2 = Math.random() * 100;
     const p3 = Math.random() * 100;
     perfBarElement.add([{percentage: p1}, {percentage: p2}, {percentage: p3}]);
-    const state = perfLineElement.add([{percentage: p1}, {percentage: p2}, {percentage: p3}]);
+    const state = perfLineElement.add([
+        {label: '#1', percentage: p1},
+        {label: '#2', percentage: p2},
+        {label: '#3', percentage: p3}]);
     console.log('perf state', state);
 
     setTimeout(animatePerf, animationTimeInMs);
