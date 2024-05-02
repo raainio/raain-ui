@@ -75,7 +75,7 @@ export class PolarDrawer {
         };
 
         if (distanceRatio <= 0) {
-            console.warn('distanceRatio is 0 - no sense ? ', center, centerPoint);
+            console.warn('polar distanceRatio is 0 - no sense ? ', center, centerPoint);
             return 0;
         }
 
@@ -87,7 +87,7 @@ export class PolarDrawer {
         const filteredValues = optimization.filteringValues(this.polarMapZoom(), this.geoValues, this.polarMap2Display);
         for (let [i, polarValue] of filteredValues.entries()) {
             if (done > optimization.hardLimit) {
-                console.log('hard limit reached ', optimization.hardLimit);
+                console.warn('polar hard limit reached ', optimization.hardLimit);
                 break;
             }
 
@@ -141,7 +141,7 @@ export class PolarDrawer {
 
         }
 
-        console.log('Polar done vs possible:', done, this.possibleDrawing);
+        // console.log('Polar done vs possible:', done, this.possibleDrawing);
         return done;
     }
 

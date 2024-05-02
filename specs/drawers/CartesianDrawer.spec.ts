@@ -1,8 +1,6 @@
 import {Point} from 'leaflet';
-
 import {expect} from 'chai';
 import {CartesianDrawer, CartesianDrawerOptimization, CartesianGridValue, CartesianMapValue, MapLatLng} from '../../src';
-
 
 describe('CartesianDrawer', () => {
 

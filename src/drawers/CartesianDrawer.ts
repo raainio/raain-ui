@@ -70,7 +70,7 @@ export class CartesianDrawer {
 
         for (const mapValue of filteredValues) {
             if (done > optimization.hardLimit) {
-                console.log('hard limit reached ', optimization?.hardLimit);
+                console.warn('cartesian hard limit reached ', optimization.hardLimit);
                 break;
             }
             const points = this.cartesianMap2Points(mapValue);

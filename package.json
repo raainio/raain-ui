@@ -1,6 +1,6 @@
 {
   "name": "raain-ui",
-  "version": "1.11.59",
+  "version": "1.11.66",
   "author": "contact@raain.io",
   "homepage": "https://github.com/raainio/raain-ui",
   "description": "raain.io ui layers",
@@ -18,7 +18,7 @@
     "geolib": "^3.3.3",
     "leaflet": "^1.9.3",
     "pixi.js": "^5.3.12",
-    "raain-model": "^1.11.5"
+    "raain-model": "^1.11.6"
   },
   "peerDependencies": {
     "chart.js": "^4.2.1",
@@ -34,6 +34,7 @@
     "chai": "4.3.4",
     "chai-as-promised": "^7.1.1",
     "chai-spies": "^1.0.0",
+    "jsdom": "^24.0.0",
     "mocha": "^10.2.0",
     "mock-browser": "^0.92.14",
     "nyc": "^15.1.0",

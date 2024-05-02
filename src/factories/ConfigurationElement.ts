@@ -33,7 +33,7 @@ export class ConfigurationElement {
                     data: inputs.points,
                     borderColor: ChartColors.blue,
                     fill: false,
-                    tension: 0.4,
+                    tension: 0,
                 }],
         };
 
@@ -122,8 +122,6 @@ export class ConfigurationElement {
         //           dataset.data.splice(indexToRemove, 1);
         //       }
         //   });
-
-        // chart.update();
 
         this.chart = new Chart(element, config);
     }

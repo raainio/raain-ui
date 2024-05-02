@@ -21,6 +21,7 @@ export class DateStatusElement {
     public focusReset: () => void;
     public focusPrevious: () => void;
     public focusNext: () => void;
+    public focusClick: (e) => void;
 
     constructor(protected addSomeDebugInfos = false) {
         this.focusReset = () => {
@@ -63,7 +64,7 @@ export class DateStatusElement {
         min: Date,
         max: Date) {
 
-        console.log('groupFocus:', mapToFilter.length, focusDate, focusRange);
+        // console.log('groupFocus:', mapToFilter.length, focusDate, focusRange);
         const filteredAndSorted = DateStatusElement.filterFocus(mapToFilter, focusDate, focusRange);
 
         if (focusRange === DateRange.CENTURY) {
@@ -151,7 +152,7 @@ export class DateStatusElement {
             return groupedByHour;
         }
 
-        // all dates that are in the current hour
+        // all minutes that are in the current hour
         let allDates = [];
         data.forEach(d => {
             allDates = allDates.concat(d.values);
@@ -167,21 +168,21 @@ export class DateStatusElement {
     protected static getFocusDateAndTitle(oldFocusDate: Date, focusRange: DateRange, index: number, min: Date, max: Date) {
 
         const newFocusDate = new Date(oldFocusDate);
-        let newTitle = '....';
+        let newTitle = '...';
 
-        if (focusRange === DateRange.CENTURY) {
+        if (focusRange === DateRange.YEAR) {
             newTitle = DateStatusElement.buildLabelYear(newFocusDate, min.getFullYear() + index);
-        } else if (focusRange === DateRange.YEAR) {
-            newTitle = DateStatusElement.buildLabelMonth(newFocusDate, index);
         } else if (focusRange === DateRange.MONTH) {
-            newTitle = DateStatusElement.buildLabelDay(newFocusDate, index);
+            newTitle = DateStatusElement.buildLabelMonth(newFocusDate, index);
         } else if (focusRange === DateRange.DAY) {
-            newTitle = DateStatusElement.buildLabelHour(newFocusDate, index);
+            newTitle = DateStatusElement.buildLabelDay(newFocusDate, index);
         } else if (focusRange === DateRange.HOUR) {
+            newTitle = DateStatusElement.buildLabelHour(newFocusDate, index);
+        } else if (focusRange === DateRange.MINUTE) {
             newTitle = DateStatusElement.buildLabel(newFocusDate);
         }
 
-        console.log('getFocusDateAndTitle:', index, oldFocusDate?.toISOString(), newFocusDate.toISOString(), newTitle);
+        // console.log('getFocusDateAndTitle:', focusRange, index, oldFocusDate?.toISOString(), newFocusDate.toISOString(), newTitle);
         return {newFocusDate, newTitle};
     }
 
@@ -257,6 +258,33 @@ export class DateStatusElement {
             labels: DateStatusElement.focusLabels(inputs.focusDate, inputs.focusRange, min, max, inputs.setOfData)
         };
 
+        this.focusClick = (e) => {
+            const eChart = e?.chart ? e.chart : chart;
+            const eFocusRange = eChart['focusRange'] + 1;
+            const focusPos = this.getFocusPosRelative(e, eChart);
+
+            const {newFocusDate, newTitle} = DateStatusElement.getFocusDateAndTitle(eChart['focusDate'],
+                eFocusRange,
+                focusPos,
+                eChart['focusDateMin'],
+                eChart['focusDateMax']);
+
+            eChart['focusPos'] = focusPos;
+            eChart['focusRange'] = eFocusRange;
+            eChart['focusDate'] = new Date(newFocusDate);
+            eChart.config['_config'].options.plugins.title.text = '' + newTitle;
+
+            eChart.data.datasets.forEach((dataset: any, index: number) => {
+                dataset.data = DateStatusElement.groupFocus(inputs.setOfData[index].values,
+                    eChart['focusDate'], eChart['focusRange'],
+                    eChart['focusDateMin'], eChart['focusDateMax']);
+            });
+            eChart.data.labels = DateStatusElement.focusLabels(eChart['focusDate'], eChart['focusRange'],
+                eChart['focusDateMin'], eChart['focusDateMax'], inputs.setOfData);
+
+            eChart.update();
+        };
+
         const config: any = {
             data,
             options: {
@@ -287,38 +315,12 @@ export class DateStatusElement {
                 //        }
                 //    }
                 // },
-                onClick: (e) => {
-                    const eChart = e.chart;
-                    const eFocusRange = eChart['focusRange'];
-                    const canvasPosition = getRelativePosition(e, eChart);
-                    const pos = chart.scales.x.getValueForPixel(canvasPosition.x);
-
-                    const {newFocusDate, newTitle} = DateStatusElement.getFocusDateAndTitle(eChart['focusDate'],
-                        eFocusRange,
-                        pos,
-                        eChart['focusDateMin'],
-                        eChart['focusDateMax']);
-
-                    eChart['focusPos'] = pos;
-                    eChart['focusRange'] = eFocusRange + 1;
-                    eChart['focusDate'] = new Date(newFocusDate);
-                    eChart.config['_config'].options.plugins.title.text = '' + newTitle;
-
-                    eChart.data.datasets.forEach((dataset, index) => {
-                        dataset.data = DateStatusElement.groupFocus(inputs.setOfData[index].values,
-                            eChart['focusDate'], eChart['focusRange'],
-                            eChart['focusDateMin'], eChart['focusDateMax']);
-                    });
-                    eChart.data.labels = DateStatusElement.focusLabels(eChart['focusDate'], eChart['focusRange'],
-                        eChart['focusDateMin'], eChart['focusDateMax'], inputs.setOfData);
-
-                    // console.log('update...');
-                    eChart.update();
-                }
+                onClick: this.focusClick
             },
         };
 
         const chart = new Chart(element, config);
+        chart['focusPos'] = this.getInitialFocusPos(inputs.focusDate, inputs.focusRange, min);
         chart['focusDate'] = inputs.focusDate;
         chart['focusRange'] = inputs.focusRange;
         chart['focusDateMin'] = min;
@@ -326,6 +328,7 @@ export class DateStatusElement {
 
         this.focusReset = () => {
             chart.config['_config'].options.plugins.title.text = '...';
+            chart['focusPos'] = 0;
             chart['focusDate'] = inputs.focusDate;
             chart['focusRange'] = DateRange.CENTURY;
             chart.data.datasets.forEach((dataset, index) => {
@@ -333,61 +336,89 @@ export class DateStatusElement {
             });
             chart.data.labels = DateStatusElement.focusLabels(chart['focusDate'], chart['focusRange'],
                 chart['focusDateMin'], chart['focusDateMax'], inputs.setOfData);
+
             chart.update();
         };
 
-        this.focusPrevious = () => {
-
-            const eFocusRange = chart['focusRange'] - 1;
-            let eFocusPos = chart['focusPos'] ? chart['focusPos'] : 0;
-            eFocusPos = eFocusPos - 1;
-
-            const {newFocusDate, newTitle} = DateStatusElement.getFocusDateAndTitle(chart['focusDate'],
+        const chartUpdate = (chartToUpdate: Chart, eFocusRange: DateRange, eFocusPos: number, eFocusDate: Date) => {
+            const {newFocusDate, newTitle} = DateStatusElement.getFocusDateAndTitle(eFocusDate,
                 eFocusRange, eFocusPos,
-                chart['focusDateMin'], chart['focusDateMax']);
+                chartToUpdate['focusDateMin'], chartToUpdate['focusDateMax']);
 
-            chart['focusPos'] = eFocusPos;
-            chart['focusDate'] = new Date(newFocusDate);
-            chart.config['_config'].options.plugins.title.text = '' + newTitle;
+            chartToUpdate['focusPos'] = eFocusPos;
+            chartToUpdate['focusDate'] = new Date(newFocusDate);
+            chartToUpdate.config['_config'].options.plugins.title.text = '' + newTitle;
 
-            chart.data.datasets.forEach((dataset, index) => {
+            chartToUpdate.data.datasets.forEach((dataset, index) => {
                 dataset.data = DateStatusElement.groupFocus(inputs.setOfData[index].values,
-                    chart['focusDate'], chart['focusRange'],
-                    chart['focusDateMin'], chart['focusDateMax']);
+                    chartToUpdate['focusDate'], chartToUpdate['focusRange'],
+                    chartToUpdate['focusDateMin'], chartToUpdate['focusDateMax']);
             });
-            chart.data.labels = DateStatusElement.focusLabels(chart['focusDate'], chart['focusRange'],
-                chart['focusDateMin'], chart['focusDateMax'], inputs.setOfData);
 
-            chart.update();
+            chartToUpdate.data.labels = DateStatusElement.focusLabels(chartToUpdate['focusDate'],
+                chartToUpdate['focusRange'], chartToUpdate['focusDateMin'], chartToUpdate['focusDateMax'], inputs.setOfData);
+
+            chartToUpdate.update();
         };
 
         this.focusNext = () => {
+            const eFocusRange = chart['focusRange'];
+            const {pos, newFocusDate} = this.getFocusPosAdded(chart, eFocusRange, 1, chart['focusDate'], min);
+            chartUpdate(chart, eFocusRange, pos, newFocusDate);
+        };
 
-            const eFocusRange = chart['focusRange'] - 1;
-            let eFocusPos = chart['focusPos'] ? chart['focusPos'] : 0;
-            eFocusPos = eFocusPos + 1;
-
-            const {newFocusDate, newTitle} = DateStatusElement.getFocusDateAndTitle(chart['focusDate'],
-                eFocusRange, eFocusPos,
-                chart['focusDateMin'], chart['focusDateMax']);
-
-            chart['focusPos'] = eFocusPos;
-            chart['focusDate'] = new Date(newFocusDate);
-            chart.config['_config'].options.plugins.title.text = '' + newTitle;
-
-            chart.data.datasets.forEach((dataset, index) => {
-                dataset.data = DateStatusElement.groupFocus(inputs.setOfData[index].values,
-                    chart['focusDate'], chart['focusRange'],
-                    chart['focusDateMin'], chart['focusDateMax']);
-            });
-
-            chart.data.labels = DateStatusElement.focusLabels(chart['focusDate'],
-                chart['focusRange'], chart['focusDateMin'], chart['focusDateMax'], inputs.setOfData);
-
-            chart.update();
+        this.focusPrevious = () => {
+            const eFocusRange = chart['focusRange'];
+            const {pos, newFocusDate} = this.getFocusPosAdded(chart, eFocusRange, -1, chart['focusDate'], min);
+            chartUpdate(chart, eFocusRange, pos, newFocusDate);
         };
 
         this.chart = chart;
+    }
+
+    getFocusPosRelative(event: any, chart: any) {
+        const canvasPosition = getRelativePosition(event, chart);
+        return chart.scales.x.getValueForPixel(canvasPosition.x);
+    }
+
+    protected getInitialFocusPos(focusDate: Date, focusRange: DateRange, min: Date) {
+        let pos = 0;
+        if (focusRange === DateRange.YEAR) {
+            pos = focusDate.getFullYear() - min.getFullYear();
+        } else if (focusRange === DateRange.MONTH) {
+            pos = focusDate.getMonth();
+        } else if (focusRange === DateRange.DAY) {
+            pos = focusDate.getDate() - 1;
+        } else if (focusRange === DateRange.HOUR) {
+            pos = focusDate.getHours();
+        } else if (focusRange === DateRange.MINUTE) {
+            pos = focusDate.getMinutes();
+        }
+        return pos;
+    }
+
+    protected getFocusPosAdded(chart: any, focusRange: DateRange, toAdd: number, focusDate: Date, min: Date) {
+        let pos = chart['focusPos'] || 0;
+        const newFocusDate = new Date(focusDate);
+
+        if (focusRange === DateRange.YEAR) {
+            newFocusDate.setFullYear(focusDate.getFullYear() + toAdd);
+            pos = newFocusDate.getFullYear() - min.getFullYear();
+        } else if (focusRange === DateRange.MONTH) {
+            newFocusDate.setMonth(focusDate.getMonth() + toAdd);
+            pos = newFocusDate.getMonth();
+        } else if (focusRange === DateRange.DAY) {
+            newFocusDate.setDate(focusDate.getDate() + toAdd);
+            pos = newFocusDate.getDate() - 1;
+        } else if (focusRange === DateRange.HOUR) {
+            newFocusDate.setHours(focusDate.getHours() + toAdd);
+            pos = newFocusDate.getHours();
+        } else if (focusRange === DateRange.MINUTE) {
+            newFocusDate.setMinutes(focusDate.getMinutes() + toAdd);
+            pos = newFocusDate.getMinutes();
+        }
+
+        return {pos, newFocusDate};
     }
 
 }

@@ -27,8 +27,8 @@ export class CompareElement {
                 {
                     type: 'bubble',
                     data: inputs.points,
-                    borderColor: ChartColors.dark,
-                    backgroundColor: Tools.getTransparency(ChartColors.grey, 0.2),
+                    borderColor: Tools.getTransparency(ChartColors.grey, 0.9),
+                    backgroundColor: Tools.getTransparency(ChartColors.grey, 0.9),
                     pointStyle: 'circle',
                     pointHoverRadius: 15,
                 },
@@ -43,6 +43,7 @@ export class CompareElement {
             ],
             selectedPoint: undefined,
         };
+
         const config: any = {
             data,
             options: {
@@ -80,6 +81,7 @@ export class CompareElement {
                 },
             },
         };
+
         this.chart = new Chart(element, config);
     }
 

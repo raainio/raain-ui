@@ -1,5 +1,3 @@
-// @ts-ignore
-import {MapLatLng, PolarMapValue, TimeframeContainers} from '../../src';
 import {expect} from 'chai';
 import {
     CartesianMeasureValue,
@@ -13,6 +11,7 @@ import {
     RainComputationMap,
     RainMeasure
 } from 'raain-model';
+import {TimeframeContainers} from '../../src';
 
 describe('TimeframeContainers', () => {
 

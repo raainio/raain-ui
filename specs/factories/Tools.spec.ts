@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {DateRange, Tools} from '../../src/factories/Tools';
+import {DateRange, Tools} from '../../src';
 
 describe('Factories.Tools', () => {
 

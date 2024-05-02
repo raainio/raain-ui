@@ -105,5 +105,4 @@ export class SpeedMatrixElement {
         this.app.stage.addChild(pixiGraphic);
     }
 
-
 }

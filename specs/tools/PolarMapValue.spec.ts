@@ -1,6 +1,5 @@
-// @ts-ignore
-import {PolarMapValue} from '../../src';
 import {expect} from 'chai';
+import {PolarMapValue} from '../../src';
 
 describe('PolarMapValue', () => {
 

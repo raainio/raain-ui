@@ -66,5 +66,4 @@ export class MonitoringBarsElement {
         this.chart.update();
     }
 
-
 }

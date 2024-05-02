@@ -31,7 +31,7 @@ export class MonitoringLinesElement {
                 label: pl.label,
                 data,
                 borderColor: ChartColors[index],
-                tension: 0.1,
+                tension: 0.4,
             };
         });
 
@@ -121,6 +121,5 @@ export class MonitoringLinesElement {
             return {label: line.label, points};
         });
     }
-
 
 }

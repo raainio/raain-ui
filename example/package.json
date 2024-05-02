@@ -15,7 +15,7 @@
     "geolib": "^3.3.3",
     "leaflet": "^1.9.3",
     "pixi.js": "^5.3.12",
-    "raain-model": "^1.11.5",
+    "raain-model": "^1.11.6",
     "raain-ui": "../dist"
   },
   "devDependencies": {

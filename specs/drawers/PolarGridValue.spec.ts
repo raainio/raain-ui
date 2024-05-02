@@ -1,5 +1,4 @@
 import {Point} from 'leaflet';
-
 import {expect} from 'chai';
 import {PolarGridValue} from '../../src';
 

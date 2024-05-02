@@ -23,13 +23,12 @@ export enum DateRange {
 
 export class Tools {
 
-
-    public static getTransparency(value: string, opacity: number) {
-        const alpha = opacity === undefined ? 0.5 : 1 - opacity;
+    public static getTransparency(value: string, transparency: number) {
+        const alpha = transparency === undefined ? 0.5 : 1 - transparency;
         return colorLib(value).alpha(alpha).rgbString();
     }
 
-    static formatDate(date: Date, dateRange: number) {
+    public static formatDate(date: Date, dateRange: number) {
         const yyyy = date.getFullYear();
         const mm = String(date.getMonth() + 1).padStart(2, '0');
         const dd = String(date.getDate()).padStart(2, '0');
