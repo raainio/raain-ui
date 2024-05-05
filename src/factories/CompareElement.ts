@@ -27,8 +27,8 @@ export class CompareElement {
                 {
                     type: 'bubble',
                     data: inputs.points,
-                    borderColor: Tools.getTransparency(ChartColors.grey, 0.9),
-                    backgroundColor: Tools.getTransparency(ChartColors.grey, 0.9),
+                    borderColor: Tools.getTransparency(ChartColors.grey, 0.7),
+                    backgroundColor: Tools.getTransparency(ChartColors.grey, 0.7),
                     pointStyle: 'circle',
                     pointHoverRadius: 15,
                 },
