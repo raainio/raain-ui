@@ -30,8 +30,9 @@ describe('TimeframeContainers', () => {
         const radarNodeMap1 = new RadarNodeMap({
             id: 'r1',
             name: 'radarName.polar',
-            periodBegin: new Date(),
-            periodEnd: new Date(),
+            description: '...',
+            date: new Date(),
+            team: null,
             map: [],
             latitude: 10,
             longitude: 20
@@ -49,8 +50,9 @@ describe('TimeframeContainers', () => {
         const radarNodeMap2 = new RadarNodeMap({
             id: 'r1',
             name: 'radarName.cartesian',
-            periodBegin: new Date(),
-            periodEnd: new Date(),
+            description: '...',
+            date: new Date(),
+            team: null,
             map: [],
             latitude: 10,
             longitude: 20
@@ -72,8 +74,7 @@ describe('TimeframeContainers', () => {
         const rainMeasure1 = new RainMeasure({id: 'rm1', date: new Date(), values: [polarMeasureValue]});
         const rainComputationMap1 = new RainComputationMap({
             id: 'r1',
-            periodBegin: new Date(),
-            periodEnd: new Date(),
+            date: new Date(),
             map: [],
             isReady: true
         });
@@ -89,8 +90,7 @@ describe('TimeframeContainers', () => {
         const rainMeasure2 = new RainMeasure({id: 'rm1', date: new Date(), values: [cartesianMeasureValue, cartesianMeasureValue]});
         const rainComputationMap2 = new RainComputationMap({
             id: 'r1',
-            periodBegin: new Date(),
-            periodEnd: new Date(),
+            date: new Date(),
             map: [],
             isReady: true
         });
