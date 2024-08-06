@@ -15,28 +15,21 @@ export class TimeframeContainer {
         this.compositeLayer = compositeLayer;
     }
 
-    showTimeframe(date?: Date): { layer: IPixiUniqueLayer, frameContainer: FrameContainer } {
+    showTimeframes(date: Date) {
 
         if (!this.compositeLayer) {
-            return {layer: null, frameContainer: null};
+            return [{layers: [], frameContainer: null}];
         }
 
-        let layerShown: IPixiUniqueLayer = null;
-        let frameContainerFound = this.timeframe.length ? this.timeframe[0] : null;
-        this.timeframe.forEach(c => {
-            if (new Date(c.date).getTime() === date?.getTime()) {
-                frameContainerFound = c;
-            }
+        let layersShown: { layers: IPixiUniqueLayer[], frameContainer: FrameContainer }[] = [];
+        this.timeframe.forEach(frameContainer => {
+            layersShown = layersShown.concat({layers: this.compositeLayer.show(date.toISOString()), frameContainer});
         });
 
-        if (!!frameContainerFound) {
-            layerShown = this.compositeLayer.showTheFistMatchingId(this.getFrameId(frameContainerFound));
-        }
-
-        return {layer: layerShown, frameContainer: frameContainerFound};
+        return layersShown;
     }
 
     getFrameId(frameContainer: FrameContainer): string {
-        return this.name + new Date(frameContainer.date).toISOString();
+        return this.name + '_' + new Date(frameContainer.date).toISOString() + '_' + frameContainer.values?.length;
     }
 }

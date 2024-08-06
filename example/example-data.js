@@ -112,7 +112,7 @@ const animateCartesian = (toggle) => {
     if (!cartesianModeToggle) {
         return;
     }
-    timeframeContainers.showTimeframe('allCartesianRain', new Date(now.getTime() + indexAnimation * 5 * 60000));
+    timeframeContainers.showTimeframes('allCartesianRain', new Date(now.getTime() + indexAnimation * 5 * 60000));
     animateMatrix();
     if (animationEnabled) {
         indexAnimation++;
@@ -130,7 +130,7 @@ const animatePolar = (toggle) => {
     if (cartesianModeToggle) {
         return;
     }
-    timeframeContainers.showTimeframe('allPolarRain', new Date(now.getTime() + indexAnimation * 5 * 60000));
+    timeframeContainers.showTimeframes('allPolarRain', new Date(now.getTime() + indexAnimation * 5 * 60000));
     animateMatrix();
     if (animationEnabled) {
         indexAnimation++;
@@ -181,4 +181,3 @@ window.backward = backward;
 
 mapElement.compositeLayer.showTheFistMatchingId('Cartesian');
 setTimeout(animateCartesian, animationTimeInMs);
-

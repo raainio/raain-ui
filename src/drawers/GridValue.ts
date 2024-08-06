@@ -6,7 +6,7 @@ export class GridValue {
         public id?: string) {
     }
 
-    protected static translateColor(srcValue) {
+    protected static translateColor(srcValue: number) {
 
         let value = '#000000';
         let transparency = 1; // 1 => invisible
@@ -55,12 +55,12 @@ export class GridValue {
         return {value, transparency};
     }
 
-    public getColor(forcedColor?: number): number {
-        return forcedColor ? forcedColor : this.color;
+    public getColor(brightRatio = 1): number {
+        return Math.round(this.color * brightRatio);
     }
 
-    public getTransparency(forcedOpacity?: number): number {
-        return forcedOpacity ? forcedOpacity : this.transparency;
+    public getTransparency(ratio = 1): number {
+        return this.transparency * ratio;
     }
 
 }

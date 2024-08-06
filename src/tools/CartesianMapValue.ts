@@ -1,27 +1,28 @@
 import {CartesianValue} from 'raain-model';
 import {MapLatLng} from './MapLatLng';
+import {LatLng} from 'leaflet';
 
 export class CartesianMapValue extends MapLatLng {
 
     constructor(
         value: number,
-        public readonly latitude: number,
-        public readonly longitude: number,
-        public readonly latitude2?: number,
-        public readonly longitude2?: number,
-        id?: string,
-        name?: string) {
+        lat: number,
+        lng: number,
+        public readonly lat2: number,
+        public readonly lng2: number,
+        id: string,
+        name: string) {
 
-        super(latitude, longitude, undefined, id, name, value);
+        super(lat, lng, undefined, id, name, value);
     }
 
     public static Duplicate(src: CartesianMapValue): CartesianMapValue {
         return new CartesianMapValue(
             src.value,
-            src.latitude,
-            src.longitude,
-            src.latitude2,
-            src.longitude2,
+            src.lat,
+            src.lng,
+            src.lat2,
+            src.lng2,
             src.id,
             src.name,
         );
@@ -35,10 +36,18 @@ export class CartesianMapValue extends MapLatLng {
                 cartesianValue.lat,
                 cartesianValue.lng,
                 cartesianValue.lat + widthForMap.lat,
-                cartesianValue.lng + widthForMap.lng
+                cartesianValue.lng + widthForMap.lng,
+                '' + Math.random(),
+                ''
             ));
         });
         return cartesianMapValues;
+    }
+
+    getPoints(): { point1: LatLng, point2: LatLng } {
+        const point1 = new LatLng(this.lat, this.lng);
+        const point2 = new LatLng(this.lat2, this.lng2);
+        return {point1, point2};
     }
 
 }

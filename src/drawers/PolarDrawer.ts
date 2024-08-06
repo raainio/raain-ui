@@ -1,11 +1,10 @@
 import {Point} from 'leaflet';
 import {PolarGridValue} from './PolarGridValue';
-import {PolarMapValue} from '../tools/PolarMapValue';
+import {MapLatLng, MapTools, PolarMapValue} from '../tools';
 import {PolarDrawerOptimization} from './PolarDrawerOptimization';
-import {MapTools} from '../tools/MapTools';
-import {MapLatLng} from '../tools/MapLatLng';
+import {IDrawer} from './IDrawer';
 
-export class PolarDrawer {
+export class PolarDrawer implements IDrawer {
 
     private geoValues: PolarMapValue[];
     private version: string;
@@ -60,6 +59,13 @@ export class PolarDrawer {
             return true;
         }
         return this.possibleDrawing !== this.getPossibleDrawing();
+    }
+
+    public getExecOfVisiblePoints(values: PolarMapValue[], fnToApplyToAllPoint: (v: PolarMapValue[]) => any) {
+
+        const optimization = this.getOptimization();
+        const filteredValues = optimization.filteringValues(this.polarMapZoom(), values, this.polarMap2Display);
+        return fnToApplyToAllPoint(filteredValues);
     }
 
     public renderPolarMapValues(center: MapLatLng, centerPoint: Point,

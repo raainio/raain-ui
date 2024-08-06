@@ -2,24 +2,22 @@ import {Map} from 'leaflet';
 import {PixiGridLayer} from './PixiGridLayer';
 import {IPixiLayer} from './IPixiLayer';
 import {IPixiUniqueLayer} from './IPixiUniqueLayer';
+import {IDrawer} from '../drawers/IDrawer';
 
 export class CompositeLayer extends PixiGridLayer implements IPixiLayer {
 
     protected layers: IPixiUniqueLayer[];
-    protected initialized: boolean;
 
-    constructor(public id?: string) {
+    constructor(public id: string, width: number, height: number) {
         super(id); // @PixiGridLayer
         this.removeAllLayers();
+        this.setCurrentWidth(width);
+        this.setCurrentHeight(height);
         this.setRenderFn(this.renderVisibleLayers.bind(this));
+        this._initializeLayer();
     }
 
     public addToMap(map: Map) {
-        if (!this.initialized) {
-            this._initializeLayer();
-            this.initialized = true;
-        }
-
         if (!map.hasLayer(this)) {
             map.addLayer(this);
             this._update();
@@ -39,6 +37,7 @@ export class CompositeLayer extends PixiGridLayer implements IPixiLayer {
     }
 
     public addLayer(layer: IPixiUniqueLayer) {
+        layer.setPixiApp(this.pixiApp);
         this.layers.push(layer);
     }
 
@@ -69,6 +68,31 @@ export class CompositeLayer extends PixiGridLayer implements IPixiLayer {
 
         this.renderVisibleLayers();
         return layerShown;
+    }
+
+    public show(inId: string): IPixiUniqueLayer[] {
+        const layersToShow = this.layers.filter(l => l.getId().indexOf(inId) >= 0);
+        layersToShow.forEach(l => l.show());
+
+        this.renderVisibleLayers();
+        return layersToShow;
+    }
+
+    public showAll(): IPixiUniqueLayer[] {
+        const layersToShow = this.layers;
+        layersToShow.forEach(l => l.show());
+
+        this.renderVisibleLayers();
+        return layersToShow;
+    }
+
+    getFirstDrawer(): IDrawer {
+        for (const layer of this.layers) {
+            if (layer.getDrawer()) {
+                return layer.getDrawer();
+            }
+        }
+        return null;
     }
 
     private renderVisibleLayers(): number {

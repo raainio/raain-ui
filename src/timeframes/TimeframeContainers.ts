@@ -9,37 +9,37 @@ import {
     RainPolarMeasureValue,
 } from 'raain-model';
 import {FrameContainer} from './FrameContainer';
-import {PolarMapValue} from '../tools/PolarMapValue';
-import {CartesianMapValue} from '../tools/CartesianMapValue';
-import {IPixiUniqueLayer} from '../layers/IPixiUniqueLayer';
+import {CartesianMapValue, PolarMapValue} from '../tools';
+import {IPixiUniqueLayer} from '../layers';
 
 export class TimeframeContainers {
     constructor(public containers: Array<TimeframeContainer>) {
     }
 
-    public addFromRadarNodeMap(radarNodeMap: RadarNodeMap,
-                               isPolar: boolean) {
+    addFromRadarNodeMap(radarNodeMap: RadarNodeMap,
+                        isPolar: boolean) {
 
         const radarMeasures = radarNodeMap.getMapData();
         const frames = this.computeFrames(radarMeasures, isPolar);
         this.containers.push(new TimeframeContainer(radarNodeMap.name, frames, radarNodeMap.getVersion()));
     }
 
-    public addFromRainComputationMap(rainComputationMap: RainComputationMap,
-                                     isPolar: boolean) {
+    addFromRainComputationMap(rainComputationMap: RainComputationMap,
+                              isPolar: boolean) {
 
         const rainMeasures = rainComputationMap.getMapData();
         const frames = this.computeFrames(rainMeasures, isPolar);
         this.containers.push(new TimeframeContainer(rainComputationMap.name, frames, rainComputationMap.getVersion()));
     }
 
-    showTimeframe(name: string, date?: Date): { layer: IPixiUniqueLayer, frameContainer: FrameContainer } {
+    showTimeframes(name: string, date: Date) {
+        let shows: { layers: IPixiUniqueLayer[], frameContainer: FrameContainer }[] = [];
         for (const container of this.containers) {
             if (container.name === name) {
-                return container.showTimeframe(date);
+                shows = shows.concat(container.showTimeframes(date));
             }
         }
-        return {layer: null, frameContainer: null};
+        return shows;
     }
 
     protected computeFrames(measures: Measure[], isPolar: boolean): FrameContainer[] {

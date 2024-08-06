@@ -31,8 +31,8 @@ describe('CartesianDrawer', () => {
         // scenario
         const cartesianDrawer = new CartesianDrawer((mapValue: CartesianMapValue) => {
                 return {
-                    p1: new Point(mapValue.latitude * 1000, mapValue.longitude * 1000),
-                    p2: new Point(mapValue.latitude * 1000 + 1, mapValue.longitude * 1000 + 1)
+                    p1: new Point(mapValue.lat * 1000, mapValue.lng * 1000),
+                    p2: new Point(mapValue.lat * 1000 + 1, mapValue.lng * 1000 + 1)
                 };
             }, (mapValue: CartesianMapValue) => {
                 return mapValue.value < 5;
@@ -77,8 +77,8 @@ describe('CartesianDrawer', () => {
         // scenario
         const cartesianDrawer = new CartesianDrawer((mapValue: CartesianMapValue) => {
                 const result = {
-                    p1: new Point(mapValue.latitude * 1000, mapValue.longitude * 1000),
-                    p2: new Point(mapValue.latitude * 1000, mapValue.longitude * 1000)
+                    p1: new Point(mapValue.lat * 1000, mapValue.lng * 1000),
+                    p2: new Point(mapValue.lat * 1000, mapValue.lng * 1000)
                 };
                 return result;
             }, (mapValue: CartesianMapValue) => {
@@ -117,5 +117,32 @@ describe('CartesianDrawer', () => {
             }
         });
     });
-});
 
+
+    it('should exec', async () => {
+        // scenario
+        const cartesianDrawer = new CartesianDrawer((mapValue: CartesianMapValue) => {
+                return {
+                    p1: new Point(mapValue.lat * 1000, mapValue.lng * 1000),
+                    p2: new Point(mapValue.lat * 1000, mapValue.lng * 1000)
+                };
+            }, (mapValue: CartesianMapValue) => {
+                return mapValue.value < 4;
+            },
+            () => {
+                return 4;
+            },
+            'withOptim');
+        cartesianDrawer.updateValues(cartesianMapValues, 'version');
+        cartesianDrawer.setConfiguration(0, 0,
+            [new CartesianDrawerOptimization('optim', 40001, false, true)]);
+
+        // exec
+        const length = await cartesianDrawer.getExecOfVisiblePoints(cartesianMapValues, async (cartesianMapValues: CartesianMapValue[]) => {
+            return cartesianMapValues.length;
+        });
+
+        // verify
+        expect(length).eq(3);
+    });
+});

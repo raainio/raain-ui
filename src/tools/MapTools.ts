@@ -28,7 +28,7 @@ export class MapTools {
             return 1;
         }
 
-        const centerIntermediate = new CartesianMapValue(0, center.lat, center.lng, 0, 0);
+        const centerIntermediate = new CartesianMapValue(0, center.lat, center.lng, 0, 0, '', '');
         const centerPoint = cartesianMap2Points(centerIntermediate).p1;
 
         const lastGeoValue = geoValues[geoValues.length - 1];

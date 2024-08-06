@@ -1,6 +1,6 @@
 import {Browser, DomUtil, GridLayer, Map} from 'leaflet';
-import {Application, Container} from 'pixi.js';
-import {MapLatLng} from '../tools/MapLatLng';
+import {Application, Container, Renderer} from 'pixi.js';
+import {MapLatLng} from '../tools';
 
 export type renderFnType = (pixiContainer: Container) => void;
 
@@ -36,7 +36,11 @@ class ApplicationOptions {
 export class PixiGridLayer extends GridLayer {
 
     protected _id: string;
+
     protected pixiApp: Application;
+    protected _pixiContainer: Container;
+    protected _pixiRenderer: Renderer;
+
     protected renderFn: renderFnType;
     protected currentWidth: number;
     protected currentHeight: number;
@@ -45,13 +49,11 @@ export class PixiGridLayer extends GridLayer {
     protected _gridZoomAnimated;
     protected _gridRendererOptions: ApplicationOptions;
     protected _gridContainer: HTMLElement;
-    protected _gridRenderer;
     protected _gridDoubleBuffering;
     protected _gridInitialZoom;
     protected _gridWgsOrigin;
     protected _gridWgsInitialShift;
     protected _gridMapInitialZoom;
-    protected _pixiContainer: Container;
     protected _gridOptions;
 
     constructor(id ?: string) {
@@ -104,16 +106,20 @@ export class PixiGridLayer extends GridLayer {
 
     // @Override
     public onAdd(targetMap: Map) {
+        console.log('onAdd', this._gridContainer);
         super.onAdd(targetMap);
 
-        this._setMap(targetMap);
+        this._gridMap = targetMap;
+        this._gridZoomAnimated = targetMap['_gridZoomAnimated'];
 
-        if (!this._gridContainer) {
-            const container = this._gridContainer = DomUtil.create('div', 'leaflet-pixi-overlay');
-            container.appendChild(this._gridRenderer.view);
+        if (!this._gridContainer && this._pixiRenderer) {
+            console.log('onAdd...', this._pixiRenderer);
+            this._gridContainer = DomUtil.create('div', 'leaflet-pixi-overlay');
+            this._gridContainer.appendChild(this._pixiRenderer.view);
+            this._gridMap.getPanes()[this._getPaneName()].appendChild(this._gridContainer);
+            this._setEvents();
         }
-        this._addContainer();
-        this._setEvents();
+
         this._gridInitialZoom = this._gridOptions.projectionZoom(this._gridMap);
         this._gridWgsOrigin = new MapLatLng(0, 0);
         this._gridWgsInitialShift = this._gridMap.project(this._gridWgsOrigin, this._gridInitialZoom);
@@ -123,6 +129,7 @@ export class PixiGridLayer extends GridLayer {
 
     // @Override
     public onRemove(targetMap) {
+        console.log('onRemove');
         super.onRemove(targetMap);
 
         const pane = this._gridMap.getPanes()[this._getPaneName()];
@@ -136,9 +143,10 @@ export class PixiGridLayer extends GridLayer {
         }
 
         this.pixiApp.destroy();
+        this.pixiApp = null;
         this._gridContainer = null;
         this._pixiContainer = null;
-        this._gridRenderer = this;
+        this._pixiRenderer = null;
 
         return this;
     }
@@ -151,11 +159,8 @@ export class PixiGridLayer extends GridLayer {
         this.currentHeight = currentHeight;
     }
 
-    protected setRenderFn(fn: renderFnType) {
-        this.renderFn = fn;
-    }
-
-    protected _initializeLayer() {
+    _initializeLayer() {
+        console.log('_initializeLayer');
 
         this._gridRendererOptions = {
             // backgroundAlpha: 0.5,
@@ -165,17 +170,29 @@ export class PixiGridLayer extends GridLayer {
             // forceCanvas: this._gridOptions.forceCanvas,
             // preserveDrawingBuffer: this._gridOptions.preserveDrawingBuffer,
             // clearBeforeRender: this._gridOptions.clearBeforeRender
+            sharedTicker: true,
         };
         // utils.isWebGLSupported() && !this._gridOptions.forceCanvas && this._gridOptions.doubleBuffering;
         this._gridDoubleBuffering = false;
 
         this.pixiApp = new Application(this._gridRendererOptions);
+        const ticker = this.pixiApp.ticker; // Ticker.shared;
+        // ticker.maxFPS = 1;
+        // ticker.minFPS = 1;
+        // ticker.deltaTime = 100000;
+        // ticker.speed = 1;
+        // ticker.update();
         this._pixiContainer = this.pixiApp.stage;
-        this._gridRenderer = this.pixiApp.renderer;
+        this._pixiRenderer = this.pixiApp.renderer;
+    }
+
+    protected setRenderFn(fn: renderFnType) {
+        this.renderFn = fn;
     }
 
     // @Override
     protected _update() {
+        console.log('_update');
         // @ts-ignore
         super._update();
 
@@ -207,14 +224,7 @@ export class PixiGridLayer extends GridLayer {
         return mapNode.childNodes[0].nodeName === this._getPaneName();
     }
 
-    protected _setMap(map) {
-        this._gridMap = map;
-        this._gridZoomAnimated = map._gridZoomAnimated;
-    }
-
     protected _addContainer() {
-        this._gridMap.getPanes()[this._getPaneName()]
-            .appendChild(this._gridContainer);
     }
 
     protected _setEvents() {

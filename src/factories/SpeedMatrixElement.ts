@@ -11,7 +11,7 @@ export class SpeedMatrixElementInput {
 
 export class SpeedMatrixElement {
 
-    public app: Application;
+    public pixiApp: Application;
 
     constructor(protected addSomeDebugInfos = false) {
     }
@@ -44,14 +44,14 @@ export class SpeedMatrixElement {
         const height = maxY - minY + 1;
         const range = maxValue - minValue;
 
-        this.app = new Application({
+        this.pixiApp = new Application({
             width: width * wh,
             height: height * wh,
             view: element,
             // antialias: true,
             backgroundColor: MapTools.hexStringToNumber('#FFFFFF')
         });
-        this.app.stage.removeChildren();
+        this.pixiApp.stage.removeChildren();
 
         const translateX = x => {
             const v = (x - minX) * wh;
@@ -102,7 +102,7 @@ export class SpeedMatrixElement {
         });
         pixiGraphic.addChild(pixiText);
 
-        this.app.stage.addChild(pixiGraphic);
+        this.pixiApp.stage.addChild(pixiGraphic);
     }
 
 }

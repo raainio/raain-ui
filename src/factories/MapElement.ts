@@ -1,12 +1,7 @@
 import {canvas, IconOptions, map, Map, Marker, tileLayer} from 'leaflet';
-import {MapLatLng} from '../tools/MapLatLng';
-import {TimeframeContainers} from '../timeframes/TimeframeContainers';
-import {MarkersLayer} from '../layers/MarkersLayer';
-import {CompositeLayer} from '../layers/CompositeLayer';
-import {TimeframeContainer} from '../timeframes/TimeframeContainer';
-import {PolarLayer} from '../layers/PolarLayer';
-import {PolarLayerConfig} from '../layers/PolarLayerConfig';
-import {CartesianLayer} from '../layers/CartesianLayer';
+import {CartesianMapValue, IconMapValue, MapLatLng, PolarMapValue} from '../tools';
+import {TimeframeContainer, TimeframeContainers} from '../timeframes';
+import {CartesianLayer, CompositeLayer, IconLayer, IPixiUniqueLayer, MarkersLayer, PolarLayer, PolarLayerConfig} from '../layers';
 
 export class MapElementInput {
     constructor(
@@ -40,7 +35,11 @@ export class MapElement {
         // Map default
         let mapLeaflet: Map;
         let markersLayer: MarkersLayer;
-        const compositeLayer = new CompositeLayer();
+        const width = element.offsetWidth;
+        const height = element.offsetHeight;
+
+        // Composite timeframes
+        const compositeLayer = new CompositeLayer('composite1', width, height);
 
         mapLeaflet = map(element, {
             preferCanvas: true,
@@ -56,17 +55,11 @@ export class MapElement {
             attribution: '&copy;<a href="https://www.openstreetmap.org/copyright">osm</a>',
         }).addTo(mapLeaflet);
 
-        // Composite timeframes
-        const width = element.offsetWidth;
-        const height = element.offsetHeight;
-        compositeLayer.setCurrentWidth(width);
-        compositeLayer.setCurrentHeight(height);
-
         let firstLayerIdPushed: string;
         if (inputs.timeframeContainers?.containers.length) {
             for (const timeFrameContainer of inputs.timeframeContainers.containers) {
 
-                const layerIds = this.addCompositeLayer(mapLeaflet, timeFrameContainer, compositeLayer);
+                const layerIds = this.addCompositeLayer(mapLeaflet, compositeLayer, timeFrameContainer);
                 if (!firstLayerIdPushed && layerIds.length) {
                     firstLayerIdPushed = layerIds[0];
                 }
@@ -74,9 +67,10 @@ export class MapElement {
         }
 
         compositeLayer.addToMap(mapLeaflet);
-        if (firstLayerIdPushed) {
-            compositeLayer.showTheFistMatchingId(firstLayerIdPushed);
-        }
+        // if (firstLayerIdPushed) {
+        //     compositeLayer.showTheFistMatchingId(firstLayerIdPushed);
+        // }
+        compositeLayer.showAll();
 
         // Markers
         let markersProduced = [];
@@ -104,34 +98,40 @@ export class MapElement {
 
         let firstLayerIdPushed: string;
         for (const timeFrameContainer of timeframeContainers.containers) {
-            const layerIds = this.addCompositeLayer(this.mapLeaflet, timeFrameContainer, this.compositeLayer);
+            const layerIds = this.addCompositeLayer(this.mapLeaflet, this.compositeLayer, timeFrameContainer,);
 
             if (!firstLayerIdPushed && layerIds.length) {
                 firstLayerIdPushed = layerIds[0];
             }
 
         }
-        this.compositeLayer.showTheFistMatchingId(firstLayerIdPushed);
+        // this.compositeLayer.showTheFistMatchingId(firstLayerIdPushed);
+        this.compositeLayer.showAll();
 
         this.compositeLayer.redraw();
         this.mapLeaflet.invalidateSize({animate: true});
     }
 
-    private addCompositeLayer(mapLeaflet: Map, timeFrameContainer: TimeframeContainer, compositeLayer: CompositeLayer): Array<string> {
+    private addCompositeLayer(mapLeaflet: Map, compositeLayer: CompositeLayer, timeFrameContainer: TimeframeContainer): Array<string> {
         const layerIds: string[] = [];
         timeFrameContainer.setCompositeLayer(compositeLayer);
+
         for (const frameContainer of timeFrameContainer.timeframe) {
             const layerId = timeFrameContainer.getFrameId(frameContainer);
-            const values: any = frameContainer.values;
+            const values = frameContainer.values;
 
-            let layer;
+            let layer: IPixiUniqueLayer;
             if (frameContainer.isPolar) {
                 layer = new PolarLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
-                layer.setPolarValues(this.center, values, new PolarLayerConfig(), timeFrameContainer.version);
+                layer.setValues(this.center, (values as PolarMapValue[]), new PolarLayerConfig(), timeFrameContainer.version);
             } else if (frameContainer.isCartesian) {
                 layer = new CartesianLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
-                layer.setCartesianGridValues(this.center, values, timeFrameContainer.version);
+                layer.setValues(this.center, (values as CartesianMapValue[]), null, timeFrameContainer.version);
+            } else if (frameContainer.isIcon) {
+                layer = new IconLayer(layerId, timeFrameContainer.name, mapLeaflet, this.addSomeDebugInfos);
+                layer.setValues(this.center, (values as IconMapValue[]), null, timeFrameContainer.version);
             }
+
             compositeLayer.addLayer(layer);
             layerIds.push(layerId);
         }

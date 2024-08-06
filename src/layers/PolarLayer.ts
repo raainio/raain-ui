@@ -1,5 +1,5 @@
 import {Map} from 'leaflet';
-import {Container, Graphics, Text} from 'pixi.js';
+import {Application, Container, Graphics, Text} from 'pixi.js';
 import {PolarMapValue} from '../tools/PolarMapValue';
 import {PolarDrawer} from '../drawers/PolarDrawer';
 import {PolarGridValue} from '../drawers/PolarGridValue';
@@ -8,6 +8,7 @@ import {PolarDrawerOptimization} from '../drawers/PolarDrawerOptimization';
 import {IPixiUniqueLayer} from './IPixiUniqueLayer';
 import {MapTools} from '../tools/MapTools';
 import {MapLatLng} from '../tools/MapLatLng';
+import {IDrawer} from '../drawers/IDrawer';
 
 export class PolarLayer implements IPixiUniqueLayer {
 
@@ -41,10 +42,10 @@ export class PolarLayer implements IPixiUniqueLayer {
         return this.mapGraph.alpha === 1;
     }
 
-    public setPolarValues(center: MapLatLng | { lat: number, lng: number },
-                          geoValues: PolarMapValue[],
-                          config: PolarLayerConfig,
-                          version: string) {
+    public setValues(center: MapLatLng | { lat: number, lng: number },
+                     geoValues: PolarMapValue[],
+                     config: PolarLayerConfig,
+                     version: string) {
         this.center = new MapLatLng(center.lat, center.lng);
         this.config.copy(config);
         this.polarDrawer = new PolarDrawer(
@@ -75,7 +76,7 @@ export class PolarLayer implements IPixiUniqueLayer {
     public render(pixiContainer: Container): number {
         const centerPoint = this.gridMap.latLngToContainerPoint(this.center);
 
-        if (!this.polarDrawer || !this.polarDrawer.hasChanged(this.center, centerPoint)) {
+        if (!this.polarDrawer?.hasChanged(this.center, centerPoint)) {
             return 0;
         }
 
@@ -131,7 +132,7 @@ export class PolarLayer implements IPixiUniqueLayer {
 
         const drawCount = this.polarDrawer.renderPolarMapValues(this.center, centerPoint, drawPolarSharp);
 
-        if (!this.addedInContainer) {
+        if (pixiContainer && !this.addedInContainer) {
             pixiContainer.addChild(this.mapGraph);
             this.addedInContainer = true;
         }
@@ -150,6 +151,13 @@ export class PolarLayer implements IPixiUniqueLayer {
         }
 
         return drawCount;
+    }
+
+    setPixiApp(pixiApp: Application) {
+    }
+
+    getDrawer(): IDrawer {
+        return this.polarDrawer;
     }
 
 }

@@ -1,8 +1,8 @@
-import {CartesianMapValue} from '../tools/CartesianMapValue';
 import {Point} from 'leaflet';
 import {CartesianDrawerOptimization} from './CartesianDrawerOptimization';
 import {GridValue} from './GridValue';
 import {MapTools} from '../tools/MapTools';
+import {MapLatLng} from '../tools';
 
 export class CartesianGridValue extends GridValue {
 
@@ -17,7 +17,7 @@ export class CartesianGridValue extends GridValue {
         super(color, transparency, id);
     }
 
-    static Create(src: CartesianMapValue,
+    static Create(src: MapLatLng,
                   srcPoints: { p1: Point, p2: Point },
                   center: Point,
                   ratio: number,

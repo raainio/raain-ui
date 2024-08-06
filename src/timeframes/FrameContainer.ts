@@ -6,7 +6,8 @@ export class FrameContainer {
     constructor(public date: Date,
                 public values: PolarMapValue[] | CartesianMapValue[],
                 public isPolar: boolean = false,
-                public isCartesian: boolean = false) {
+                public isCartesian: boolean = false,
+                public isIcon: boolean = false) {
     }
 
 }

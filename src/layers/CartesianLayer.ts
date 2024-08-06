@@ -1,11 +1,9 @@
 import {Map, Point} from 'leaflet';
-import {Container, Graphics, Text} from 'pixi.js';
+import {Application, Container, Graphics, Text} from 'pixi.js';
 import {IPixiUniqueLayer} from './IPixiUniqueLayer';
-import {CartesianMapValue} from '../tools/CartesianMapValue';
-import {CartesianGridValue} from '../drawers/CartesianGridValue';
-import {CartesianDrawer} from '../drawers/CartesianDrawer';
-import {MapTools} from '../tools/MapTools';
-import {MapLatLng} from '../tools/MapLatLng';
+import {CartesianMapValue, MapLatLng, MapTools} from '../tools';
+import {CartesianDrawer, CartesianGridValue} from '../drawers';
+import {IDrawer} from '../drawers/IDrawer';
 
 export class CartesianLayer implements IPixiUniqueLayer {
 
@@ -37,13 +35,17 @@ export class CartesianLayer implements IPixiUniqueLayer {
         return this.mapGraph.alpha === 1;
     }
 
-    public setCartesianGridValues(center: MapLatLng | { lat: number, lng: number }, values: CartesianMapValue[], version: string): void {
+    public setValues(center: MapLatLng | { lat: number, lng: number },
+                     values: CartesianMapValue[],
+                     config: any,
+                     version: string): void {
         this.center = new MapLatLng(center.lat, center.lng);
         this.cartesianDrawer = new CartesianDrawer(
             (mapValue: CartesianMapValue) => {
                 try {
-                    const p1 = this.gridMap.latLngToContainerPoint({lat: mapValue.latitude, lng: mapValue.longitude});
-                    const p2 = this.gridMap.latLngToContainerPoint({lat: mapValue.latitude2, lng: mapValue.longitude2});
+                    const {point1, point2} = mapValue.getPoints();
+                    const p1 = this.gridMap.latLngToContainerPoint(point1);
+                    const p2 = this.gridMap.latLngToContainerPoint(point2);
                     return {p1, p2};
                 } catch (e) {
                     return {
@@ -64,10 +66,10 @@ export class CartesianLayer implements IPixiUniqueLayer {
 
     public render(pixiContainer: Container): number {
 
-        const centerPoint = this.gridMap.latLngToContainerPoint({lat: this.center.lat, lng: this.center.lng});
+        const centerPoint = this.gridMap.latLngToContainerPoint(this.center);
 
         const drawCount = 0;
-        if (!this.cartesianDrawer.hasChanged(this.center, centerPoint)) {
+        if (!this.cartesianDrawer?.hasChanged(this.center, centerPoint)) {
             return drawCount;
         }
 
@@ -97,7 +99,7 @@ export class CartesianLayer implements IPixiUniqueLayer {
                 return true;
             });
 
-        if (!this.addedInContainer) {
+        if (pixiContainer && !this.addedInContainer) {
             pixiContainer.addChild(this.mapGraph);
             this.addedInContainer = true;
         }
@@ -116,6 +118,13 @@ export class CartesianLayer implements IPixiUniqueLayer {
         }
 
         return drawCount;
+    }
+
+    setPixiApp(pixiApp: Application) {
+    }
+
+    getDrawer(): IDrawer {
+        return this.cartesianDrawer;
     }
 
 }

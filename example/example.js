@@ -15,6 +15,7 @@ import {
     TimeframeContainer,
     TimeframeContainers
 } from 'raain-ui';
+import {IconMapValue} from "../src";
 
 // 1) HTML Elements
 const mapHtmlElement = document.getElementById('map');
@@ -77,6 +78,19 @@ const createCartesianMapValues = (scenario) => {
     return values;
 };
 
+const createIconValues = (scenario) => {
+    const values = [];
+    for (let latitude = center.latitude - 1; latitude < center.latitude + 1; latitude += 0.1 * scenario) {
+        for (let longitude = center.longitude - 1; longitude < center.longitude + 1; longitude += 0.1 * scenario) {
+            const speed = 8 * Math.random();
+            const angle = 360 * Math.random();
+            const mapValue = new IconMapValue(latitude, longitude, speed, angle, 'id' + Math.random(), 'name?');
+            values.push(mapValue);
+        }
+    }
+    return values;
+};
+
 const markers1 = [
     new MapLatLng(center.latitude, center.longitude, 0, 'centerId', 'center'),
     new MapLatLng(center.latitude + 0.1, center.longitude - 0.1, 0, '2', 'near center'),
@@ -91,12 +105,18 @@ const allCartesianValues = new TimeframeContainer('allCartesianValuesZoomSensiti
     new FrameContainer(addMinutes(now, 10), createCartesianMapValues(1), false, true),
 ], 'cartExample');
 
+const allIconValues = new TimeframeContainer('allIcons', [
+    new FrameContainer(now, createIconValues(1), false, false, true),
+    new FrameContainer(addMinutes(now, 10), createIconValues(2), false, false, true),
+], 'iconsExample');
+
 const timeframeContainers = new TimeframeContainers([
-    new TimeframeContainer('polar_with_Rain0_', [new FrameContainer(now, createPolarMapValues(0), true, false)], 'polarExample1'),
+    // new TimeframeContainer('polar_with_Rain0_', [new FrameContainer(now, createPolarMapValues(0), true, false)], 'polarExample1'),
     new TimeframeContainer('polar_with_Radar0_', [new FrameContainer(addMinutes(now, 10), createPolarMapValues(0), true, false)], 'polarExample2'),
     new TimeframeContainer('polar_Rain1_', [new FrameContainer(addMinutes(now, 20), createPolarMapValues(1), true, false)], 'polarExample3'),
     new TimeframeContainer('polar_without_optimization_', [new FrameContainer(addMinutes(now, 30), createPolarMapValues(1), true, false)]),
     allCartesianValues,
+    allIconValues,
 ]);
 
 const comparePoints = [
@@ -173,7 +193,7 @@ const toggleAnimation = () => {
     }
 }
 const switchTimeFramePolarRain0 = () => {
-    timeframeContainers.showTimeframe('polar_with_Rain0_', now);
+    timeframeContainers.showTimeframes('polar_with_Rain0_', now);
     if (animationEnabled) {
         setTimeout(switchTimeFrameCartesian0, animationTimeInMs);
     }
@@ -197,7 +217,13 @@ const switchTimeFramePolarWithoutOptimization = () => {
     }
 };
 const switchTimeFrameCartesian0 = () => {
-    allCartesianValues.showTimeframe(now);
+    allCartesianValues.showTimeframes(now);
+    if (animationEnabled) {
+        setTimeout(switchTimeFrameIcons, animationTimeInMs);
+    }
+};
+const switchTimeFrameIcons = () => {
+    mapElement.compositeLayer.show('Icon');
     if (animationEnabled) {
         setTimeout(switchTimeFramePolarRadar0, animationTimeInMs);
     }
@@ -235,6 +261,7 @@ window.switchTimeFramePolarRain0 = switchTimeFramePolarRain0;
 window.switchTimeFrameCartesian0 = switchTimeFrameCartesian0;
 window.switchTimeFramePolarRain1 = switchTimeFramePolarRain1;
 window.switchTimeFramePolarWithoutOptimization = switchTimeFramePolarWithoutOptimization;
+window.switchTimeFrameIcons = switchTimeFrameIcons;
 
 window.focusReset = dateStatusElement.focusReset;
 window.focusPrevious = dateStatusElement.focusPrevious;
@@ -246,4 +273,3 @@ mapElement.compositeLayer.showTheFistMatchingId('polar_with_Rain0_');
 // setTimeout(switchTimeFramePolarRain0, animationTimeInMs);
 switchMatrix();
 animatePerf();
-
