@@ -5,3 +5,4 @@
 - 1.10.x : UI feedbacks (fix cartesians, add show/hide capability)
 - 1.11.x : Factory refactored, perf monitoring added
 - 2.0.x : change raain-model
+- 2.1.x : composite layer could include icons
