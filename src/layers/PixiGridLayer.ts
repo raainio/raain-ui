@@ -106,14 +106,14 @@ export class PixiGridLayer extends GridLayer {
 
     // @Override
     public onAdd(targetMap: Map) {
-        console.log('onAdd', this._gridContainer);
+        // console.log('onAdd', this._gridContainer);
         super.onAdd(targetMap);
 
         this._gridMap = targetMap;
         this._gridZoomAnimated = targetMap['_gridZoomAnimated'];
 
         if (!this._gridContainer && this._pixiRenderer) {
-            console.log('onAdd...', this._pixiRenderer);
+            // console.log('onAdd...', this._pixiRenderer);
             this._gridContainer = DomUtil.create('div', 'leaflet-pixi-overlay');
             this._gridContainer.appendChild(this._pixiRenderer.view);
             this._gridMap.getPanes()[this._getPaneName()].appendChild(this._gridContainer);
@@ -129,7 +129,7 @@ export class PixiGridLayer extends GridLayer {
 
     // @Override
     public onRemove(targetMap) {
-        console.log('onRemove');
+        // console.log('onRemove');
         super.onRemove(targetMap);
 
         const pane = this._gridMap.getPanes()[this._getPaneName()];
@@ -160,7 +160,7 @@ export class PixiGridLayer extends GridLayer {
     }
 
     _initializeLayer() {
-        console.log('_initializeLayer');
+        // console.log('_initializeLayer');
 
         this._gridRendererOptions = {
             // backgroundAlpha: 0.5,
@@ -192,7 +192,7 @@ export class PixiGridLayer extends GridLayer {
 
     // @Override
     protected _update() {
-        console.log('_update');
+        // console.log('_update');
         // @ts-ignore
         super._update();
 
