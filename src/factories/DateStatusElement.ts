@@ -36,7 +36,6 @@ export class DateStatusElement {
         date: Date,
         value: number
     }> {
-
         return mapToFilter
             .filter(e => {
                 let isIn = true;
@@ -52,6 +51,9 @@ export class DateStatusElement {
                 if (isIn && focusRange >= DateRange.HOUR) {
                     isIn = e.date.getHours() === focusDate.getHours();
                 }
+                if (isIn && focusRange >= DateRange.MINUTE) {
+                    isIn = e.date.getMinutes() === focusDate.getMinutes();
+                }
                 return isIn;
             })
             .sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -64,7 +66,6 @@ export class DateStatusElement {
         min: Date,
         max: Date) {
 
-        // console.log('groupFocus:', mapToFilter.length, focusDate, focusRange);
         const filteredAndSorted = DateStatusElement.filterFocus(mapToFilter, focusDate, focusRange);
 
         if (focusRange === DateRange.CENTURY) {
@@ -116,7 +117,18 @@ export class DateStatusElement {
             return groupedByHour;
         }
 
-        // if (focusRange === DateRange.HOUR) {
+        if (focusRange === DateRange.HOUR) {
+            const groupedByMinutes = [];
+            for (let i = 0; i < 60; i++) {
+                const minuteDate = new Date(focusDate);
+                minuteDate.setMinutes(i);
+                const sum = DateStatusElement.filterFocus(filteredAndSorted, minuteDate, DateRange.MINUTE)
+                    .reduce((partialSum, a) => partialSum + a.value, 0);
+                groupedByMinutes.push(sum);
+            }
+            return groupedByMinutes;
+        }
+
         return filteredAndSorted.map(e => e.value);
     }
 

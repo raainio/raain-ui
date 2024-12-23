@@ -1,6 +1,6 @@
 {
   "name": "raain-ui",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "author": "contact@raain.io",
   "homepage": "https://github.com/raainio/raain-ui",
   "description": "raain.io ui layers",
@@ -18,7 +18,7 @@
     "geolib": "^3.3.4",
     "leaflet": "^1.9.4",
     "pixi.js": "^5.3.12",
-    "raain-model": "^2.4.4"
+    "raain-model": "^2.4.6"
   },
   "peerDependencies": {
     "chart.js": "^4.2.1",
