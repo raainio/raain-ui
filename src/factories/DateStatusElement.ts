@@ -162,17 +162,23 @@ export class DateStatusElement {
                 groupedByHour.push(DateStatusElement.buildLabelHour(new Date(focusDate), i));
             }
             return groupedByHour;
+        } else if (focusRange === DateRange.HOUR) {
+            const groupedByMinutes = [];
+            for (let i = 0; i < 60; i++) {
+                groupedByMinutes.push(DateStatusElement.buildLabelMinute(new Date(focusDate), i));
+            }
+            return groupedByMinutes;
         }
 
-        // all minutes that are in the current hour
+        // all elements that are in the current minute
         let allDates = [];
         data.forEach(d => {
             allDates = allDates.concat(d.values);
         });
-        const filteredHourDates = DateStatusElement.filterFocus(allDates, focusDate, DateRange.HOUR);
-        const filteredHourDatesISO = filteredHourDates
+        const filteredDates = DateStatusElement.filterFocus(allDates, focusDate, DateRange.MINUTE);
+        const filteredDatesISO = filteredDates
             .map(v => DateStatusElement.buildLabel(v.date));
-        return filteredHourDatesISO.filter((item, pos, self) => {
+        return filteredDatesISO.filter((item, pos, self) => {
             return self.indexOf(item) === pos;
         });
     }
@@ -221,6 +227,11 @@ export class DateStatusElement {
     protected static buildLabelHour(date: Date, hour: number): string {
         date.setHours(hour);
         return Tools.formatDate(date, DateRange.HOUR);
+    }
+
+    protected static buildLabelMinute(date: Date, minute: number): string {
+        date.setMinutes(minute);
+        return Tools.formatDate(date, DateRange.MINUTE);
     }
 
     public build(element: HTMLCanvasElement, inputs: DateStatusElementInput): void {
