@@ -3,15 +3,15 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "clean": "rm -rf .parcel-cache dist node_modules && npm i",
+    "clean": "rm -rf .parcel-cache dist node_modules package-lock.json && npm i",
     "build": "parcel build example.html",
     "parcel": "parcel example.html *.png",
     "start": "npm run clean && npm run parcel"
   },
   "dependencies": {
     "@kurkle/color": "^0.3.2",
-    "chart.js": "^4.2.1",
-    "chartjs-plugin-dragdata": "^2.2.5",
+    "chart.js": "^4.4.7",
+    "chartjs-plugin-dragdata": "^2.3.1",
     "geolib": "^3.3.3",
     "leaflet": "^1.9.3",
     "pixi.js": "^5.3.12",

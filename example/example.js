@@ -6,6 +6,7 @@ import {
     DateStatusElementInput,
     ElementsFactory,
     FrameContainer,
+    IconMapValue,
     MapElementInput,
     MapLatLng,
     MonitoringBarsElementInput,
@@ -13,9 +14,10 @@ import {
     PolarMapValue,
     SpeedMatrixElementInput,
     TimeframeContainer,
-    TimeframeContainers
+    TimeframeContainers,
+    Tools
 } from 'raain-ui';
-import {IconMapValue} from "../src";
+import {ChartScaleColors} from "../src";
 
 // 1) HTML Elements
 const mapHtmlElement = document.getElementById('map');
@@ -176,7 +178,46 @@ const compareElement = factory.createCompare(compareHtmlElement,
 const dateStatusElement = factory.createDateStatus(dateFocusHtmlElement,
     new DateStatusElementInput(setOfDates));
 const configurationElement = factory.createConfiguration(configurationHtmlElement,
-    new ConfigurationElementInput(configurationPoints));
+    new ConfigurationElementInput(
+        configurationPoints,
+        {x: 0, y: -2},
+        {x: 100, y: 5},
+        true,
+        [
+            {
+                color: Tools.getTransparency(ChartScaleColors['0.4'], 0.8),
+                yStart: Math.log10(0.1),
+                yEnd: Math.log10(0.4)
+            },
+            {color: Tools.getTransparency(ChartScaleColors['1'], 0.8), yStart: Math.log10(0.4), yEnd: Math.log10(1)},
+            {color: Tools.getTransparency(ChartScaleColors['3'], 0.8), yStart: Math.log10(1), yEnd: Math.log10(3)},
+            {color: Tools.getTransparency(ChartScaleColors['10'], 0.8), yStart: Math.log10(3), yEnd: Math.log10(10)},
+            {color: Tools.getTransparency(ChartScaleColors['20'], 0.8), yStart: Math.log10(10), yEnd: Math.log10(20)},
+            {color: Tools.getTransparency(ChartScaleColors['30'], 0.8), yStart: Math.log10(20), yEnd: Math.log10(30)},
+            {color: Tools.getTransparency(ChartScaleColors['50'], 0.8), yStart: Math.log10(30), yEnd: Math.log10(50)},
+            {color: Tools.getTransparency(ChartScaleColors['100'], 0.8), yStart: Math.log10(50), yEnd: Math.log10(100)},
+            {
+                color: Tools.getTransparency(ChartScaleColors['150'], 0.8),
+                yStart: Math.log10(100),
+                yEnd: Math.log10(150)
+            },
+            {
+                color: Tools.getTransparency(ChartScaleColors['200'], 0.8),
+                yStart: Math.log10(150),
+                yEnd: Math.log10(200)
+            },
+            {
+                color: Tools.getTransparency(ChartScaleColors['250'], 0.8),
+                yStart: Math.log10(200),
+                yEnd: Math.log10(250)
+            },
+            {
+                color: Tools.getTransparency(ChartScaleColors['300'], 0.8),
+                yStart: Math.log10(250),
+                yEnd: Math.log10(300)
+            },
+        ],
+    ));
 const perfBarElement = factory.createMonitoringBars(perfBarHtmlElement,
     new MonitoringBarsElementInput(perfBarsPoints));
 const perfLineElement = factory.createMonitoringLines(perfLineHtmlElement,

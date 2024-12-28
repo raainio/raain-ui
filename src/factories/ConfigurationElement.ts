@@ -7,10 +7,60 @@ export class ConfigurationElementInput {
         public points: { x: number, y: number }[] = [],
         public minPoint: { x: number, y: number } = {x: 0, y: 0},
         public maxPoint: { x: number, y: number } = {x: 100, y: 100},
+        public logAdded = false,
+        public backgroundColors: { color: string, yStart: number, yEnd: number }[] = [],
         public dragCallback?: any
     ) {
     }
 }
+
+const plugin = {
+    id: 'customCanvasBackgroundColor',
+    beforeDraw: (chart, args, options) => {
+        // console.log('customCanvasBackgroundColor.beforeDraw', args, options);
+        const {ctx, chartArea: {top, bottom, left, right}, scales: {y}} = chart;
+        //  ctx.save();
+//
+        //  const yScales = [];
+        //  const yTos = [150, 90, 50, 30, 10];
+        //  for (const yTo of yTos) {
+        //      let pos = y.getPixelForValue(yTo);
+        //      if (pos < top) {
+        //          pos = top;
+        //      }
+        //      yScales.push(pos);
+        //  }
+//
+        //  let previousYScale = top;
+        //  for (const yScale of yScales) {
+        //      // Add color stops with varying alpha values
+        //      const gradient = ctx.createLinearGradient(left, previousYScale, right - left, yScale - previousYScale);
+        //      gradient.addColorStop(0, 'rgba(255, 205, 86, 0)'); // Transparent at the top
+        //      gradient.addColorStop(0.5, 'rgba(255, 205, 86, 1)' + '0.5)'); // Semi-transparent in the middle
+        //      gradient.addColorStop(1, 'rgba(255, 205, 86, 1)' + '1)'); // Opaque at the bottom
+//
+        //      ctx.fillStyle = gradient;
+        //      // ctx.fillStyle = chart.options.plugins.customBackground.color;
+        //      // ctx.fillStyle = options.color || '#99ffff';
+//
+        //      ctx.fillRect(left, previousYScale, right - left, yScale - previousYScale);
+        //      previousYScale = yScale;
+        //  }
+//
+        //  ctx.restore();
+
+        const colors = options.colors;
+
+        ctx.save();
+        colors.forEach(colorConfig => {
+            const yStartPixel = y.getPixelForValue(colorConfig.yStart);
+            const yEndPixel = y.getPixelForValue(colorConfig.yEnd);
+            ctx.fillStyle = colorConfig.color;
+            ctx.fillRect(left, yStartPixel, right - left, yEndPixel - yStartPixel);
+        });
+        ctx.restore();
+    }
+};
 
 export class ConfigurationElement {
 
@@ -36,6 +86,8 @@ export class ConfigurationElement {
                     tension: 0,
                 }],
         };
+
+        const yType = inputs.logAdded ? 'logarithmic' : '';
 
         const config: any = {
             data,
@@ -78,10 +130,19 @@ export class ConfigurationElement {
                     },
                     tooltip: {
                         enabled: true,
-                        filter: (t) => {
+                        filter: (t: any) => {
                             return t.datasetIndex === 0;
                         }
                     },
+                    customCanvasBackgroundColor: {
+                        colors: inputs.backgroundColors
+                        //  [
+                        //      {color: Tools.getTransparency(ChartColors.grey, 0.8), yStart: 5, yEnd: 10},
+                        //      {color: Tools.getTransparency(ChartColors.blue, 0.8), yStart: 10, yEnd: 20},
+                        //      {color: Tools.getTransparency(ChartColors.red, 0.8), yStart: 50, yEnd: 70},
+                        //      {color: Tools.getTransparency(ChartColors.orange, 0.8), yStart: 100, yEnd: 240}
+                        //  ]
+                    }
                 },
 
                 scales: {
@@ -92,7 +153,20 @@ export class ConfigurationElement {
                     y: {
                         display: true,
                         suggestedMin: inputs.minPoint.y, suggestedMax: inputs.maxPoint.y,
-                        // type: 'logarithmic',
+                        // type: yType,
+
+                        ticks: {
+                            // For a category axis, the val is the index so the lookup via getLabelForValue is needed
+                            callback: function(val: number, index: number) {
+                                if (inputs.logAdded) {
+                                    // Hide every 2nd tick label
+                                    return this.getLabelForValue(Math.pow(10, val)) + ' => ' + val;
+                                }
+                                return this.getLabelForValue(val);
+                            },
+                            // color: 'red',
+                        }
+
                     },
                 },
 
@@ -105,7 +179,7 @@ export class ConfigurationElement {
                 //  },
 
             },
-            plugins: [chartDragData],
+            plugins: [chartDragData, plugin],
         };
 
         //   window.removePoint = (x, y) => {

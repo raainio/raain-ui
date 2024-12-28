@@ -1,6 +1,6 @@
 {
   "name": "raain-ui",
-  "version": "2.1.8",
+  "version": "2.1.9",
   "author": "contact@raain.io",
   "homepage": "https://github.com/raainio/raain-ui",
   "description": "raain.io ui layers",
@@ -13,16 +13,17 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "chart.js": "^4.2.1",
-    "chartjs-plugin-dragdata": "^2.2.5",
+    "chart.js": "^4.4.7",
+    "chartjs-chart-geo": "^4.3.4",
+    "chartjs-plugin-dragdata": "^2.3.1",
     "geolib": "^3.3.4",
     "leaflet": "^1.9.4",
     "pixi.js": "^5.3.12",
     "raain-model": "^2.4.6"
   },
   "peerDependencies": {
-    "chart.js": "^4.2.1",
-    "chartjs-plugin-dragdata": "^2.2.5",
+    "chart.js": "^4.4.7",
+    "chartjs-plugin-dragdata": "^2.3.1",
     "leaflet": "^1.9.4",
     "pixi.js": "^5.3.12"
   },
