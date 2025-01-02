@@ -136,12 +136,11 @@ describe('PolarDrawer', () => {
         expect(spy.values.length).eq(36);
 
         expect(spy.values[0]).deep.equal({
-            d1: 0.05,
+            d1: 0.02,
             a1: 0,
-            v: 0.4,
+            v: 0.5,
             d2: undefined,
             a2: undefined
         });
     });
 });
-

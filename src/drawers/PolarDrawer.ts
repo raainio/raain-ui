@@ -42,7 +42,7 @@ export class PolarDrawer implements IDrawer {
             return optimizations[0];
         }
 
-        console.warn('no optimization found for polar drawer - please consider to use one');
+        // console.warn('no optimization found for polar drawer - please consider to use one');
         return PolarDrawerOptimization.Defaults()[0];
     }
 

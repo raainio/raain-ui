@@ -62,10 +62,10 @@ describe('CartesianDrawer', () => {
 
         expect(spy.values[0]).deep.equal({
             gridValue: {
-                color: 52985,
+                color: 2411217,
                 height: 1,
                 id: '1',
-                transparency: 0.65,
+                transparency: 0.2890504973749961,
                 width: 1,
                 x: -1000,
                 y: -1000,
@@ -107,10 +107,10 @@ describe('CartesianDrawer', () => {
 
         expect(spy.values[0]).deep.equal({
             gridValue: {
-                color: 52985,
+                color: 2411217,
                 height: 0,
                 id: '1',
-                transparency: 0.65,
+                transparency: 0.2890504973749961,
                 width: 0,
                 x: -1000,
                 y: -1000,
@@ -119,7 +119,7 @@ describe('CartesianDrawer', () => {
     });
 
 
-    it('should exec', async () => {
+    it('should getExecOfVisiblePoints', async () => {
         // scenario
         const cartesianDrawer = new CartesianDrawer((mapValue: CartesianMapValue) => {
                 return {
@@ -143,6 +143,6 @@ describe('CartesianDrawer', () => {
         });
 
         // verify
-        expect(length).eq(3);
+        expect(length).eq(4);
     });
 });

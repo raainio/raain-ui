@@ -13,6 +13,7 @@ export const ChartColors = {
 };
 
 export const ChartScaleColors = {
+    0: 'rgb(0,0,0)',
     0.4: 'rgb(2,46,160)',
     1: 'rgb(8,135,207)',
     3: 'rgb(36,202,209)',
@@ -24,7 +25,7 @@ export const ChartScaleColors = {
     150: 'rgb(244,53,8)',
     200: 'rgb(206,9,15)',
     250: 'rgb(124,5,31)',
-    300: 'rgb(16,7,55)',
+    300: 'rgb(55,7,16)',
 };
 
 export enum DateRange {
@@ -41,6 +42,33 @@ export class Tools {
     public static getTransparency(value: string, transparency: number) {
         const alpha = transparency === undefined ? 0.5 : 1 - transparency;
         return colorLib(value).alpha(alpha).rgbString();
+    }
+
+    public static rgbStringToHex(rgbString) {
+        // Use a regular expression to extract the RGB values
+        const match = rgbString.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+        if (!match) {
+            throw new Error('Invalid RGB string format');
+        }
+
+        // Extract the red, green, and blue components
+        const r = parseInt(match[1], 10);
+        const g = parseInt(match[2], 10);
+        const b = parseInt(match[3], 10);
+
+        // Ensure the RGB values are within the valid range (0-255)
+        if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+            throw new Error('RGB values must be between 0 and 255');
+        }
+
+        // Convert each component to a two-digit hexadecimal string
+        const toHex = (c) => {
+            const hex = c.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        };
+
+        // Concatenate the hexadecimal strings
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
     }
 
     public static formatDate(date: Date, dateRange: number) {

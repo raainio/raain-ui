@@ -6,9 +6,9 @@ export class MapLatLng extends LatLng {
         public lat: number,
         public lng: number,
         public alt?: number,
-        public readonly id?: string,
-        public readonly name?: string,
-        public readonly value?: number) {
+        public id?: string,
+        public name?: string,
+        public value?: number) {
         super(lat, lng, alt);
     }
 

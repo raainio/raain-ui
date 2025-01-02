@@ -1,8 +1,7 @@
 import {Point} from 'leaflet';
 import {CartesianDrawerOptimization} from './CartesianDrawerOptimization';
 import {GridValue} from './GridValue';
-import {MapTools} from '../tools/MapTools';
-import {MapLatLng} from '../tools';
+import {MapLatLng, MapTools} from '../tools';
 
 export class CartesianGridValue extends GridValue {
 

@@ -1,7 +1,7 @@
 import {PolarMapValue} from '../tools/PolarMapValue';
 import {PolarDrawerOptimization} from './PolarDrawerOptimization';
 import {Point} from 'leaflet';
-import {MapTools} from '../tools/MapTools';
+import {MapTools} from '../tools';
 import {GridValue} from './GridValue';
 
 export class PolarGridValue extends GridValue {

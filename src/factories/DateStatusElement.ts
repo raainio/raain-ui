@@ -312,6 +312,7 @@ export class DateStatusElement {
             data,
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         // display: false,

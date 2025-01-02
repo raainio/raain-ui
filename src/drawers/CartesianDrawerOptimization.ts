@@ -19,21 +19,25 @@ export class CartesianDrawerOptimization {
 
     filteringValues(zoom: number,
                     geoValues: CartesianMapValue[],
-                    cartesianMap2Display: (mapValue: CartesianMapValue) => boolean
+                    cartesianMap2Display?: (mapValue: CartesianMapValue) => boolean
     ): CartesianMapValue[] {
         let valuesToDisplay = geoValues.filter(v => v.value > 0.4);
         if (cartesianMap2Display) {
             valuesToDisplay = valuesToDisplay.filter(cartesianMap2Display);
         }
+
+        // reduced in case of zoom
         if (this.considerZoom) {
             const zoomLimit = 8;
             if (zoom < zoomLimit) {
                 const each = zoomLimit + 1 - zoom;
                 let count = 0;
                 valuesToDisplay = valuesToDisplay.filter(v => {
-                    if (++count >= each) {
-                        count = 0;
+                    if (count++ === 0) {
                         return true;
+                    }
+                    if (count >= each) {
+                        count = 0;
                     }
                     return false;
                 });

@@ -43,7 +43,7 @@ export class CartesianDrawer implements IDrawer {
             return optimizations[0];
         }
 
-        console.warn('no optimization found for cartesian drawer - please consider to use one');
+        // console.warn('no optimization found for cartesian drawer - please consider to use one');
         return CartesianDrawerOptimization.Defaults()[0];
     }
 

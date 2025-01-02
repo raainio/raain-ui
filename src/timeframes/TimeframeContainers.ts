@@ -4,6 +4,7 @@ import {
     ICartesianMeasureValue,
     IPolarMeasureValue,
     Measure,
+    QualityTools,
     RadarNodeMap,
     RainComputationMap,
     RainPolarMeasureValue,
@@ -11,6 +12,7 @@ import {
 import {FrameContainer} from './FrameContainer';
 import {CartesianMapValue, PolarMapValue} from '../tools';
 import {IPixiUniqueLayer} from '../layers';
+import {CartesianDrawerOptimization} from '../drawers';
 
 export class TimeframeContainers {
     constructor(public containers: Array<TimeframeContainer>) {
@@ -40,6 +42,49 @@ export class TimeframeContainers {
             }
         }
         return shows;
+    }
+
+    getCumulativeCartesianValues() {
+        const cartesianSummedValues: CartesianMapValue[] = [];
+        for (const timeframeContainer of this.containers) {
+            for (const frameContainer of timeframeContainer.timeframe) {
+                if (!frameContainer.isCartesian) {
+                    continue;
+                }
+
+                const cartesianMapValues = frameContainer.values as CartesianMapValue[];
+
+                const cartesianDrawerOptimization = new CartesianDrawerOptimization('cumul', 0, false, true);
+                const cartesianMapValuesFiltered = cartesianDrawerOptimization.filteringValues(9 - 9, cartesianMapValues);
+                // const cartesianMapValuesIncreased = cartesianMapValuesFiltered.map(v => {
+                //     v.value = v.value * 9;
+                //     return v;
+                // });
+
+                for (const cartesianMapValue of cartesianMapValuesFiltered) {
+                    const alreadyExist = cartesianSummedValues
+                        .filter(v => v.equals(cartesianMapValue));
+                    if (alreadyExist.length) {
+                        alreadyExist[0].value += cartesianMapValue.value;
+                    } else {
+                        // cartesianMapValue.lat2 = QualityTools.RoundLatLng(cartesianMapValue.lat2
+                        //     + cartesianMapValue.lat2 - cartesianMapValue.lat);
+                        // cartesianMapValue.lng2 = QualityTools.RoundLatLng(cartesianMapValue.lng2
+                        //     + cartesianMapValue.lng2 - cartesianMapValue.lng);
+                        cartesianSummedValues.push(cartesianMapValue);
+                    }
+                }
+            }
+        }
+
+        return cartesianSummedValues.map(v => {
+            const lat2 = QualityTools.RoundLatLng(v.lat2
+                + 2 * (v.lat2 - v.lat));
+            const lng2 = QualityTools.RoundLatLng(v.lng2
+                + 2 * (v.lng2 - v.lng));
+            const value = v.value * 9;
+            return new CartesianMapValue(value, v.lat, v.lng, lat2, lng2, v.id, v.name);
+        });
     }
 
     protected computeFrames(measures: Measure[], isPolar: boolean): FrameContainer[] {
@@ -73,6 +118,5 @@ export class TimeframeContainers {
 
         return frames;
     }
-
 
 }

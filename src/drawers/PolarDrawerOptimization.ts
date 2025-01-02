@@ -21,7 +21,7 @@ export class PolarDrawerOptimization {
 
     filteringValues(zoom: number,
                     geoValues: PolarMapValue[],
-                    polarMap2Display: (mapValue: PolarMapValue) => boolean): PolarMapValue[] {
+                    polarMap2Display?: (mapValue: PolarMapValue) => boolean): PolarMapValue[] {
 
         // non null values
         let valuesToDisplay = geoValues.filter(v => v.value > 0);
@@ -38,9 +38,11 @@ export class PolarDrawerOptimization {
                 const each = zoomLimit + 1 - zoom;
                 let count = 0;
                 valuesToDisplay = valuesToDisplay.filter(v => {
-                    if (++count >= each) {
-                        count = 0;
+                    if (count++ === 0) {
                         return true;
+                    }
+                    if (count >= each) {
+                        count = 0;
                     }
                     return false;
                 });

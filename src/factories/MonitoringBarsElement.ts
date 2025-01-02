@@ -32,6 +32,7 @@ export class MonitoringBarsElement {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 aspectRatio: 1,
                 scales: {
                     x: {

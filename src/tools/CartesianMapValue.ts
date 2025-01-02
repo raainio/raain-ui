@@ -8,8 +8,8 @@ export class CartesianMapValue extends MapLatLng {
         value: number,
         lat: number,
         lng: number,
-        public readonly lat2: number,
-        public readonly lng2: number,
+        public lat2: number,
+        public lng2: number,
         id: string,
         name: string) {
 

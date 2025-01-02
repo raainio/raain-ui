@@ -17,7 +17,7 @@ import {
     TimeframeContainers,
     Tools
 } from 'raain-ui';
-import {ChartScaleColors} from "../src";
+import {ChartScaleColors, ScaleElementInput} from "../src";
 
 // 1) HTML Elements
 const mapHtmlElement = document.getElementById('map');
@@ -28,6 +28,7 @@ const speedMatrixHtmlElement = document.getElementById('speedMatrix');
 const configurationHtmlElement = document.getElementById('configuration');
 const perfBarHtmlElement = document.getElementById('perfBar');
 const perfLineHtmlElement = document.getElementById('perfLine');
+const scaleHtmlElement = document.getElementById('scale');
 
 
 // 2) Values
@@ -163,6 +164,15 @@ let perfLinesPoints = [
     {label: '#3', points: [{date: addMinutes(now,), percentage: 12}]}
 ];
 
+const entries = Object.entries(ChartScaleColors);
+entries.sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]));
+const sortedMap = new Map(entries);
+const sortedArray = [...sortedMap.entries()];
+const scaleColors = sortedArray.map(entry => {
+    return {color: entry[1]}
+});
+const scaleLabels = sortedArray.map(entry => entry[0]);
+
 // 3) Configurations
 const iconsOptions = {
     iconUrl: './my-marker-icon.png',
@@ -222,6 +232,8 @@ const perfBarElement = factory.createMonitoringBars(perfBarHtmlElement,
     new MonitoringBarsElementInput(perfBarsPoints));
 const perfLineElement = factory.createMonitoringLines(perfLineHtmlElement,
     new MonitoringLinesElementInput(perfLinesPoints, 10));
+const scaleElement = factory.createScale(scaleHtmlElement,
+    new ScaleElementInput(scaleColors, scaleLabels, 'mm/h'));
 
 // 5) animations (switching timeframes, moving perf data...)
 let matrixIndex = 0;

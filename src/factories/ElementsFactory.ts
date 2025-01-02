@@ -6,6 +6,7 @@ import {DateStatusElement, DateStatusElementInput} from './DateStatusElement';
 import {SpeedMatrixElement, SpeedMatrixElementInput} from './SpeedMatrixElement';
 import {MonitoringBarsElement, MonitoringBarsElementInput} from './MonitoringBarsElement';
 import {MonitoringLinesElement, MonitoringLinesElementInput} from './MonitoringLinesElement';
+import {ScaleElement, ScaleElementInput} from './ScaleElement';
 
 export class ElementsFactory {
 
@@ -56,6 +57,12 @@ export class ElementsFactory {
 
     public createMonitoringLines(element: HTMLCanvasElement, inputs: MonitoringLinesElementInput): MonitoringLinesElement {
         const el = new MonitoringLinesElement(this.addSomeDebugInfos);
+        el.build(element, inputs);
+        return el;
+    }
+
+    public createScale(element: HTMLCanvasElement, inputs: ScaleElementInput): ScaleElement {
+        const el = new ScaleElement(this.addSomeDebugInfos);
         el.build(element, inputs);
         return el;
     }

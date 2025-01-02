@@ -43,6 +43,7 @@ export class MonitoringLinesElement {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     x: {
                         // display: false,
