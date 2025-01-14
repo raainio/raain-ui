@@ -8,6 +8,7 @@ import {
     QualityTools,
     RadarMeasure,
     RadarNodeMap,
+    RadarPolarMeasureValue,
     RainComputationMap,
     RainMeasure
 } from 'raain-model';
@@ -25,8 +26,14 @@ describe('TimeframeContainers', () => {
         const timeframeContainers = new TimeframeContainers([]);
 
         const measureValuePolarContainer = new MeasureValuePolarContainer({azimuth: 0, distance: 1, polarEdges: [33, 45.5]});
-        const polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers: [measureValuePolarContainer]});
-        const radarMeasure1 = new RadarMeasure({id: 'rm1', date: new Date(), values: [polarMeasureValue]});
+        const radarPolarMeasureValue = new RadarPolarMeasureValue({
+            polarMeasureValue: new PolarMeasureValue({
+                measureValuePolarContainers: [measureValuePolarContainer],
+                azimuthsCount: 720,
+                polarEdgesCount: 250,
+            }), angle: 0.4, axis: 0
+        });
+        const radarMeasure1 = new RadarMeasure({id: 'rm1', date: new Date(), values: [radarPolarMeasureValue]});
         const radarNodeMap1 = new RadarNodeMap({
             id: 'r1',
             name: 'radarName.polar',
@@ -75,8 +82,14 @@ describe('TimeframeContainers', () => {
         const cartesianPixelWidth = new LatLng({lat: QualityTools.DEFAULT_SCALE, lng: QualityTools.DEFAULT_SCALE});
 
         const measureValuePolarContainer = new MeasureValuePolarContainer({azimuth: 0, distance: 1, polarEdges: [33, 45.5]});
-        const polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers: [measureValuePolarContainer]});
-        const rainMeasure1 = new RainMeasure({id: 'rm1', date: new Date(), values: [polarMeasureValue]});
+        const radarPolarMeasureValue = new RadarPolarMeasureValue({
+            polarMeasureValue: new PolarMeasureValue({
+                measureValuePolarContainers: [measureValuePolarContainer],
+                azimuthsCount: 720,
+                polarEdgesCount: 250,
+            }), angle: 0.4, axis: 0
+        });
+        const rainMeasure1 = new RainMeasure({id: 'rm1', date: new Date(), values: [radarPolarMeasureValue]});
         const rainComputationMap1 = new RainComputationMap({
             id: 'r1',
             date: new Date(),

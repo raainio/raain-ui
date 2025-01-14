@@ -13,17 +13,18 @@
     "chart.js": "^4.4.7",
     "chartjs-plugin-dragdata": "^2.3.1",
     "geolib": "^3.3.3",
+    "hash-it": "^6.0.0",
     "leaflet": "^1.9.3",
     "pixi.js": "^5.3.12",
-    "raain-model": "^2.4.6",
-    "raain-ui": "../dist"
+    "raain-model": "^2.5.3",
+    "raain-ui": "file:../dist"
   },
   "devDependencies": {
     "buffer": "^5.7.1",
     "console-browserify": "^1.2.0",
     "events": "^3.3.0",
     "os-browserify": "^0.3.0",
-    "parcel": "^2.8.3",
+    "parcel": "^2.13.3",
     "process": "^0.11.10",
     "punycode": "^1.4.1",
     "querystring-es3": "^0.2.1",
