@@ -1,11 +1,11 @@
 import {expect} from 'chai';
 import {
     CartesianMeasureValue,
+    CartesianTools,
     CartesianValue,
-    LatLng,
     MeasureValuePolarContainer,
+    MergeStrategy,
     PolarMeasureValue,
-    QualityTools,
     RadarMeasure,
     RadarNodeMap,
     RadarPolarMeasureValue,
@@ -52,8 +52,7 @@ describe('TimeframeContainers', () => {
 
         const cartesianValue1 = new CartesianValue({value: 123, lat: 10, lng: 20});
         const cartesianValue2 = new CartesianValue({value: 321, lat: 11, lng: 21});
-        const cartesianPixelWidth = new LatLng({lat: QualityTools.DEFAULT_SCALE, lng: QualityTools.DEFAULT_SCALE});
-        const cartesianMeasureValue = new CartesianMeasureValue({cartesianValues: [cartesianValue1, cartesianValue2], cartesianPixelWidth});
+        const cartesianMeasureValue = new CartesianMeasureValue({cartesianValues: [cartesianValue1, cartesianValue2]});
         const radarMeasure2 = new RadarMeasure({id: 'rm1', date: new Date(), values: [cartesianMeasureValue]});
         const radarNodeMap2 = new RadarNodeMap({
             id: 'r1',
@@ -79,7 +78,6 @@ describe('TimeframeContainers', () => {
 
     it('should create from raain model RainComputationMap', async () => {
         const timeframeContainers = new TimeframeContainers([]);
-        const cartesianPixelWidth = new LatLng({lat: QualityTools.DEFAULT_SCALE, lng: QualityTools.DEFAULT_SCALE});
 
         const measureValuePolarContainer = new MeasureValuePolarContainer({azimuth: 0, distance: 1, polarEdges: [33, 45.5]});
         const radarPolarMeasureValue = new RadarPolarMeasureValue({
@@ -96,7 +94,12 @@ describe('TimeframeContainers', () => {
             map: [],
             isReady: true
         });
-        rainComputationMap1.setMapData([rainMeasure1, rainMeasure1]);
+        const cartesianTools = new CartesianTools();
+        cartesianTools.buildLatLngEarthMap();
+        rainComputationMap1.setMapData([rainMeasure1, rainMeasure1], {
+            mergeStrategy: MergeStrategy.AVERAGE,
+            cartesianTools
+        });
         rainComputationMap1.name = 'rain.polar';
 
         timeframeContainers.addFromRainComputationMap(rainComputationMap1, true);
@@ -105,7 +108,7 @@ describe('TimeframeContainers', () => {
 
         const cartesianValue1 = new CartesianValue({value: 123, lat: 10, lng: 20});
         const cartesianValue2 = new CartesianValue({value: 321, lat: 11, lng: 21});
-        const cartesianMeasureValue = new CartesianMeasureValue({cartesianValues: [cartesianValue1, cartesianValue2], cartesianPixelWidth});
+        const cartesianMeasureValue = new CartesianMeasureValue({cartesianValues: [cartesianValue1, cartesianValue2]});
         const rainMeasure2 = new RainMeasure({id: 'rm1', date: new Date(), values: [cartesianMeasureValue, cartesianMeasureValue]});
         const rainComputationMap2 = new RainComputationMap({
             id: 'r1',
@@ -113,7 +116,10 @@ describe('TimeframeContainers', () => {
             map: [],
             isReady: true
         });
-        rainComputationMap2.setMapData([rainMeasure2]);
+        rainComputationMap2.setMapData([rainMeasure2], {
+            mergeStrategy: MergeStrategy.AVERAGE,
+            cartesianTools
+        });
         rainComputationMap2.name = 'rain.cartesian';
 
         timeframeContainers.addFromRainComputationMap(rainComputationMap2, false);

@@ -1,7 +1,7 @@
 import {IconMapValue, MapTools} from '../tools';
 import {Point} from 'leaflet';
 import {GridValue} from './GridValue';
-import {QualityTools} from 'raain-model';
+import {CartesianTools} from 'raain-model';
 
 export class IconGridValue extends GridValue {
 
@@ -39,7 +39,7 @@ export class IconGridValue extends GridValue {
         end: { x: number, y: number },
         center: { x: number, y: number },
     } {
-        const angle = QualityTools.GetAzimuthRad(-this.angle);
+        const angle = CartesianTools.GetAzimuthRad(-this.angle);
         const center = {
             x: this.centerX,
             y: this.centerY

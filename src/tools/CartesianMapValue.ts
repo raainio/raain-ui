@@ -1,4 +1,4 @@
-import {CartesianValue} from 'raain-model';
+import {CartesianTools, CartesianValue} from 'raain-model';
 import {MapLatLng} from './MapLatLng';
 import {LatLng} from 'leaflet';
 
@@ -28,15 +28,18 @@ export class CartesianMapValue extends MapLatLng {
         );
     }
 
-    public static From(cartesianValues: CartesianValue[], widthForMap: MapLatLng | { lat: number, lng: number }): CartesianMapValue[] {
+    public static From(cartesianValues: CartesianValue[], cartesianTools: CartesianTools): CartesianMapValue[] {
         const cartesianMapValues = [];
         cartesianValues.forEach(cartesianValue => {
+            const latLngFromEarthMap = cartesianTools.getLatLngFromEarthMap(cartesianValue);
+            const scaleLatLngFromEarth = cartesianTools.getScaleLatLngFromEarth(cartesianValue);
+
             cartesianMapValues.push(new CartesianMapValue(
                 cartesianValue.value,
-                cartesianValue.lat,
-                cartesianValue.lng,
-                cartesianValue.lat + widthForMap.lat,
-                cartesianValue.lng + widthForMap.lng,
+                latLngFromEarthMap.lat,
+                latLngFromEarthMap.lng,
+                latLngFromEarthMap.lat + scaleLatLngFromEarth.lat,
+                latLngFromEarthMap.lng + scaleLatLngFromEarth.lng,
                 '' + Math.random(),
                 ''
             ));
