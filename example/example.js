@@ -128,7 +128,7 @@ const comparePoints = [
     {x: 9, y: 25, r: 9, name: 'two'},
     {x: 55, y: 22, r: 10, name: 'three'},
     {x: 46, y: 32, r: 5}];
-const configurationPoints = [{x: 3, y: 2}, {x: 10, y: 25}, {x: 55, y: 135}];
+const configurationPoints = [{x: 0, y: -1}, {x: 10, y: 0.5}, {x: 65, y: 2}];
 const dateStatusPoints1 = [
     {date: new Date('2022-05-01 13:05'), value: 2},
     {date: new Date('2023-05-01 13:05'), value: 2},
@@ -187,44 +187,78 @@ const compareElement = factory.createCompare(compareHtmlElement,
     new CompareElementInput(comparePoints, {x: 80, y: 80}, console.log));
 const dateStatusElement = factory.createDateStatus(dateFocusHtmlElement,
     new DateStatusElementInput(setOfDates));
+const confTransparency = 0.3;
 const configurationElement = factory.createConfiguration(configurationHtmlElement,
     new ConfigurationElementInput(
         configurationPoints,
-        {x: 0, y: -2},
-        {x: 100, y: 5},
+        {x: 0, y: -1},
+        {x: 100, y: 3},
         true,
         [
             {
-                color: Tools.getTransparency(ChartScaleColors['0.4'], 0.8),
+                color: Tools.getTransparency(ChartScaleColors['0'], confTransparency),
                 yStart: Math.log10(0.1),
                 yEnd: Math.log10(0.4)
             },
-            {color: Tools.getTransparency(ChartScaleColors['1'], 0.8), yStart: Math.log10(0.4), yEnd: Math.log10(1)},
-            {color: Tools.getTransparency(ChartScaleColors['3'], 0.8), yStart: Math.log10(1), yEnd: Math.log10(3)},
-            {color: Tools.getTransparency(ChartScaleColors['10'], 0.8), yStart: Math.log10(3), yEnd: Math.log10(10)},
-            {color: Tools.getTransparency(ChartScaleColors['20'], 0.8), yStart: Math.log10(10), yEnd: Math.log10(20)},
-            {color: Tools.getTransparency(ChartScaleColors['30'], 0.8), yStart: Math.log10(20), yEnd: Math.log10(30)},
-            {color: Tools.getTransparency(ChartScaleColors['50'], 0.8), yStart: Math.log10(30), yEnd: Math.log10(50)},
-            {color: Tools.getTransparency(ChartScaleColors['100'], 0.8), yStart: Math.log10(50), yEnd: Math.log10(100)},
             {
-                color: Tools.getTransparency(ChartScaleColors['150'], 0.8),
+                color: Tools.getTransparency(ChartScaleColors['0.4'], confTransparency),
+                yStart: Math.log10(0.4),
+                yEnd: Math.log10(1)
+            },
+            {
+                color: Tools.getTransparency(ChartScaleColors['1'], confTransparency),
+                yStart: Math.log10(1),
+                yEnd: Math.log10(3)
+            },
+            {
+                color: Tools.getTransparency(ChartScaleColors['3'], confTransparency),
+                yStart: Math.log10(3),
+                yEnd: Math.log10(10)
+            },
+            {
+                color: Tools.getTransparency(ChartScaleColors['10'], confTransparency),
+                yStart: Math.log10(10),
+                yEnd: Math.log10(20)
+            },
+            {
+                color: Tools.getTransparency(ChartScaleColors['20'], confTransparency),
+                yStart: Math.log10(20),
+                yEnd: Math.log10(30)
+            },
+            {
+                color: Tools.getTransparency(ChartScaleColors['30'], confTransparency),
+                yStart: Math.log10(30),
+                yEnd: Math.log10(50)
+            },
+            {
+                color: Tools.getTransparency(ChartScaleColors['50'], confTransparency),
+                yStart: Math.log10(50),
+                yEnd: Math.log10(100)
+            },
+            {
+                color: Tools.getTransparency(ChartScaleColors['100'], confTransparency),
                 yStart: Math.log10(100),
                 yEnd: Math.log10(150)
             },
             {
-                color: Tools.getTransparency(ChartScaleColors['200'], 0.8),
+                color: Tools.getTransparency(ChartScaleColors['150'], confTransparency),
                 yStart: Math.log10(150),
                 yEnd: Math.log10(200)
             },
             {
-                color: Tools.getTransparency(ChartScaleColors['250'], 0.8),
+                color: Tools.getTransparency(ChartScaleColors['200'], confTransparency),
                 yStart: Math.log10(200),
                 yEnd: Math.log10(250)
             },
             {
-                color: Tools.getTransparency(ChartScaleColors['300'], 0.8),
+                color: Tools.getTransparency(ChartScaleColors['250'], confTransparency),
                 yStart: Math.log10(250),
                 yEnd: Math.log10(300)
+            },
+            {
+                color: Tools.getTransparency(ChartScaleColors['300'], confTransparency),
+                yStart: Math.log10(300),
+                yEnd: Math.log10(500)
             },
         ],
     ));

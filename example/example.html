@@ -38,9 +38,14 @@
     <canvas id="speedMatrix"></canvas>
 </div>
 
-<h3>configuration example</h3>
-<div style="height: 400px;">
-    <canvas id="configuration"></canvas>
+<h3>configuration & scale example</h3>
+<div style="position: relative; height: 400px;">
+    <div style="position:absolute;  top:0;bottom: 0; width:100px;">
+        <canvas id="scale"></canvas>
+    </div>
+    <div style="position:absolute; position:absolute;  top:0;bottom: 0; left:100px; ">
+        <canvas id="configuration"></canvas>
+    </div>
 </div>
 
 <h3>perf example</h3>
@@ -49,11 +54,6 @@
 </div>
 <div style="height: 200px;">
     <canvas id="perfLine"></canvas>
-</div>
-
-<h3>scale example</h3>
-<div style="height: 400px; width: 100px">
-    <canvas id="scale"></canvas>
 </div>
 
 <script src="./example.js" type="module"></script>

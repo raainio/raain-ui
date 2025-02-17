@@ -1,4 +1,5 @@
 import Chart from 'chart.js/auto';
+import {ChartColors} from './Tools';
 
 export class ScaleElementInput {
     constructor(
@@ -40,16 +41,25 @@ export class ScaleElement {
                             // This case happens on initial chart load
                             return;
                         }
-                        const color1 = inputs.colors[index].color;
+
+                        let color1 = ChartColors.dark;
+                        if (index < inputs.colors.length) {
+                            color1 = inputs.colors[index].color;
+                        }
                         let color2 = color1;
-                        if (inputs.colors.length > index + 1) {
+                        if (index + 1 < inputs.colors.length) {
                             color2 = inputs.colors[index + 1].color;
                         }
-                        return getGradient(chart, index, color1, index + 1, color2);
+                        // return getGradient(chart, index, color1, index + 1, color2);
+                        return color1;
+                        // return getGradient(chart, index, color1, index + 1, color2);
                     },
                 };
             })
         };
+
+        // remove the last color
+        // data.datasets.splice(data.datasets.length - 1);
 
         const config: any = {
             data,
@@ -74,12 +84,12 @@ export class ScaleElement {
                             display: false // Hide the y-axis borderline
                         },
                         grid: {
-                            drawBorder: false, // Hide the y-axis grid border
-                            drawOnChartArea: false, // Hide the y-axis grid lines on the chart area
-                            drawTicks: false // Hide the y-axis ticks
+                            drawBorder: false, // Hide the x-axis grid border
+                            drawOnChartArea: false, // Hide the x-axis grid lines on the chart area
+                            drawTicks: false // Hide the x-axis ticks
                         },
                         ticks: {
-                            // display: false // Hide the y-axis tick labels
+                            // display: false // Hide the x-axis tick labels
                         }
                     },
                     y: {
@@ -93,7 +103,11 @@ export class ScaleElement {
                             drawOnChartArea: false, // Hide the y-axis grid lines on the chart area
                             // drawTicks: false // Hide the y-axis ticks
                         },
+                        // min: 0,
+                        // max: 300,
                         ticks: {
+                            stepSize: 0.5,
+                            autoSkip: false,
                             // display: false // Hide the y-axis tick labels
                             callback(value: number) {
                                 if (value >= 0 && value < inputs.labels.length) {
@@ -109,6 +123,5 @@ export class ScaleElement {
         };
         this.chart = new Chart(element, config);
     }
-
 
 }

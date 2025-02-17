@@ -62,10 +62,10 @@ describe('CartesianDrawer', () => {
 
         expect(spy.values[0]).deep.equal({
             gridValue: {
-                color: 2411217,
+                color: 559055,
                 height: 1,
                 id: '1',
-                transparency: 0.2890504973749961,
+                transparency: 0.6321205588285577,
                 width: 1,
                 x: -1000,
                 y: -1000,
@@ -107,10 +107,10 @@ describe('CartesianDrawer', () => {
 
         expect(spy.values[0]).deep.equal({
             gridValue: {
-                color: 2411217,
+                color: 559055,
                 height: 0,
                 id: '1',
-                transparency: 0.2890504973749961,
+                transparency: 0.6321205588285577,
                 width: 0,
                 x: -1000,
                 y: -1000,
