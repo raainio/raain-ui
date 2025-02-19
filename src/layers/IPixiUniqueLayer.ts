@@ -9,7 +9,7 @@ export interface IPixiUniqueLayer {
 
     hide(): void;
 
-    show(): void;
+    show(alpha?: number): void;
 
     isVisible(): boolean;
 

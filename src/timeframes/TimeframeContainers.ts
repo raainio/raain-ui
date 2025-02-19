@@ -34,11 +34,11 @@ export class TimeframeContainers {
         this.containers.push(new TimeframeContainer(rainComputationMap.name, frames, rainComputationMap.getVersion()));
     }
 
-    showTimeframes(name: string, date: Date) {
+    showTimeframes(name: string, date: Date, alpha = 1) {
         let shows: { layers: IPixiUniqueLayer[], frameContainer: FrameContainer }[] = [];
         for (const container of this.containers) {
             if (container.name === name) {
-                shows = shows.concat(container.showTimeframes(date));
+                shows = shows.concat(container.showTimeframes(date, alpha));
             }
         }
         return shows;

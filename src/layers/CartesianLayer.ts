@@ -27,8 +27,8 @@ export class CartesianLayer implements IPixiUniqueLayer {
         this.mapGraph.alpha = 0;
     }
 
-    public show(): void {
-        this.mapGraph.alpha = 1;
+    public show(alpha = 1): void {
+        this.mapGraph.alpha = alpha;
     }
 
     public isVisible(): boolean {

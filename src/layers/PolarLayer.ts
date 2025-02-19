@@ -34,12 +34,12 @@ export class PolarLayer implements IPixiUniqueLayer {
         this.mapGraph.alpha = 0;
     }
 
-    public show() {
-        this.mapGraph.alpha = 1;
+    public show(alpha = 1) {
+        this.mapGraph.alpha = alpha;
     }
 
     public isVisible(): boolean {
-        return this.mapGraph.alpha === 1;
+        return this.mapGraph.alpha !== 0;
     }
 
     public setValues(center: MapLatLng | { lat: number, lng: number },

@@ -48,7 +48,7 @@ export class CompositeLayer extends PixiGridLayer implements IPixiLayer {
         }
     }
 
-    public showTheFistMatchingId(layerId: string): IPixiUniqueLayer {
+    public showTheFistMatchingId(layerId: string, alpha = 1): IPixiUniqueLayer {
         let firstFound = false;
         let hideEverythingElse = false;
         let layerShown: IPixiUniqueLayer = null;
@@ -58,7 +58,7 @@ export class CompositeLayer extends PixiGridLayer implements IPixiLayer {
             }
 
             if (firstFound && !hideEverythingElse) {
-                layer.show();
+                layer.show(alpha);
                 hideEverythingElse = true;
                 layerShown = layer;
             } else {
@@ -70,17 +70,17 @@ export class CompositeLayer extends PixiGridLayer implements IPixiLayer {
         return layerShown;
     }
 
-    public show(inId: string): IPixiUniqueLayer[] {
+    public show(inId: string, alpha = 1): IPixiUniqueLayer[] {
         const layersToShow = this.layers.filter(l => l.getId().indexOf(inId) >= 0);
-        layersToShow.forEach(l => l.show());
+        layersToShow.forEach(l => l.show(alpha));
 
         this.renderVisibleLayers();
         return layersToShow;
     }
 
-    public showAll(): IPixiUniqueLayer[] {
+    public showAll(alpha = 1): IPixiUniqueLayer[] {
         const layersToShow = this.layers;
-        layersToShow.forEach(l => l.show());
+        layersToShow.forEach(l => l.show(alpha));
 
         this.renderVisibleLayers();
         return layersToShow;

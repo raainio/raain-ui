@@ -15,7 +15,7 @@ export class TimeframeContainer {
         this.compositeLayer = compositeLayer;
     }
 
-    showTimeframes(date: Date) {
+    showTimeframes(date: Date, alpha = 1) {
 
         if (!this.compositeLayer) {
             return [{layers: [], frameContainer: null}];
@@ -23,7 +23,7 @@ export class TimeframeContainer {
 
         let layersShown: { layers: IPixiUniqueLayer[], frameContainer: FrameContainer }[] = [];
         this.timeframe.forEach(frameContainer => {
-            layersShown = layersShown.concat({layers: this.compositeLayer.show(date.toISOString()), frameContainer});
+            layersShown = layersShown.concat({layers: this.compositeLayer.show(date.toISOString(), alpha), frameContainer});
         });
 
         return layersShown;

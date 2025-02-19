@@ -20,6 +20,7 @@ export class MapElement {
     public markersLayer: MarkersLayer;
     public compositeLayer: CompositeLayer;
     public markersProduced: Marker[];
+    public alpha = 1;
 
     constructor(
         public center: MapLatLng | { lat: number, lng: number } | { latitude: number, longitude: number } | any = {lat: 0, lng: 0},
@@ -70,7 +71,7 @@ export class MapElement {
         // if (firstLayerIdPushed) {
         //     compositeLayer.showTheFistMatchingId(firstLayerIdPushed);
         // }
-        compositeLayer.showAll();
+        compositeLayer.showAll(this.alpha);
 
         // Markers
         let markersProduced = [];
@@ -106,7 +107,7 @@ export class MapElement {
 
         }
         // this.compositeLayer.showTheFistMatchingId(firstLayerIdPushed);
-        this.compositeLayer.showAll();
+        this.compositeLayer.showAll(this.alpha);
 
         this.compositeLayer.redraw();
         this.mapLeaflet.invalidateSize({animate: true});

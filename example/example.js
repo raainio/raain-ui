@@ -114,7 +114,7 @@ const allIconValues = new TimeframeContainer('allIcons', [
 ], 'iconsExample');
 
 const timeframeContainers = new TimeframeContainers([
-    // new TimeframeContainer('polar_with_Rain0_', [new FrameContainer(now, createPolarMapValues(0), true, false)], 'polarExample1'),
+    new TimeframeContainer('polar_with_Rain0_', [new FrameContainer(now, createPolarMapValues(0), true, false)], 'polarExample1'),
     new TimeframeContainer('polar_with_Radar0_', [new FrameContainer(addMinutes(now, 10), createPolarMapValues(0), true, false)], 'polarExample2'),
     new TimeframeContainer('polar_Rain1_', [new FrameContainer(addMinutes(now, 20), createPolarMapValues(1), true, false)], 'polarExample3'),
     new TimeframeContainer('polar_without_optimization_', [new FrameContainer(addMinutes(now, 30), createPolarMapValues(1), true, false)]),
@@ -280,7 +280,14 @@ const toggleAnimation = () => {
     }
 }
 const switchTimeFramePolarRain0 = () => {
-    timeframeContainers.showTimeframes('polar_with_Rain0_', now);
+    // timeframeContainers.showTimeframes('polar_with_Rain0_', now, 1);
+    mapElement.compositeLayer.showTheFistMatchingId('polar_with_Rain0_', 0.2);
+    mapElement.mapLeaflet.eachLayer(layer => {
+        if (layer._container?.style) {
+            layer._container.style.filter = 'brightness(30%)';
+        }
+    });
+
     if (animationEnabled) {
         setTimeout(switchTimeFrameCartesian0, animationTimeInMs);
     }
@@ -298,13 +305,19 @@ const switchTimeFramePolarRain1 = () => {
     }
 };
 const switchTimeFramePolarWithoutOptimization = () => {
-    mapElement.compositeLayer.showTheFistMatchingId('polar_without_optimization_');
+    mapElement.compositeLayer.showTheFistMatchingId('polar_without_optimization_', 0.5);
+    mapElement.mapLeaflet.eachLayer(layer => {
+        if (layer._container?.style) {
+            layer._container.style.filter = 'brightness(90%)';
+        }
+    });
+
     if (animationEnabled) {
         setTimeout(switchTimeFrameCartesian0, animationTimeInMs);
     }
 };
 const switchTimeFrameCartesian0 = () => {
-    allCartesianValues.showTimeframes(now);
+    allCartesianValues.showTimeframes(now, 0.2);
     if (animationEnabled) {
         setTimeout(switchTimeFrameIcons, animationTimeInMs);
     }
