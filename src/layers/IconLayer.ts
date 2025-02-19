@@ -32,7 +32,7 @@ export class IconLayer implements IPixiUniqueLayer {
     }
 
     public isVisible(): boolean {
-        return this.mapGraph.alpha === 1;
+        return this.mapGraph.alpha !== 0;
     }
 
     public setValues(center: MapLatLng | { lat: number, lng: number },
