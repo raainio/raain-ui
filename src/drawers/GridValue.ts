@@ -21,7 +21,7 @@ export class GridValue {
             .sort((a, b) => b[0] - a[0]);
 
         for (const [index, scaleValue] of scaleDescValues.entries()) {
-            transparency = 1 - Math.exp(-0.1 * index);
+            transparency = 0; // 1 - Math.exp(-0.1 * index);
             color = scaleValue[1];
             if (scaleValue[0] <= srcValue) {
                 break;

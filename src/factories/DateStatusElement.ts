@@ -1,6 +1,7 @@
 import Chart from 'chart.js/auto';
-import {ChartColors, DateRange, Tools} from './Tools';
+import {DateRange, Tools} from './Tools';
 import {getRelativePosition} from 'chart.js/helpers';
+import {ChartColors} from './ChartColors';
 
 export class DateStatusElementInput {
     constructor(

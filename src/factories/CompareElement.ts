@@ -1,5 +1,6 @@
 import Chart from 'chart.js/auto';
-import {ChartColors, Tools} from './Tools';
+import {Tools} from './Tools';
+import {ChartColors} from './ChartColors';
 
 export class CompareElementInput {
     constructor(

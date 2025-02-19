@@ -1,5 +1,5 @@
 import Chart from 'chart.js/auto';
-import {ChartColors} from './Tools';
+import {ChartColors} from './ChartColors';
 
 export class MonitoringLinesElementInput {
     constructor(
