@@ -61,6 +61,11 @@ export class PolarDrawer implements IDrawer {
         return this.possibleDrawing !== this.getPossibleDrawing();
     }
 
+    public getExecOfWindowPoints(values: PolarMapValue[], fnToApplyToAllPoint: (c: PolarMapValue[]) => any) {
+        const filteredValues = values.filter(this.polarMap2Display);
+        return fnToApplyToAllPoint(filteredValues);
+    }
+
     public getExecOfVisiblePoints(values: PolarMapValue[], fnToApplyToAllPoint: (v: PolarMapValue[]) => any) {
 
         const optimization = this.getOptimization();

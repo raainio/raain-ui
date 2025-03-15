@@ -1,4 +1,5 @@
 export interface IDrawer {
-    getExecOfVisiblePoints(values: any, fnToApplyToAllPoint: (c: any) => any): any;
+    getExecOfWindowPoints(values: any, fnToApplyToAllPoint: (c: any) => any): any;
 
+    getExecOfVisiblePoints(values: any, fnToApplyToAllPoint: (c: any) => any): any;
 }

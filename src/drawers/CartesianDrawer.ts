@@ -59,6 +59,11 @@ export class CartesianDrawer implements IDrawer {
         return this.distanceRatio !== this.getDistanceRatio(center);
     }
 
+    public getExecOfWindowPoints(values: CartesianMapValue[], fnToApplyToAllPoint: (c: CartesianMapValue[]) => any) {
+        const filteredValues = values.filter(this.cartesianMap2Display);
+        return fnToApplyToAllPoint(filteredValues);
+    }
+
     public getExecOfVisiblePoints(values: CartesianMapValue[], fnToApplyToAllPoint: (c: CartesianMapValue[]) => any) {
 
         const optimization = this.getOptimization();
