@@ -1,6 +1,6 @@
 {
   "name": "raain-ui",
-  "version": "2.3.9",
+  "version": "2.3.10",
   "author": "contact@raain.io",
   "homepage": "https://github.com/raainio/raain-ui",
   "description": "raain.io ui layers",
@@ -20,7 +20,7 @@
     "raain-model": "^3.0.9"
   },
   "scripts": {
-    "bp:_clean": "rm -rf package-lock.json node_modules .gen .logs .nyc_output .logs .output.txt .coverage .coverage_temp dist app && npm i",
+    "bp:_clean": "rm -rf package-lock.json node_modules .gen .logs .nyc_output .logs .output.txt .coverage .angular dist app www && npm i",
     "bp:bump": "OLD_VERSION=\"v$(node -e \"console.log(require('./package.json').version)\")\" && VERSION=\"$(npm version patch --no-git-tag-version)\" && npm i && echo \"export const bpInfo = {version:'$VERSION'}\" > ./src/bpInfo.ts && git tag $OLD_VERSION && git checkout -b $VERSION",
     "bp:update-changelog-dates": "node ./scripts/bp/update-changelog-date.js",
     "bp:use-local-deps": "node ./scripts/bp/switch-dependencies.js local && npm run bp:_clean",
