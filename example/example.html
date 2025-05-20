@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>raain-ui-example</title>
+    <meta charset="UTF-8"/>
+    <!-- Include the CesiumJS JavaScript and CSS files -->
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.128/Build/Cesium/Cesium.js"></script>
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.128/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+
+</head>
+<body>
+
+<a href="example.html">example1</a>
+<a href="example-data.html">example2</a>
+
+<h3>map example</h3>
+<a onclick="toggleAnimation()"> >> animate</a>
+<a onclick="switchTimeFramePolarRain0()"> >> switchTimeFramePolarRain0</a>
+<a onclick="switchTimeFrameCartesian0()"> >> switchTimeFrameCartesian0</a>
+<a onclick="switchTimeFramePolarRain1()"> >> switchTimeFramePolarRain1</a>
+<a onclick="switchTimeFramePolarWithoutOptimization()"> >> switchTimeFramePolarWithoutOptimization</a>
+<a onclick="switchTimeFrameIcons()"> >> switchTimeFrameIcons</a>
+<hr>
+<div id="map" style="height: 500px; width: 100%;"></div>
+
+<h3>compare example</h3>
+<div style="height: 300px; width: 100%;">
+    <canvas id="compare"></canvas>
+</div>
+
+<h3>date focus example</h3>
+<div style="height: 300px; width: 100%;">
+    <a onclick="focusPrevious()"> << </a>
+    <a onclick="focusReset()"> focusReset</a>
+    <a onclick="focusNext()"> >> </a>
+    <canvas id="dateFocus"></canvas>
+</div>
+
+<h3>dynamic date focus example</h3>
+<div style="height: 300px; width: 100%;">
+    <a onclick="dynamicFocusPrevious()"> << </a>
+    <a onclick="dynamicFocusReset()"> focusReset</a>
+    <a onclick="dynamicFocusNext()"> >> </a>
+    <canvas id="dynamicDate"></canvas>
+</div>
+
+<h3>matrix example</h3>
+<div style="height: 300px; width: 100%;">
+    <h5 id="speedTitle">...</h5>
+    <canvas id="speedMatrix"></canvas>
+</div>
+
+<h3>configuration & scale example</h3>
+<div style="position: relative; height: 400px;">
+    <div style="position:absolute;  top:0;bottom: 0; width:100px;">
+        <canvas id="scale"></canvas>
+    </div>
+    <div style="position:absolute; position:absolute;  top:0;bottom: 0; left:100px; ">
+        <canvas id="configuration"></canvas>
+    </div>
+</div>
+
+<h3>perf example</h3>
+<div style="height: 100px;width: 100px; border:1px solid green;">
+    <canvas id="perfBar"></canvas>
+</div>
+<div style="height: 200px;">
+    <canvas id="perfLine"></canvas>
+</div>
+
+<h3>earth map example TODO</h3>
+<div id="earthMap" style="height: 400px; width: 400px;position: relative"></div>
+
+<script src="./example.js" type="module"></script>
+
+<script>
+    //  Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmMWYzYzE5NC05ZTdhLTQwNjAtOWI1Ny1lMjZiOTRmMTQ4MDgiLCJpZCI6Mjk1MjM3LCJpYXQiOjE3NDQ5Nzk5Nzd9.9rJCrhRntACDWSpWrzYAA0bIyPl9eLLBOBUU1G5ZhPo';
+    //  const viewer = new Cesium.Viewer('earthMap', {
+    //      terrain: Cesium.Terrain.fromWorldTerrain(),
+    //  });
+</script>
+
+</body>
+</html>

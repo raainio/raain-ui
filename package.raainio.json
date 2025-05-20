@@ -1,0 +1,8 @@
+{
+  "local.dependencies": {
+    "raain-model": "file:../raain-model/dist"
+  },
+  "remote.dependencies": {
+    "raain-model": "^3.0.9"
+  }
+}

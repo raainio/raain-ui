@@ -1,0 +1,68 @@
+{
+  "name": "raain-ui",
+  "version": "2.3.8",
+  "author": "contact@raain.io",
+  "homepage": "https://github.com/raainio/raain-ui",
+  "description": "raain.io ui layers",
+  "keywords": [
+    "raain.io",
+    "pixi"
+  ],
+  "private": false,
+  "license": "MIT",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "peerDependencies": {
+    "chart.js": "^4.4.7",
+    "chartjs-plugin-dragdata": "^2.3.1",
+    "leaflet": "^1.9.4",
+    "pixi.js": "^5.3.12",
+    "raain-model": "^3.0.9"
+  },
+  "scripts": {
+    "bp:_clean": "rm -rf package-lock.json node_modules .gen .logs .nyc_output .logs .output.txt .coverage .coverage_temp dist app && npm i",
+    "bp:bump": "OLD_VERSION=\"v$(node -e \"console.log(require('./package.json').version)\")\" && VERSION=\"$(npm version patch --no-git-tag-version)\" && npm i && echo \"export const bpInfo={version:'$VERSION'}\" > ./src/bpInfo.ts && git tag $OLD_VERSION && git checkout -b $VERSION",
+    "bp:update-changelog": "node ./scripts/bp/update-changelog-date.js",
+    "bp:use-local-deps": "node ./scripts/bp/switch-dependencies.js local && npm run bp:_clean",
+    "bp:use-remote-deps": "node ./scripts/bp/switch-dependencies.js remote && npm run bp:_clean",
+    "bp:branch:push": "git add . && git commit -m \"chore: release v$(node -p \"require('./package.json').version\")\" && git push",
+    "bp:branch:squash": "node ./scripts/bp/squash-commits.js",
+    "test": "nyc ./node_modules/.bin/_mocha --require ./tools/register.js 'specs/**/**.spec.ts'",
+    "build": "npm run build-dist",
+    "build-dist": "rm -rf dist/ && tsc --project tsconfig.json && cp *.md dist/ && cp package.json dist/ && cp -r src/data dist/"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.7",
+    "chartjs-chart-geo": "^4.3.4",
+    "chartjs-plugin-dragdata": "^2.3.1",
+    "geolib": "^3.3.4",
+    "leaflet": "^1.9.4",
+    "pixi.js": "^5.3.12",
+    "raain-model": "^3.0.9",
+    "satellite-view": "^2.1.2",
+    "spinning-ball": "^0.5.0",
+    "tile-setter": "^0.1.12",
+    "yawgl": "^0.4.3"
+  },
+  "devDependencies": {
+    "@testdeck/mocha": "^0.3.3",
+    "@types/chai": "^5.2.1",
+    "@types/jsdom": "^21.1.7",
+    "@types/leaflet": "^1.9.3",
+    "@types/mocha": "^10.0.1",
+    "@types/sinon": "^17.0.4",
+    "assert": "^2.0.0",
+    "chai": "4.3.4",
+    "chai-as-promised": "^7.1.1",
+    "chai-spies": "^1.0.0",
+    "jsdom": "^24.0.0",
+    "mocha": "^10.2.0",
+    "mock-browser": "^0.92.14",
+    "nyc": "^15.1.0",
+    "sinon": "^15.2.0",
+    "ts-mockito": "^2.6.1",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.20.1",
+    "typescript": "^5.0.3"
+  }
+}
