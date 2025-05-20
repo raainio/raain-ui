@@ -182,12 +182,7 @@ Then use `@angular-builders/custom-webpack` to apply this configuration:
 
 ## 📝 Changelog
 
-See the [Changelog](./CHANGELOG.md) for a detailed list of changes in each version. Recent highlights include:
-
-- **v2.3.x**: Cartesian earth optimization, DateStatusUtils, Memory bank documentation
-- **v2.2.x**: Model polar visualization improvements
-- **v2.1.x**: Support for icons in composite layers
-- **v2.0.x**: Updated raain-model integration
+See the [Changelog](./CHANGELOG.md) for a detailed list of changes in each version.
 
 ## 👥 Contributing
 

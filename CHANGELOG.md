@@ -9,7 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-## [2.3.x] - Current
+- Version bump to 2.3.9
+- Version information export in bpInfo.ts
+
+## [2.3.8] - 2025-05-20
+
+### Changed
+
+- Version bump to 2.3.8
+- Version information export in bpInfo.ts
+
+## [2.3.6] - 2025-04-01
 
 ### Added
 
