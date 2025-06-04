@@ -257,14 +257,19 @@ const dynamicDateElement = factory.createDynamicDateStatus(dynamicDateHtmlElemen
 
                 resolve([
                     {
-                        label: 'Test Data',
+                        label: 'Dynamic Data1',
+                        style: 'bar',
+                        values: baseData
+                    },
+                    {
+                        label: 'Dynamic Data2',
                         style: 'line',
                         values: baseData
                     }
                 ]);
             }, 500); // Simulate network delay
         });
-    }));
+    }, {dataLength: 2}));
 const confTransparency = 0.3;
 const configurationElement = factory.createConfiguration(configurationHtmlElement,
     new ConfigurationElementInput(

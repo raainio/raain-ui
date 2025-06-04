@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added onLastClick callback option to DynamicDateStatusElement
+- Improved dataset initialization in DynamicDateStatusElement
+- Simplified type definitions using IDataSet interface
+
 ### Changed
 
-- Version bump to 2.3.10
+- Version bump to 2.3.13
 - Version information export in bpInfo.ts
 
 ## [2.3.9] - 2025-05-20

@@ -1,30 +1,32 @@
 import {DateRange} from './Tools';
-import {DateStatusElement, DateStatusElementInput} from './DateStatusElement';
+import {DateStatusElement, DateStatusElementInput, IDataSet} from './DateStatusElement';
 import {DateStatusUtils} from './DateStatusUtils';
 
 export class DynamicDateStatusElementInput extends DateStatusElementInput {
     constructor(
-        public fetchDataFn: (focusDate: Date, focusRange: DateRange) => Promise<{
-            label: string,
-            style: string,
-            values: { date: Date, value: number }[],
-        }[]>,
+        public fetchDataFn: (focusDate: Date, focusRange: DateRange) => Promise<IDataSet[]>,
         public options: {
             dataLength?: number,
             focusDate?: Date,
             focusRange?: DateRange,
             chartMinValue?: number,
-            chartMaxValue?: number
+            chartMaxValue?: number,
+            onLastClick?: (date: Date) => void,
         } = {
             dataLength: 1,
             focusDate: new Date(),
             focusRange: DateRange.YEAR,
             chartMinValue: 0,
             chartMaxValue: 100,
+            onLastClick: undefined,
         },
     ) {
         super(
-            [{label: '...', style: 'bar', values: []}],
+            Array.from({length: options.dataLength ?? 1}, (_, i) => ({
+                label: `Dataset ${i + 1}`,
+                style: 'bar',
+                values: []
+            })),
             options.focusDate ?? new Date(),
             options.focusRange ?? DateRange.YEAR,
             options.chartMinValue,
@@ -36,11 +38,7 @@ export class DynamicDateStatusElementInput extends DateStatusElementInput {
 export class DynamicDateStatusElement extends DateStatusElement {
     protected element: HTMLCanvasElement;
     protected inputs: DynamicDateStatusElementInput;
-    protected fetchDataFn: (focusDate: Date, focusRange: DateRange) => Promise<{
-        label: string,
-        style: string,
-        values: { date: Date, value: number }[],
-    }[]>;
+    protected fetchDataFn: (focusDate: Date, focusRange: DateRange) => Promise<IDataSet[]>;
 
     constructor(addSomeDebugInfos = false) {
         super(addSomeDebugInfos);
@@ -141,6 +139,9 @@ export class DynamicDateStatusElement extends DateStatusElement {
         this.focusClick = async (e) => {
 
             if (this.focusRange >= DateRange.HOUR) {
+                if (this.inputs.options?.onLastClick) {
+                    this.inputs.options?.onLastClick(new Date(this.focusDate));
+                }
                 return;
             }
 

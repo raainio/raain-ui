@@ -61,6 +61,32 @@ function checkForUncommittedChanges() {
     }
 }
 
+// Function to check if we are on main or master branch
+function checkIfOnMainOrMaster() {
+    try {
+        // Get the current branch name
+        const currentBranchResult = execCommand('git rev-parse --abbrev-ref HEAD', true);
+        if (!currentBranchResult.success) {
+            console.error('Failed to get current branch name.');
+            return false; // Fail safe - if we can't check, assume we're not on main/master
+        }
+        const currentBranch = currentBranchResult.output.trim();
+
+        // Check if we're on main or master branch
+        if (currentBranch === 'main' || currentBranch === 'master') {
+            console.log(`\n⚠️ You are on the ${currentBranch} branch.`);
+            console.log('Pre-release checks should not be run on the main or master branch.');
+            return true;
+        }
+
+        console.log(`Current branch: ${currentBranch}`);
+        return false;
+    } catch (error) {
+        console.error('Error checking current branch:', error.message);
+        return false; // Fail safe - if we can't check, assume we're not on main/master
+    }
+}
+
 // Function to check if all changes are only in interesting files
 function checkIfOnlyInterestingFilesChanged() {
     try {
@@ -108,9 +134,9 @@ function checkIfOnlyInterestingFilesChanged() {
             return false;
         }
 
-        // Check if all changed files are *.md or *.json files
+        // Check if all changed files are *.md, *.json files, bpInfo or in scripts/bp directory
         const onlyInterestingFiles = changedFiles.every(file => {
-            return file.endsWith('.md') || file.endsWith('.json') || file.endsWith('bpInfo.ts');
+            return file.endsWith('.md') || file.endsWith('.json') || file.endsWith('bpInfo.ts') || file.startsWith('scripts/bp/');
         });
 
         if (onlyInterestingFiles) {
@@ -131,6 +157,12 @@ function checkIfOnlyInterestingFilesChanged() {
 // Main function
 async function checkBeforeRelease() {
     console.log('Running pre-release checks...');
+
+    // Check if we are on main or master branch
+    if (checkIfOnMainOrMaster()) {
+        console.log('Exiting with code 1 (pre-release checks should not be run on main or master branch).');
+        process.exit(1);
+    }
 
     // Check for uncommitted changes
     if (checkForUncommittedChanges()) {
