@@ -245,11 +245,11 @@ export class DateStatusUtils {
         date.setUTCSeconds(0);
         const utcFormatted = Tools.formatDate(date, DateRange.HOUR);
 
-        const local = new Date();
-        const userTimezoneOffset = local.getTimezoneOffset() * 60000;
-        const localDate = new Date(date.getTime() - userTimezoneOffset);
-        const localFormatted = Tools.formatDate(localDate, DateRange.HOUR);
         if (withLocal) {
+            const local = new Date(date);
+            const userTimezoneOffset = local.getTimezoneOffset() * 60000;
+            const localDate = new Date(date.getTime() - userTimezoneOffset);
+            const localFormatted = Tools.formatDate(localDate, DateRange.HOUR);
             return `UTC ${utcFormatted} - Local ${localFormatted}`;
         } else {
             return `UTC ${utcFormatted}`;
@@ -263,12 +263,11 @@ export class DateStatusUtils {
         date.setUTCMinutes(minute);
         date.setUTCSeconds(0);
         const utcFormatted = Tools.formatDate(date, DateRange.MINUTE);
-
-        const local = new Date();
-        const userTimezoneOffset = local.getTimezoneOffset() * 60000;
-        const localDate = new Date(date.getTime() - userTimezoneOffset);
-        const localFormatted = Tools.formatDate(localDate, DateRange.MINUTE);
         if (withLocal) {
+            const local = new Date(date);
+            const userTimezoneOffset = local.getTimezoneOffset() * 60000;
+            const localDate = new Date(date.getTime() - userTimezoneOffset);
+            const localFormatted = Tools.formatDate(localDate, DateRange.MINUTE);
             return `UTC ${utcFormatted} - Local ${localFormatted}`;
         } else {
             return `UTC ${utcFormatted}`;

@@ -60,3 +60,7 @@ app/
 .gen/
 *gitignored*
 *gitignored
+
+# Added by mle-best-practices
+./app/
+./dist/
