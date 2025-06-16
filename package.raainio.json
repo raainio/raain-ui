@@ -3,6 +3,6 @@
     "raain-model": "file:../raain-model/dist"
   },
   "remote.dependencies": {
-    "raain-model": "^3.0.11"
+    "raain-model": "^3.0.13"
   }
 }

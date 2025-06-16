@@ -4,7 +4,6 @@ import {PolarLayerConfig} from './PolarLayerConfig';
 import {IDrawer} from '../drawers/IDrawer';
 
 export interface IPixiUniqueLayer {
-
     getId(): string;
 
     hide(): void;
@@ -13,10 +12,12 @@ export interface IPixiUniqueLayer {
 
     isVisible(): boolean;
 
-    setValues(center: MapLatLng | { lat: number, lng: number },
-              values: PolarMapValue[] | CartesianMapValue[],
-              config: PolarLayerConfig | any,
-              version: string): void;
+    setValues(
+        center: MapLatLng | {lat: number; lng: number},
+        values: PolarMapValue[] | CartesianMapValue[],
+        config: PolarLayerConfig | any,
+        version: string
+    ): void;
 
     render(pixiContainer: Container): number;
 

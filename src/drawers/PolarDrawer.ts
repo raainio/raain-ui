@@ -5,7 +5,6 @@ import {PolarDrawerOptimization} from './PolarDrawerOptimization';
 import {IDrawer} from './IDrawer';
 
 export class PolarDrawer implements IDrawer {
-
     private geoValues: PolarMapValue[];
     private version: string;
     private optimizations: PolarDrawerOptimization[];
@@ -13,10 +12,12 @@ export class PolarDrawer implements IDrawer {
     private distanceRatio: number;
     private centerPoint: Point;
 
-    constructor(private polarMap2Point: (pv: PolarMapValue) => Point,
-                private polarMap2Display: (pv: PolarMapValue) => boolean,
-                private polarMapZoom: () => number,
-                private type: string) {
+    constructor(
+        private polarMap2Point: (pv: PolarMapValue) => Point,
+        private polarMap2Display: (pv: PolarMapValue) => boolean,
+        private polarMapZoom: () => number,
+        private type: string
+    ) {
         this.geoValues = [];
         this.possibleDrawing = 0;
         this.distanceRatio = 0;
@@ -28,9 +29,11 @@ export class PolarDrawer implements IDrawer {
         return this.version;
     }
 
-    public setConfiguration(theme: number,
-                            range: number,
-                            optimizations: PolarDrawerOptimization[]): void {
+    public setConfiguration(
+        theme: number,
+        range: number,
+        optimizations: PolarDrawerOptimization[]
+    ): void {
         this.optimizations = optimizations;
     }
 
@@ -61,28 +64,39 @@ export class PolarDrawer implements IDrawer {
         return this.possibleDrawing !== this.getPossibleDrawing();
     }
 
-    public getExecOfWindowPoints(values: PolarMapValue[], fnToApplyToAllPoint: (c: PolarMapValue[]) => any) {
+    public getExecOfWindowPoints(
+        values: PolarMapValue[],
+        fnToApplyToAllPoint: (c: PolarMapValue[]) => any
+    ) {
         const filteredValues = values.filter(this.polarMap2Display);
         return fnToApplyToAllPoint(filteredValues);
     }
 
-    public getExecOfVisiblePoints(values: PolarMapValue[], fnToApplyToAllPoint: (v: PolarMapValue[]) => any) {
-
+    public getExecOfVisiblePoints(
+        values: PolarMapValue[],
+        fnToApplyToAllPoint: (v: PolarMapValue[]) => any
+    ) {
         const optimization = this.getOptimization();
-        const filteredValues = optimization.filteringValues(this.polarMapZoom(), values, this.polarMap2Display);
+        const filteredValues = optimization.filteringValues(
+            this.polarMapZoom(),
+            values,
+            this.polarMap2Display
+        );
         return fnToApplyToAllPoint(filteredValues);
     }
 
-    public renderPolarMapValues(center: MapLatLng, centerPoint: Point,
-                                drawPolarSharp: (polar1: PolarGridValue, polar2?: PolarGridValue) => boolean): number {
-
+    public renderPolarMapValues(
+        center: MapLatLng,
+        centerPoint: Point,
+        drawPolarSharp: (polar1: PolarGridValue, polar2?: PolarGridValue) => boolean
+    ): number {
         let done = 0;
         const edgeCount = this.getEdgeCount();
         const distanceRatio = this.getDistanceRatio(centerPoint);
         const azimuthStepInDegrees = this.getAzimuthStepInDegrees();
-        const optimizationValues: { x1: PolarGridValue, x2: PolarGridValue } = {
+        const optimizationValues: {x1: PolarGridValue; x2: PolarGridValue} = {
             x1: null,
-            x2: null
+            x2: null,
         };
 
         if (distanceRatio <= 0) {
@@ -95,7 +109,11 @@ export class PolarDrawer implements IDrawer {
         this.distanceRatio = distanceRatio;
         this.centerPoint = centerPoint;
 
-        const filteredValues = optimization.filteringValues(this.polarMapZoom(), this.geoValues, this.polarMap2Display);
+        const filteredValues = optimization.filteringValues(
+            this.polarMapZoom(),
+            this.geoValues,
+            this.polarMap2Display
+        );
         for (let [i, polarValue] of filteredValues.entries()) {
             if (done > optimization.hardLimit) {
                 console.warn('polar hard limit reached ', optimization.hardLimit);
@@ -106,7 +124,11 @@ export class PolarDrawer implements IDrawer {
             polarValue.setCenter({latitude: center.lat, longitude: center.lng});
 
             if (optimization.groupAzimuths()) {
-                const drawValue = (x1: PolarGridValue, pv2: PolarMapValue, forceDraw?: boolean): boolean => {
+                const drawValue = (
+                    x1: PolarGridValue,
+                    pv2: PolarMapValue,
+                    forceDraw?: boolean
+                ): boolean => {
                     if (!x1 || !pv2) {
                         return false;
                     }
@@ -134,22 +156,24 @@ export class PolarDrawer implements IDrawer {
                 if (!this.polarMap2Display(polarValue)) {
                     drawValue(optimizationValues.x1, polarValue, true);
                     optimizationValues.x1 = null;
-                } else if (((i % edgeCount) === (edgeCount - 1))) {
+                } else if (i % edgeCount === edgeCount - 1) {
                     drawValue(optimizationValues.x1, polarValue, true);
                     optimizationValues.x1 = null;
                     i = this._getNextOffset(i, edgeCount) - 1;
                 } else {
                     const drawDone = drawValue(optimizationValues.x1, polarValue);
                     if (drawDone || !optimizationValues.x1) {
-                        optimizationValues.x1 = PolarGridValue.Create(polarValue, distanceRatio, optimization);
+                        optimizationValues.x1 = PolarGridValue.Create(
+                            polarValue,
+                            distanceRatio,
+                            optimization
+                        );
                     }
                 }
             } else {
                 const x = PolarGridValue.Create(polarValue, distanceRatio, optimization);
                 done += drawPolarSharp(x) ? 1 : 0;
             }
-
-
         }
 
         // console.log('Polar done vs possible:', done, this.possibleDrawing);
@@ -169,7 +193,7 @@ export class PolarDrawer implements IDrawer {
 
     protected getPossibleDrawing() {
         let count = 0;
-        const nonNullValues = this.geoValues.filter(v => v.value);
+        const nonNullValues = this.geoValues.filter((v) => v.value);
         for (const mapValue of nonNullValues) {
             if (this.polarMap2Display(mapValue)) {
                 count++;
@@ -179,14 +203,15 @@ export class PolarDrawer implements IDrawer {
     }
 
     private getDistanceRatio(centerPoint: Point): number {
-
         if (this.geoValues.length < 1) {
             return 0;
         }
 
-        const distanceRatio = MapTools.getPolarDistanceRatio(centerPoint,
+        const distanceRatio = MapTools.getPolarDistanceRatio(
+            centerPoint,
             this.geoValues[this.geoValues.length - 1],
-            this.polarMap2Point);
+            this.polarMap2Point
+        );
         return distanceRatio;
     }
 

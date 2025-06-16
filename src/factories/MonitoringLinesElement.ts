@@ -3,30 +3,29 @@ import {ChartColors} from './ChartColors';
 
 export class MonitoringLinesElementInput {
     constructor(
-        public pointsLines: Array<{ label: string, points: Array<{ date: Date, percentage: number }> }> = [],
-        public limit = 100,
-    ) {
-    }
+        public pointsLines: Array<{
+            label: string;
+            points: Array<{date: Date; percentage: number}>;
+        }> = [],
+        public limit = 100
+    ) {}
 }
 
 export class MonitoringLinesElement {
-
     public chart: Chart<any>;
     public limit: number;
 
-    constructor(protected addSomeDebugInfos = false) {
-    }
+    constructor(protected addSomeDebugInfos = false) {}
 
     public build(element: HTMLCanvasElement, inputs: MonitoringLinesElementInput): void {
-
         this.limit = inputs.limit;
         if (inputs.pointsLines.length === 0) {
             throw new Error('No point lines found.');
         }
 
-        const labels = inputs.pointsLines[0].points.map(b => b.date.toISOString());
+        const labels = inputs.pointsLines[0].points.map((b) => b.date.toISOString());
         const datasets = inputs.pointsLines.map((pl, index) => {
-            const data = pl.points.map(b => b.percentage);
+            const data = pl.points.map((b) => b.percentage);
             return {
                 label: pl.label,
                 data,
@@ -39,7 +38,7 @@ export class MonitoringLinesElement {
             type: 'line',
             data: {
                 labels,
-                datasets
+                datasets,
             },
             options: {
                 responsive: true,
@@ -65,7 +64,7 @@ export class MonitoringLinesElement {
                         ticks: {
                             display: false,
                         },
-                    }
+                    },
                 },
                 grid: {
                     display: true,
@@ -82,14 +81,16 @@ export class MonitoringLinesElement {
                         display: true,
                     },
                 },
-            }
+            },
         };
 
         this.chart = new Chart(element, config);
     }
 
-    public add(linesPoint: Array<{ label: string, percentage: number }>, date: Date = new Date())
-        : Array<{ label: string, points: Array<{ date: Date, percentage: number }> }> {
+    public add(
+        linesPoint: Array<{label: string; percentage: number}>,
+        date: Date = new Date()
+    ): Array<{label: string; points: Array<{date: Date; percentage: number}>}> {
         let allLabels = JSON.parse(JSON.stringify(this.chart.data.labels));
         const allLinesPoints = this.chart.data.datasets;
 
@@ -103,7 +104,7 @@ export class MonitoringLinesElement {
             if (allPoints.length >= this.limit) {
                 allPoints = allPoints.slice(1);
             }
-            const found = linesPoint.filter(l => l.label === line.label);
+            const found = linesPoint.filter((l) => l.label === line.label);
             if (found.length === 1) {
                 allPoints.push(found[0].percentage);
             } else {
@@ -115,12 +116,11 @@ export class MonitoringLinesElement {
         this.chart.data.labels = allLabels;
         this.chart.update();
 
-        return allLinesPoints.map(line => {
+        return allLinesPoints.map((line) => {
             const points = line.data.map((data: number, index: number) => {
                 return {date: new Date(allLabels[index]), percentage: data};
             });
             return {label: line.label, points};
         });
     }
-
 }

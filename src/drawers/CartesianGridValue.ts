@@ -4,7 +4,6 @@ import {GridValue} from './GridValue';
 import {MapLatLng, MapTools} from '../tools';
 
 export class CartesianGridValue extends GridValue {
-
     constructor(
         color: number,
         transparency: number,
@@ -12,16 +11,18 @@ export class CartesianGridValue extends GridValue {
         public y: number,
         public width: number,
         public height: number,
-        id?: string) {
+        id?: string
+    ) {
         super(color, transparency, id);
     }
 
-    static Create(src: MapLatLng,
-                  srcPoints: { p1: Point, p2: Point },
-                  center: Point,
-                  ratio: number,
-                  optimization: CartesianDrawerOptimization): CartesianGridValue {
-
+    static Create(
+        src: MapLatLng,
+        srcPoints: {p1: Point; p2: Point},
+        center: Point,
+        ratio: number,
+        optimization: CartesianDrawerOptimization
+    ): CartesianGridValue {
         let {transparency, value} = GridValue.translateColor(src.value);
 
         if (optimization?.bypass && 0.2 <= src.value) {
@@ -41,8 +42,7 @@ export class CartesianGridValue extends GridValue {
             y,
             width,
             height,
-            '' + Math.round(src.value * 100) / 100, // src.id,
+            '' + Math.round(src.value * 100) / 100 // src.id,
         );
     }
-
 }

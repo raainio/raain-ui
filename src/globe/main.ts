@@ -10,17 +10,16 @@ import {initInfoBox} from './infobox';
 // Users should import '../data/globe.css' manually
 
 export function initGlobe(userParams: {
-    container: HTMLElement,
-    center: number[],
-    altitude: number
+    container: HTMLElement;
+    center: number[];
+    altitude: number;
 }) {
     const params = setParams(userParams);
     const {ballParams, globeDiv, infoDiv} = params;
 
     const ball = spinningBall.init(ballParams);
 
-    return initMap(ball, params)
-        .then(map => setup(map, ball, globeDiv, infoDiv));
+    return initMap(ball, params).then((map) => setup(map, ball, globeDiv, infoDiv));
 }
 
 function setup(map, ball, globeDiv, infoDiv) {
@@ -34,7 +33,7 @@ function setup(map, ball, globeDiv, infoDiv) {
             requestID = requestAnimationFrame(animate);
         },
         stopAnimation: () => cancelAnimationFrame(requestID),
-        update,  // For requestAnimationFrame loops managed by the parent program
+        update, // For requestAnimationFrame loops managed by the parent program
 
         cameraPos: ball.cameraPos,
         cursorPos: ball.cursorPos,

@@ -3,21 +3,17 @@ import {MapTools} from '../tools/MapTools';
 
 export class SpeedMatrixElementInput {
     constructor(
-        public positionValuesMatrix: Array<{ x: number, y: number, value: number }>,
+        public positionValuesMatrix: Array<{x: number; y: number; value: number}>,
         public trustIndicator: number = 1
-    ) {
-    }
+    ) {}
 }
 
 export class SpeedMatrixElement {
-
     public pixiApp: Application;
 
-    constructor(protected addSomeDebugInfos = false) {
-    }
+    constructor(protected addSomeDebugInfos = false) {}
 
     public build(element: HTMLCanvasElement, inputs: SpeedMatrixElementInput): void {
-
         const wh = 10;
         let minX, maxX, minY, maxY, minValue, maxValue;
         for (const value of inputs.positionValuesMatrix) {
@@ -49,19 +45,19 @@ export class SpeedMatrixElement {
             height: height * wh,
             view: element,
             // antialias: true,
-            backgroundColor: MapTools.hexStringToNumber('#FFFFFF')
+            backgroundColor: MapTools.hexStringToNumber('#FFFFFF'),
         });
         this.pixiApp.stage.removeChildren();
 
-        const translateX = x => {
+        const translateX = (x) => {
             const v = (x - minX) * wh;
             return v;
         };
-        const translateY = y => {
+        const translateY = (y) => {
             const v = (maxY - minY - (y - minY)) * wh;
             return v;
         };
-        const translateColor = value => {
+        const translateColor = (value) => {
             const valueOpt = maxValue ? value / maxValue : 0;
             if (valueOpt >= 1) {
                 return '#01d331';
@@ -104,5 +100,4 @@ export class SpeedMatrixElement {
 
         this.pixiApp.stage.addChild(pixiGraphic);
     }
-
 }

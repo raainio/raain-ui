@@ -1,9 +1,14 @@
 import {Point} from 'leaflet';
 import {expect} from 'chai';
-import {MapLatLng, PolarDrawer, PolarDrawerOptimization, PolarGridValue, PolarMapValue} from '../../src';
+import {
+    MapLatLng,
+    PolarDrawer,
+    PolarDrawerOptimization,
+    PolarGridValue,
+    PolarMapValue,
+} from '../../src';
 
 describe('Drawers.PolarDrawer', () => {
-
     const polarMapValues: PolarMapValue[] = [];
     const width = 10;
     const azimuthStep = 10;
@@ -13,36 +18,49 @@ describe('Drawers.PolarDrawer', () => {
     for (let azimuthInDegrees = 0; azimuthInDegrees < 360; azimuthInDegrees += azimuthStep) {
         for (let distance = 0; distance < width; distance++) {
             const value = isOdd(distance) ? distance : 0;
-            polarMapValues.push(new PolarMapValue(
-                value, azimuthInDegrees, distance * 1000, 0,
-                `${distance * azimuthInDegrees}`, `${distance * azimuthInDegrees}`));
+            polarMapValues.push(
+                new PolarMapValue(
+                    value,
+                    azimuthInDegrees,
+                    distance * 1000,
+                    0,
+                    `${distance * azimuthInDegrees}`,
+                    `${distance * azimuthInDegrees}`
+                )
+            );
         }
     }
 
     it('should create a basic PolarDrawer', async () => {
-        const polarDrawer = new PolarDrawer(() => {
+        const polarDrawer = new PolarDrawer(
+            () => {
                 return null;
-            }, () => {
+            },
+            () => {
                 return false;
             },
             () => {
                 return 1;
             },
-            'rain');
+            'rain'
+        );
 
         expect(polarDrawer.renderPolarMapValues(new MapLatLng(0, 0), new Point(0, 0), null)).eq(0);
     });
 
     it('should getNextOffset', async () => {
-        const polarDrawer = new PolarDrawer(() => {
+        const polarDrawer = new PolarDrawer(
+            () => {
                 return null;
-            }, () => {
+            },
+            () => {
                 return false;
             },
             () => {
                 return 1;
             },
-            'rain');
+            'rain'
+        );
         polarDrawer.updateValues(polarMapValues, 'version');
 
         expect(polarDrawer._getNextOffset(0, 10)).eq(10);
@@ -60,7 +78,8 @@ describe('Drawers.PolarDrawer', () => {
 
     it('should render a basic PolarMapValues without optimization', async () => {
         // scenario
-        const polarDrawer = new PolarDrawer((pm: PolarMapValue) => {
+        const polarDrawer = new PolarDrawer(
+            (pm: PolarMapValue) => {
                 return new Point(pm.getLatitude() * 100000, pm.getLongitude() * 100000);
             },
             (pmv: PolarMapValue) => {
@@ -69,15 +88,18 @@ describe('Drawers.PolarDrawer', () => {
             () => {
                 return 9;
             },
-            'radar');
+            'radar'
+        );
         polarDrawer.updateValues(polarMapValues, 'version');
         const spy = {drawn: 0, values: []};
         const spyDrawing = (pg1: PolarGridValue, pg2?: PolarGridValue) => {
             spy.drawn++;
             spy.values.push({
-                d1: pg1.getPolarDistanceRelative(), a1: pg1.polarAzimuthInDegrees,
-                d2: pg2?.getPolarDistanceRelative(), a2: pg2?.polarAzimuthInDegrees,
-                v: pg1.getTransparency()
+                d1: pg1.getPolarDistanceRelative(),
+                a1: pg1.polarAzimuthInDegrees,
+                d2: pg2?.getPolarDistanceRelative(),
+                a2: pg2?.polarAzimuthInDegrees,
+                v: pg1.getTransparency(),
             });
             return true;
         };
@@ -86,7 +108,8 @@ describe('Drawers.PolarDrawer', () => {
         const rendered = polarDrawer.renderPolarMapValues(
             new MapLatLng(0.001, 0.001),
             new Point(0.1, 0.1),
-            spyDrawing);
+            spyDrawing
+        );
 
         // verify
         expect(rendered).eq(72);
@@ -97,7 +120,8 @@ describe('Drawers.PolarDrawer', () => {
     });
 
     it('should render a basic PolarMapValues with optimization', async () => {
-        const polarDrawer = new PolarDrawer((pm: PolarMapValue) => {
+        const polarDrawer = new PolarDrawer(
+            (pm: PolarMapValue) => {
                 return new Point(pm.getLatitude() * 100000, pm.getLongitude() * 100000);
             },
             (pmv: PolarMapValue) => {
@@ -106,29 +130,31 @@ describe('Drawers.PolarDrawer', () => {
             () => {
                 return 9;
             },
-            'rain with zoom');
+            'rain with zoom'
+        );
         polarDrawer.updateValues(polarMapValues, 'version');
         const spy = {drawn: 0, values: []};
         const spyDrawing = (pg1: PolarGridValue, pg2?: PolarGridValue) => {
             spy.drawn++;
             spy.values.push({
-                d1: pg1.getPolarDistanceRelative(), a1: pg1.polarAzimuthInDegrees,
-                d2: pg2?.getPolarDistanceRelative(), a2: pg2?.polarAzimuthInDegrees,
-                v: pg1.getTransparency()
+                d1: pg1.getPolarDistanceRelative(),
+                a1: pg1.polarAzimuthInDegrees,
+                d2: pg2?.getPolarDistanceRelative(),
+                a2: pg2?.polarAzimuthInDegrees,
+                v: pg1.getTransparency(),
             });
             return true;
         };
 
-        const optimizations = [
-            new PolarDrawerOptimization('zoom', 40001, 0, 9, 2, false, true)
-        ];
+        const optimizations = [new PolarDrawerOptimization('zoom', 40001, 0, 9, 2, false, true)];
         polarDrawer.setConfiguration(0, 0, optimizations);
 
         // render
         const rendered = polarDrawer.renderPolarMapValues(
             new MapLatLng(0.001, 0.001),
             new Point(0.1, 0.1),
-            spyDrawing);
+            spyDrawing
+        );
 
         // verify
         expect(rendered).eq(36);
@@ -140,7 +166,7 @@ describe('Drawers.PolarDrawer', () => {
             a1: 0,
             v: 0.5,
             d2: undefined,
-            a2: undefined
+            a2: undefined,
         });
     });
 });

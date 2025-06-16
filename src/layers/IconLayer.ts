@@ -6,16 +6,17 @@ import {IconDrawer, IconGridValue} from '../drawers';
 import {IDrawer} from '../drawers/IDrawer';
 
 export class IconLayer implements IPixiUniqueLayer {
-
     private readonly mapGraph: Graphics;
     private addedInContainer: boolean;
     private iconDrawer: IconDrawer;
     private center: MapLatLng;
 
-    constructor(protected id: string,
-                protected type: string,
-                protected gridMap: Map,
-                protected addSomeDebugInfos = false) {
+    constructor(
+        protected id: string,
+        protected type: string,
+        protected gridMap: Map,
+        protected addSomeDebugInfos = false
+    ) {
         this.mapGraph = new Graphics();
     }
 
@@ -35,10 +36,12 @@ export class IconLayer implements IPixiUniqueLayer {
         return this.mapGraph.alpha !== 0;
     }
 
-    public setValues(center: MapLatLng | { lat: number, lng: number },
-                     values: IconMapValue[],
-                     config: any,
-                     version: string): void {
+    public setValues(
+        center: MapLatLng | {lat: number; lng: number},
+        values: IconMapValue[],
+        config: any,
+        version: string
+    ): void {
         this.center = new MapLatLng(center.lat, center.lng);
         this.iconDrawer = new IconDrawer(
             (mapValue: IconMapValue) => {
@@ -48,19 +51,20 @@ export class IconLayer implements IPixiUniqueLayer {
                 } catch (e) {
                     return null;
                 }
-            }, (mapValue: IconMapValue): boolean => {
+            },
+            (mapValue: IconMapValue): boolean => {
                 return this.gridMap.getBounds().contains(mapValue);
             },
             (): number => {
                 return this.gridMap.getZoom();
             },
-            this.type);
+            this.type
+        );
 
         this.iconDrawer.updateValues(values, version);
     }
 
     public render(pixiContainer: Container): number {
-
         if (!this.center) {
             return -1;
         }
@@ -74,26 +78,38 @@ export class IconLayer implements IPixiUniqueLayer {
 
         this.mapGraph.removeChildren();
 
-        this.iconDrawer.renderCartesianMapValues(this.center, centerPoint, (gridValue: IconGridValue) => {
-            const pixiGraphic = new Graphics();
-            // pixiGraphic.beginFill(gridValue.getColor(), 1 - gridValue.getTransparency());
-            const width = 5;
-            const {center, start, end} = gridValue.getPoints(width);
-            const diff = {x: end.x - start.x, y: end.y - start.y};
+        this.iconDrawer.renderCartesianMapValues(
+            this.center,
+            centerPoint,
+            (gridValue: IconGridValue) => {
+                const pixiGraphic = new Graphics();
+                // pixiGraphic.beginFill(gridValue.getColor(), 1 - gridValue.getTransparency());
+                const width = 5;
+                const {center, start, end} = gridValue.getPoints(width);
+                const diff = {x: end.x - start.x, y: end.y - start.y};
 
-            pixiGraphic.lineStyle(width, gridValue.getColor(1), 1 - gridValue.getTransparency());
-            pixiGraphic.moveTo(start.x, start.y);
-            pixiGraphic.lineTo(end.x - diff.x / 7, end.y - diff.y / 7);
-            pixiGraphic.drawCircle(end.x - diff.x / 7, end.y - diff.y / 7, width);
-            pixiGraphic.lineStyle(width / 2, gridValue.getColor(0.9), 1 - gridValue.getTransparency());
-            pixiGraphic.moveTo(start.x, start.y);
-            pixiGraphic.lineTo(end.x, end.y);
+                pixiGraphic.lineStyle(
+                    width,
+                    gridValue.getColor(1),
+                    1 - gridValue.getTransparency()
+                );
+                pixiGraphic.moveTo(start.x, start.y);
+                pixiGraphic.lineTo(end.x - diff.x / 7, end.y - diff.y / 7);
+                pixiGraphic.drawCircle(end.x - diff.x / 7, end.y - diff.y / 7, width);
+                pixiGraphic.lineStyle(
+                    width / 2,
+                    gridValue.getColor(0.9),
+                    1 - gridValue.getTransparency()
+                );
+                pixiGraphic.moveTo(start.x, start.y);
+                pixiGraphic.lineTo(end.x, end.y);
 
-            pixiGraphic.x = center.x;
-            pixiGraphic.y = center.y;
-            this.mapGraph.addChild(pixiGraphic);
-            return true;
-        });
+                pixiGraphic.x = center.x;
+                pixiGraphic.y = center.y;
+                this.mapGraph.addChild(pixiGraphic);
+                return true;
+            }
+        );
 
         if (pixiContainer && !this.addedInContainer) {
             pixiContainer.addChild(this.mapGraph);
@@ -132,5 +148,4 @@ export class IconLayer implements IPixiUniqueLayer {
     getDrawer(): IDrawer {
         return this.iconDrawer;
     }
-
 }

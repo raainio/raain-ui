@@ -1,7 +1,6 @@
 import {Map} from 'leaflet';
 
 export interface IPixiLayer {
-
     addToMap(map: Map): void;
 
     removeFromMap(map: Map): void;
@@ -9,5 +8,4 @@ export interface IPixiLayer {
     setCurrentWidth(width: number): void;
 
     setCurrentHeight(height: number): void;
-
 }

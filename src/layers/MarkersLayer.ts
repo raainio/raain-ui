@@ -1,9 +1,18 @@
-import {Icon, icon as leafletIcon, IconOptions, layerGroup, LayerGroup, Map, Marker, marker as leafletMarker, MarkerOptions} from 'leaflet';
+import {
+    Icon,
+    icon as leafletIcon,
+    IconOptions,
+    layerGroup,
+    LayerGroup,
+    Map,
+    Marker,
+    marker as leafletMarker,
+    MarkerOptions,
+} from 'leaflet';
 import {IPixiLayer} from './IPixiLayer';
 import {MapLatLng} from '../tools/MapLatLng';
 
 export class MarkersLayer implements IPixiLayer {
-
     protected _layerGroup: LayerGroup;
     protected _width: number;
     protected _height: number;
@@ -12,7 +21,6 @@ export class MarkersLayer implements IPixiLayer {
         this._layerGroup = null;
         this._width = 0;
         this._height = 0;
-
     }
 
     public addToMap(map: Map) {
@@ -43,7 +51,9 @@ export class MarkersLayer implements IPixiLayer {
         this._height = height;
     }
 
-    public render(markers: { iconsLatLng: MapLatLng[], iconOptions?: IconOptions }[]): { markers: Marker[] } {
+    public render(markers: {iconsLatLng: MapLatLng[]; iconOptions?: IconOptions}[]): {
+        markers: Marker[];
+    } {
         if (this._layerGroup) {
             this._layerGroup.clearLayers();
         }
@@ -57,7 +67,6 @@ export class MarkersLayer implements IPixiLayer {
         let x: number;
         let y: number;
         for (const marker of markers) {
-
             let iconOption: Icon;
             if (marker.iconOptions) {
                 iconOption = leafletIcon(marker.iconOptions);
@@ -69,7 +78,7 @@ export class MarkersLayer implements IPixiLayer {
                 if (x !== undefined && !isNaN(x) && y !== undefined && !isNaN(y)) {
                     const options: MarkerOptions = {
                         title: iconsLatLng.name,
-                        alt: iconsLatLng.id
+                        alt: iconsLatLng.id,
                     };
                     if (iconOption) {
                         options.icon = iconOption;
@@ -85,5 +94,4 @@ export class MarkersLayer implements IPixiLayer {
         this._layerGroup = layerGroup(ms);
         return {markers: ms};
     }
-
 }

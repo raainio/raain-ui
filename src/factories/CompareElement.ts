@@ -4,25 +4,25 @@ import {ChartColors} from './ChartColors';
 
 export class CompareElementInput {
     constructor(
-        public points: { x: number, y: number, r: number, name: string, id: string }[] = [],
-        public topPoint: { x: number, y: number } = {
+        public points: {x: number; y: number; r: number; name: string; id: string}[] = [],
+        public topPoint: {x: number; y: number} = {
             x: 100,
-            y: 100
+            y: 100,
         },
         public clickCallback?: any
-    ) {
-    }
+    ) {}
 }
 
 export class CompareElement {
-
     public chart: Chart<any>;
 
-    constructor(protected addSomeDebugInfos = false) {
-    }
+    constructor(protected addSomeDebugInfos = false) {}
 
     public build(element: HTMLCanvasElement, inputs: CompareElementInput): void {
-        const bijectivePoints = [{x: 0, y: 0}, {x: inputs.topPoint.x, y: inputs.topPoint.y}];
+        const bijectivePoints = [
+            {x: 0, y: 0},
+            {x: inputs.topPoint.x, y: inputs.topPoint.y},
+        ];
         const data = {
             datasets: [
                 {
@@ -70,10 +70,9 @@ export class CompareElement {
                                     }
                                 }
                                 return label;
-                            }
-                        }
+                            },
+                        },
                     },
-
                 },
                 onClick(e: any) {
                     if (data.selectedPoint && inputs.clickCallback) {
@@ -85,6 +84,4 @@ export class CompareElement {
 
         this.chart = new Chart(element, config);
     }
-
-
 }

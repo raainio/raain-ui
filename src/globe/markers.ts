@@ -25,9 +25,7 @@ export function initMarkers(globe, container) {
 
     function getMarkerElement(element, type) {
         const validNodeNames = ['DIV', 'div', 'IMG', 'img', 'SVG', 'svg'];
-        return (element && validNodeNames.includes(element.nodeName))
-            ? element
-            : createSVG(type);
+        return element && validNodeNames.includes(element.nodeName) ? element : createSVG(type);
     }
 
     function createSVG(type = 'marker') {
@@ -50,7 +48,7 @@ export function initMarkers(globe, container) {
         const visible = globe.project(marker.screenPos, marker.position);
 
         Object.assign(marker.element.style, {
-            display: (visible) ? 'inline-block' : 'none',
+            display: visible ? 'inline-block' : 'none',
             left: marker.screenPos[0] + 'px',
             top: marker.screenPos[1] + 'px',
         });

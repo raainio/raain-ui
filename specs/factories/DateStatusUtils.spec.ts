@@ -10,7 +10,7 @@ describe('Factories.DateStatusUtils', () => {
         {date: new Date('2023-06-01T13:05:00Z'), value: 2},
         {date: new Date('2023-06-02T00:00:00Z'), value: 1},
         {date: new Date('2023-06-02T13:12:00Z'), value: 3},
-        {date: new Date('2023-06-02T14:39:00Z'), value: 5}
+        {date: new Date('2023-06-02T14:39:00Z'), value: 5},
     ];
     const dateStatusPoints2 = [
         {date: new Date('2023-05-12T11:05:00Z'), value: 5},
@@ -20,11 +20,11 @@ describe('Factories.DateStatusUtils', () => {
         {date: new Date('2023-06-02T13:29:00Z'), value: 5},
         {date: new Date('2023-06-02T14:29:00Z'), value: 5},
         {date: new Date('2023-06-12T13:22:00Z'), value: 3},
-        {date: new Date('2024-06-12T13:22:00Z'), value: 3}
+        {date: new Date('2024-06-12T13:22:00Z'), value: 3},
     ];
     const setOfDates = [
         {label: 'data 1', style: 'bar', values: dateStatusPoints1},
-        {label: 'data 2', style: 'bar', values: dateStatusPoints2}
+        {label: 'data 2', style: 'bar', values: dateStatusPoints2},
     ];
 
     describe('filterFocus', () => {
@@ -32,16 +32,20 @@ describe('Factories.DateStatusUtils', () => {
             const focusDate = new Date('2023-06-02T13:00:00Z');
 
             // Test YEAR range
-            let filtered = DateStatusUtils.filterFocus(dateStatusPoints1, focusDate, DateRange.YEAR);
+            let filtered = DateStatusUtils.filterFocus(
+                dateStatusPoints1,
+                focusDate,
+                DateRange.YEAR
+            );
             expect(filtered.length).to.equal(5);
-            filtered.forEach(point => {
+            filtered.forEach((point) => {
                 expect(point.date.getUTCFullYear()).to.equal(focusDate.getUTCFullYear());
             });
 
             // Test MONTH range
             filtered = DateStatusUtils.filterFocus(dateStatusPoints1, focusDate, DateRange.MONTH);
             expect(filtered.length).to.equal(4);
-            filtered.forEach(point => {
+            filtered.forEach((point) => {
                 expect(point.date.getUTCFullYear()).to.equal(focusDate.getUTCFullYear());
                 expect(point.date.getUTCMonth()).to.equal(focusDate.getUTCMonth());
             });
@@ -49,7 +53,7 @@ describe('Factories.DateStatusUtils', () => {
             // Test DAY range
             filtered = DateStatusUtils.filterFocus(dateStatusPoints1, focusDate, DateRange.DAY);
             expect(filtered.length).to.equal(3);
-            filtered.forEach(point => {
+            filtered.forEach((point) => {
                 expect(point.date.getUTCFullYear()).to.equal(focusDate.getUTCFullYear());
                 expect(point.date.getUTCMonth()).to.equal(focusDate.getUTCMonth());
                 expect(point.date.getUTCDate()).to.equal(focusDate.getUTCDate());
@@ -58,7 +62,7 @@ describe('Factories.DateStatusUtils', () => {
             // Test HOUR range
             filtered = DateStatusUtils.filterFocus(dateStatusPoints1, focusDate, DateRange.HOUR);
             expect(filtered.length).to.equal(1);
-            filtered.forEach(point => {
+            filtered.forEach((point) => {
                 expect(point.date.getUTCFullYear()).to.equal(focusDate.getUTCFullYear());
                 expect(point.date.getUTCMonth()).to.equal(focusDate.getUTCMonth());
                 expect(point.date.getUTCDate()).to.equal(focusDate.getUTCDate());
@@ -72,7 +76,11 @@ describe('Factories.DateStatusUtils', () => {
 
         it('should sort filtered data points by date', () => {
             const focusDate = new Date('2023-06-02T00:00:00Z');
-            const filtered = DateStatusUtils.filterFocus(dateStatusPoints1, focusDate, DateRange.DAY);
+            const filtered = DateStatusUtils.filterFocus(
+                dateStatusPoints1,
+                focusDate,
+                DateRange.DAY
+            );
 
             for (let i = 1; i < filtered.length; i++) {
                 expect(filtered[i].date.getTime()).to.be.at.least(filtered[i - 1].date.getTime());
@@ -130,7 +138,9 @@ describe('Factories.DateStatusUtils', () => {
 
             // Should have entries for each day in June
             expect(grouped.length).to.equal(30);
-            expect(JSON.stringify(grouped)).to.equal('[2,32,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]');
+            expect(JSON.stringify(grouped)).to.equal(
+                '[2,32,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]'
+            );
         });
 
         it('should group data points by DAY', () => {
@@ -147,7 +157,9 @@ describe('Factories.DateStatusUtils', () => {
             );
 
             expect(grouped.length).to.equal(24); // 24 hours
-            expect(JSON.stringify(grouped)).to.equal('[1,0,0,0,0,0,0,0,0,0,0,0,0,21,10,0,0,0,0,0,0,0,0,0]');
+            expect(JSON.stringify(grouped)).to.equal(
+                '[1,0,0,0,0,0,0,0,0,0,0,0,0,21,10,0,0,0,0,0,0,0,0,0]'
+            );
         });
 
         it('should group data points by HOUR', () => {
@@ -164,7 +176,9 @@ describe('Factories.DateStatusUtils', () => {
             );
 
             expect(grouped.length).to.equal(60); // 60 minutes
-            expect(JSON.stringify(grouped)).to.equal('[0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,7,0,0,0,6,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]');
+            expect(JSON.stringify(grouped)).to.equal(
+                '[0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,7,0,0,0,6,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]'
+            );
         });
     });
 
@@ -324,7 +338,9 @@ describe('Factories.DateStatusUtils', () => {
             );
 
             // Check format rather than exact date/time due to timezone differences
-            expect(result.newTitle).to.match(/^UTC \d{4}-\d{2}-\d{2} 13h - Local \d{4}-\d{2}-\d{2} \d{2}h$/);
+            expect(result.newTitle).to.match(
+                /^UTC \d{4}-\d{2}-\d{2} 13h - Local \d{4}-\d{2}-\d{2} \d{2}h$/
+            );
             expect(result.newFocusDate.getUTCHours()).to.equal(13);
         });
     });

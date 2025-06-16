@@ -3,15 +3,17 @@ import {ChartColors} from './ChartColors';
 
 export class ScaleElementInput {
     constructor(
-        public colors: { color: string }[],
+        public colors: {color: string}[],
         public labels: string[],
         public label: string
-    ) {
-    }
+    ) {}
 }
 
 function getGradient(chart, y1, color1, y2, color2) {
-    const {ctx, scales: {y}} = chart;
+    const {
+        ctx,
+        scales: {y},
+    } = chart;
     const gradient = ctx.createLinearGradient(0, y.getPixelForValue(y1), 0, y.getPixelForValue(y2));
     // const gradient = ctx.createLinearGradient(0, y1, 0, y2);
     gradient.addColorStop(0, color1);
@@ -20,14 +22,11 @@ function getGradient(chart, y1, color1, y2, color2) {
 }
 
 export class ScaleElement {
-
     public chart: Chart<any>;
 
-    constructor(protected addSomeDebugInfos = false) {
-    }
+    constructor(protected addSomeDebugInfos = false) {}
 
     public build(element: HTMLCanvasElement, inputs: ScaleElementInput): void {
-
         const data = {
             labels: [inputs.label],
             datasets: inputs.colors.map((c, index) => {
@@ -55,7 +54,7 @@ export class ScaleElement {
                         // return getGradient(chart, index, color1, index + 1, color2);
                     },
                 };
-            })
+            }),
         };
 
         // remove the last color
@@ -72,31 +71,31 @@ export class ScaleElement {
                     },
                     tooltip: {
                         enabled: false,
-                    }
+                    },
                 },
                 layout: {
-                    padding: 0 // Remove padding around the chart
+                    padding: 0, // Remove padding around the chart
                 },
                 scales: {
                     x: {
                         stacked: true,
                         border: {
-                            display: false // Hide the y-axis borderline
+                            display: false, // Hide the y-axis borderline
                         },
                         grid: {
                             drawBorder: false, // Hide the x-axis grid border
                             drawOnChartArea: false, // Hide the x-axis grid lines on the chart area
-                            drawTicks: false // Hide the x-axis ticks
+                            drawTicks: false, // Hide the x-axis ticks
                         },
                         ticks: {
                             // display: false // Hide the x-axis tick labels
-                        }
+                        },
                     },
                     y: {
                         stacked: true,
                         beginAtZero: true,
                         border: {
-                            display: false // Hide the y-axis borderline
+                            display: false, // Hide the y-axis borderline
                         },
                         grid: {
                             drawBorder: false, // Hide the y-axis grid border
@@ -114,8 +113,8 @@ export class ScaleElement {
                                     return inputs.labels[value];
                                 }
                                 return '';
-                            }
-                        }
+                            },
+                        },
                     },
                 },
             },
@@ -123,5 +122,4 @@ export class ScaleElement {
         };
         this.chart = new Chart(element, config);
     }
-
 }

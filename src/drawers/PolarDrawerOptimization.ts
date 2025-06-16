@@ -1,14 +1,15 @@
 import {PolarMapValue} from '../tools/PolarMapValue';
 
 export class PolarDrawerOptimization {
-    constructor(public type: string,
-                public hardLimit: number,
-                public min: number,
-                public max: number,
-                public step: number,
-                public bypass: boolean,
-                public considerZoom: boolean) {
-    }
+    constructor(
+        public type: string,
+        public hardLimit: number,
+        public min: number,
+        public max: number,
+        public step: number,
+        public bypass: boolean,
+        public considerZoom: boolean
+    ) {}
 
     static Defaults(): PolarDrawerOptimization[] {
         return [
@@ -19,12 +20,13 @@ export class PolarDrawerOptimization {
         ];
     }
 
-    filteringValues(zoom: number,
-                    geoValues: PolarMapValue[],
-                    polarMap2Display?: (mapValue: PolarMapValue) => boolean): PolarMapValue[] {
-
+    filteringValues(
+        zoom: number,
+        geoValues: PolarMapValue[],
+        polarMap2Display?: (mapValue: PolarMapValue) => boolean
+    ): PolarMapValue[] {
         // non null values
-        let valuesToDisplay = geoValues.filter(v => v.value > 0);
+        let valuesToDisplay = geoValues.filter((v) => v.value > 0);
 
         // into the map
         if (polarMap2Display) {
@@ -37,7 +39,7 @@ export class PolarDrawerOptimization {
             if (zoom < zoomLimit) {
                 const each = zoomLimit + 1 - zoom;
                 let count = 0;
-                valuesToDisplay = valuesToDisplay.filter(v => {
+                valuesToDisplay = valuesToDisplay.filter((v) => {
                     if (count++ === 0) {
                         return true;
                     }

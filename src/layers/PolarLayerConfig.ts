@@ -5,8 +5,7 @@ export class PolarLayerConfig {
         public range?: number,
         public opacity?: number,
         public minValueToDisplay?: number
-    ) {
-    }
+    ) {}
 
     copy(from: PolarLayerConfig): PolarLayerConfig {
         if (typeof from.optimization !== 'undefined') {

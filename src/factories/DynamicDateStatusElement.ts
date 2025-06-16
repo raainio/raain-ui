@@ -6,12 +6,12 @@ export class DynamicDateStatusElementInput extends DateStatusElementInput {
     constructor(
         public fetchDataFn: (focusDate: Date, focusRange: DateRange) => Promise<IDataSet[]>,
         public options: {
-            dataLength?: number,
-            focusDate?: Date,
-            focusRange?: DateRange,
-            chartMinValue?: number,
-            chartMaxValue?: number,
-            onLastClick?: (date: Date) => void,
+            dataLength?: number;
+            focusDate?: Date;
+            focusRange?: DateRange;
+            chartMinValue?: number;
+            chartMaxValue?: number;
+            onLastClick?: (date: Date) => void;
         } = {
             dataLength: 1,
             focusDate: new Date(),
@@ -19,13 +19,13 @@ export class DynamicDateStatusElementInput extends DateStatusElementInput {
             chartMinValue: 0,
             chartMaxValue: 100,
             onLastClick: undefined,
-        },
+        }
     ) {
         super(
             Array.from({length: options.dataLength ?? 1}, (_, i) => ({
                 label: `Dataset ${i + 1}`,
                 style: 'bar',
-                values: []
+                values: [],
             })),
             options.focusDate ?? new Date(),
             options.focusRange ?? DateRange.YEAR,
@@ -78,7 +78,10 @@ export class DynamicDateStatusElement extends DateStatusElement {
 
             try {
                 this.setOfData = await this.fetchDataFn(this.focusDate, this.focusRange);
-                const dataPoints = this.buildDateTimeSeries(this.inputs.focusDate, this.inputs.focusRange);
+                const dataPoints = this.buildDateTimeSeries(
+                    this.inputs.focusDate,
+                    this.inputs.focusRange
+                );
                 await originalFocusReset(dataPoints);
             } catch (error) {
                 if (!document || !document['mocked']) {
@@ -137,7 +140,6 @@ export class DynamicDateStatusElement extends DateStatusElement {
 
         // Override focusClick
         this.focusClick = async (e) => {
-
             if (this.focusRange >= DateRange.HOUR) {
                 if (this.inputs.options?.onLastClick) {
                     this.inputs.options?.onLastClick(new Date(this.focusDate));
@@ -155,7 +157,8 @@ export class DynamicDateStatusElement extends DateStatusElement {
                     this.focusDate,
                     this.focusRange + 1,
                     focusPos,
-                    this.minDate, this.maxDate
+                    this.minDate,
+                    this.maxDate
                 );
                 this.setOfData = await this.fetchDataFn(newFocusDate, this.focusRange + 1);
 

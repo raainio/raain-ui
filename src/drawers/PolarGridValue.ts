@@ -5,27 +5,28 @@ import {MapTools} from '../tools';
 import {GridValue} from './GridValue';
 
 export class PolarGridValue extends GridValue {
-
     constructor(
         color: number,
         transparency: number,
         public polarAzimuthInDegrees: number,
         private polarDistanceRelative: number,
-        id?: string) {
+        id?: string
+    ) {
         super(color, transparency, id);
     }
 
-    static Create(src: PolarMapValue,
-                  distanceRatio: number,
-                  optimization: PolarDrawerOptimization): PolarGridValue {
-
+    static Create(
+        src: PolarMapValue,
+        distanceRatio: number,
+        optimization: PolarDrawerOptimization
+    ): PolarGridValue {
         let {transparency, value} = GridValue.translateColor(src.value);
 
         if (optimization.type !== 'rain') {
             const range = optimization.max - optimization.min + 1;
             const stepCount = Math.floor(range / optimization.step) + 1;
             for (let i = 0; i < stepCount; i++) {
-                const floorValue = optimization.min + (i * optimization.step);
+                const floorValue = optimization.min + i * optimization.step;
                 if (src.value >= floorValue) {
                     transparency = (range - floorValue) / (range * 2);
                 }

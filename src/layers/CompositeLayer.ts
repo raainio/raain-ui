@@ -5,10 +5,13 @@ import {IPixiUniqueLayer} from './IPixiUniqueLayer';
 import {IDrawer} from '../drawers/IDrawer';
 
 export class CompositeLayer extends PixiGridLayer implements IPixiLayer {
-
     protected layers: IPixiUniqueLayer[];
 
-    constructor(public id: string, width: number, height: number) {
+    constructor(
+        public id: string,
+        width: number,
+        height: number
+    ) {
         super(id); // @PixiGridLayer
         this.removeAllLayers();
         this.setCurrentWidth(width);
@@ -71,8 +74,8 @@ export class CompositeLayer extends PixiGridLayer implements IPixiLayer {
     }
 
     public show(inId: string, alpha = 1): IPixiUniqueLayer[] {
-        const layersToShow = this.layers.filter(l => l.getId().indexOf(inId) >= 0);
-        layersToShow.forEach(l => l.show(alpha));
+        const layersToShow = this.layers.filter((l) => l.getId().indexOf(inId) >= 0);
+        layersToShow.forEach((l) => l.show(alpha));
 
         this.renderVisibleLayers();
         return layersToShow;
@@ -80,7 +83,7 @@ export class CompositeLayer extends PixiGridLayer implements IPixiLayer {
 
     public showAll(alpha = 1): IPixiUniqueLayer[] {
         const layersToShow = this.layers;
-        layersToShow.forEach(l => l.show(alpha));
+        layersToShow.forEach((l) => l.show(alpha));
 
         this.renderVisibleLayers();
         return layersToShow;

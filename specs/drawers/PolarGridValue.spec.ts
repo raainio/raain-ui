@@ -3,10 +3,7 @@ import {expect} from 'chai';
 import {PolarGridValue} from '../../src';
 
 describe('Drawers.PolarGridValue', () => {
-
-
     it('should getPositionFrom az=0', async () => {
-
         const polarGridValue = new PolarGridValue(12, 0.5, 0, 1000);
         let origin = new Point(0, 0);
         expect(polarGridValue.getPositionFrom(origin).x).eq(0);

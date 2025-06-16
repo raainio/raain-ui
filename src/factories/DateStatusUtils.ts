@@ -13,12 +13,16 @@ export class DateStatusUtils {
     /**
      * Filters data points based on the focus date and range
      */
-    public static filterFocus(mapToFilter: Array<{ date: Date, value: number }>, focusDate: Date, focusRange: DateRange): Array<{
-        date: Date,
-        value: number
+    public static filterFocus(
+        mapToFilter: Array<{date: Date; value: number}>,
+        focusDate: Date,
+        focusRange: DateRange
+    ): Array<{
+        date: Date;
+        value: number;
     }> {
         return mapToFilter
-            .filter(e => {
+            .filter((e) => {
                 let isIn = true;
                 if (isIn && focusRange >= DateRange.YEAR) {
                     isIn = e.date.getUTCFullYear() === focusDate.getUTCFullYear();
@@ -44,12 +48,12 @@ export class DateStatusUtils {
      * Groups data points based on the focus date and range
      */
     public static groupFocus(
-        mapToFilter: Array<{ date: Date, value: number }>,
+        mapToFilter: Array<{date: Date; value: number}>,
         focusDate: Date,
         focusRange: DateRange,
         min: Date,
-        max: Date): number[] {
-
+        max: Date
+    ): number[] {
         const filteredAndSorted = DateStatusUtils.filterFocus(mapToFilter, focusDate, focusRange);
 
         if (focusRange === DateRange.CENTURY) {
@@ -57,8 +61,11 @@ export class DateStatusUtils {
             for (let i = min.getUTCFullYear(); i <= max.getUTCFullYear(); i++) {
                 const yearDate = new Date(focusDate);
                 yearDate.setUTCFullYear(i);
-                const sum = DateStatusUtils.filterFocus(filteredAndSorted, yearDate, DateRange.YEAR)
-                    .reduce((partialSum, a) => partialSum + a.value, 0);
+                const sum = DateStatusUtils.filterFocus(
+                    filteredAndSorted,
+                    yearDate,
+                    DateRange.YEAR
+                ).reduce((partialSum, a) => partialSum + a.value, 0);
                 groupedByYear.push(sum);
             }
             return groupedByYear;
@@ -69,8 +76,11 @@ export class DateStatusUtils {
             for (let i = 0; i < 12; i++) {
                 const monthDate = new Date(focusDate);
                 monthDate.setUTCMonth(i);
-                const sum = DateStatusUtils.filterFocus(filteredAndSorted, monthDate, DateRange.MONTH)
-                    .reduce((partialSum, a) => partialSum + a.value, 0);
+                const sum = DateStatusUtils.filterFocus(
+                    filteredAndSorted,
+                    monthDate,
+                    DateRange.MONTH
+                ).reduce((partialSum, a) => partialSum + a.value, 0);
                 groupedByMonth.push(sum);
             }
             return groupedByMonth;
@@ -82,8 +92,11 @@ export class DateStatusUtils {
             for (let i = 1; i <= daysInMonth; i++) {
                 const dayDate = new Date(focusDate);
                 dayDate.setUTCDate(i);
-                const sum = DateStatusUtils.filterFocus(filteredAndSorted, dayDate, DateRange.DAY)
-                    .reduce((partialSum, a) => partialSum + a.value, 0);
+                const sum = DateStatusUtils.filterFocus(
+                    filteredAndSorted,
+                    dayDate,
+                    DateRange.DAY
+                ).reduce((partialSum, a) => partialSum + a.value, 0);
                 groupedByDay.push(sum);
             }
             return groupedByDay;
@@ -94,8 +107,11 @@ export class DateStatusUtils {
             for (let i = 0; i < 24; i++) {
                 const hourDate = new Date(focusDate);
                 hourDate.setUTCHours(i);
-                const sum = DateStatusUtils.filterFocus(filteredAndSorted, hourDate, DateRange.HOUR)
-                    .reduce((partialSum, a) => partialSum + a.value, 0);
+                const sum = DateStatusUtils.filterFocus(
+                    filteredAndSorted,
+                    hourDate,
+                    DateRange.HOUR
+                ).reduce((partialSum, a) => partialSum + a.value, 0);
                 groupedByHour.push(sum);
             }
             return groupedByHour;
@@ -106,24 +122,33 @@ export class DateStatusUtils {
             for (let i = 0; i < 60; i++) {
                 const minuteDate = new Date(focusDate);
                 minuteDate.setUTCMinutes(i);
-                const sum = DateStatusUtils.filterFocus(filteredAndSorted, minuteDate, DateRange.MINUTE)
-                    .reduce((partialSum, a) => partialSum + a.value, 0);
+                const sum = DateStatusUtils.filterFocus(
+                    filteredAndSorted,
+                    minuteDate,
+                    DateRange.MINUTE
+                ).reduce((partialSum, a) => partialSum + a.value, 0);
                 groupedByMinutes.push(sum);
             }
             return groupedByMinutes;
         }
 
-        return filteredAndSorted.map(e => e.value);
+        return filteredAndSorted.map((e) => e.value);
     }
 
     /**
      * Generates labels for the chart based on the focus date and range
      */
-    public static focusLabels(focusDate: Date, focusRange: DateRange, min: Date, max: Date, data: {
-        label: string,
-        style: string,
-        values: { date: Date, value: number }[],
-    }[]): string[] {
+    public static focusLabels(
+        focusDate: Date,
+        focusRange: DateRange,
+        min: Date,
+        max: Date,
+        data: {
+            label: string;
+            style: string;
+            values: {date: Date; value: number}[];
+        }[]
+    ): string[] {
         if (focusRange === DateRange.CENTURY) {
             const groupedByYear = [];
             for (let i = min.getUTCFullYear(); i <= max.getUTCFullYear(); i++) {
@@ -159,12 +184,11 @@ export class DateStatusUtils {
 
         // all elements that are in the current minute
         let allDates = [];
-        data.forEach(d => {
+        data.forEach((d) => {
             allDates = allDates.concat(d.values);
         });
         const filteredDates = DateStatusUtils.filterFocus(allDates, focusDate, DateRange.MINUTE);
-        const filteredDatesISO = filteredDates
-            .map(v => DateStatusUtils.buildLabel(v.date));
+        const filteredDatesISO = filteredDates.map((v) => DateStatusUtils.buildLabel(v.date));
         return filteredDatesISO.filter((item, pos, self) => {
             return self.indexOf(item) === pos;
         });
@@ -173,7 +197,13 @@ export class DateStatusUtils {
     /**
      * Gets the focus date and title for a given index
      */
-    public static getFocusDateAndTitle(oldFocusDate: Date, focusRange: DateRange, index: number, min: Date, max: Date) {
+    public static getFocusDateAndTitle(
+        oldFocusDate: Date,
+        focusRange: DateRange,
+        index: number,
+        min: Date,
+        max: Date
+    ) {
         const newFocusDate = new Date(oldFocusDate);
         let newTitle = '...';
 
@@ -245,11 +275,11 @@ export class DateStatusUtils {
         date.setUTCSeconds(0);
         const utcFormatted = Tools.formatDate(date, DateRange.HOUR);
 
-        const local = new Date();
-        const userTimezoneOffset = local.getTimezoneOffset() * 60000;
-        const localDate = new Date(date.getTime() - userTimezoneOffset);
-        const localFormatted = Tools.formatDate(localDate, DateRange.HOUR);
         if (withLocal) {
+            const local = new Date(date);
+            const userTimezoneOffset = local.getTimezoneOffset() * 60000;
+            const localDate = new Date(date.getTime() - userTimezoneOffset);
+            const localFormatted = Tools.formatDate(localDate, DateRange.HOUR);
             return `UTC ${utcFormatted} - Local ${localFormatted}`;
         } else {
             return `UTC ${utcFormatted}`;
@@ -263,12 +293,11 @@ export class DateStatusUtils {
         date.setUTCMinutes(minute);
         date.setUTCSeconds(0);
         const utcFormatted = Tools.formatDate(date, DateRange.MINUTE);
-
-        const local = new Date();
-        const userTimezoneOffset = local.getTimezoneOffset() * 60000;
-        const localDate = new Date(date.getTime() - userTimezoneOffset);
-        const localFormatted = Tools.formatDate(localDate, DateRange.MINUTE);
         if (withLocal) {
+            const local = new Date(date);
+            const userTimezoneOffset = local.getTimezoneOffset() * 60000;
+            const localDate = new Date(date.getTime() - userTimezoneOffset);
+            const localFormatted = Tools.formatDate(localDate, DateRange.MINUTE);
             return `UTC ${utcFormatted} - Local ${localFormatted}`;
         } else {
             return `UTC ${utcFormatted}`;

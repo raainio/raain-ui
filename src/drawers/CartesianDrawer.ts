@@ -7,7 +7,6 @@ import {GridValue} from './GridValue';
 import {IDrawer} from './IDrawer';
 
 export class CartesianDrawer implements IDrawer {
-
     protected optimizations: CartesianDrawerOptimization[];
 
     private geoValues: CartesianMapValue[];
@@ -15,10 +14,12 @@ export class CartesianDrawer implements IDrawer {
     private distanceRatio: number;
     private centerPoint: Point;
 
-    constructor(private cartesianMap2Points: (mapValue: CartesianMapValue) => { p1: Point, p2: Point },
-                private cartesianMap2Display: (mapValue: CartesianMapValue) => boolean,
-                private cartesianMapZoom: () => number,
-                private type: string) {
+    constructor(
+        private cartesianMap2Points: (mapValue: CartesianMapValue) => {p1: Point; p2: Point},
+        private cartesianMap2Display: (mapValue: CartesianMapValue) => boolean,
+        private cartesianMapZoom: () => number,
+        private type: string
+    ) {
         this.geoValues = [];
         this.distanceRatio = 0;
         this.centerPoint = new Point(0, 0);
@@ -29,9 +30,11 @@ export class CartesianDrawer implements IDrawer {
         return this.version;
     }
 
-    public setConfiguration(theme: number,
-                            range: number,
-                            optimizations: CartesianDrawerOptimization[]): void {
+    public setConfiguration(
+        theme: number,
+        range: number,
+        optimizations: CartesianDrawerOptimization[]
+    ): void {
         this.optimizations = optimizations;
     }
 
@@ -59,26 +62,41 @@ export class CartesianDrawer implements IDrawer {
         return this.distanceRatio !== this.getDistanceRatio(center);
     }
 
-    public getExecOfWindowPoints(values: CartesianMapValue[], fnToApplyToAllPoint: (c: CartesianMapValue[]) => any) {
+    public getExecOfWindowPoints(
+        values: CartesianMapValue[],
+        fnToApplyToAllPoint: (c: CartesianMapValue[]) => any
+    ) {
         const filteredValues = values.filter(this.cartesianMap2Display);
         return fnToApplyToAllPoint(filteredValues);
     }
 
-    public getExecOfVisiblePoints(values: CartesianMapValue[], fnToApplyToAllPoint: (c: CartesianMapValue[]) => any) {
-
+    public getExecOfVisiblePoints(
+        values: CartesianMapValue[],
+        fnToApplyToAllPoint: (c: CartesianMapValue[]) => any
+    ) {
         const optimization = this.getOptimization();
-        const filteredValues = optimization.filteringValues(this.cartesianMapZoom(), values, this.cartesianMap2Display);
+        const filteredValues = optimization.filteringValues(
+            this.cartesianMapZoom(),
+            values,
+            this.cartesianMap2Display
+        );
         return fnToApplyToAllPoint(filteredValues);
     }
 
-    public renderCartesianMapValues(center: MapLatLng, centerPoint: Point,
-                                    drawShape: (gridValue: GridValue) => boolean): number {
-
+    public renderCartesianMapValues(
+        center: MapLatLng,
+        centerPoint: Point,
+        drawShape: (gridValue: GridValue) => boolean
+    ): number {
         let done = 0;
         this.distanceRatio = this.getDistanceRatio(center);
         this.centerPoint = centerPoint;
         const optimization = this.getOptimization();
-        const filteredValues = optimization.filteringValues(this.cartesianMapZoom(), this.geoValues, this.cartesianMap2Display);
+        const filteredValues = optimization.filteringValues(
+            this.cartesianMapZoom(),
+            this.geoValues,
+            this.cartesianMap2Display
+        );
 
         for (const mapValue of filteredValues) {
             if (done > optimization.hardLimit) {
@@ -92,20 +110,29 @@ export class CartesianDrawer implements IDrawer {
             if (drawShape(gridValue)) {
                 done++;
             }
-
         }
         return done;
     }
 
-    protected createGridValue(mapValue: CartesianMapValue, points: { p1: Point, p2: Point }, centerPoint: Point): GridValue {
-        return CartesianGridValue.Create(mapValue, points, centerPoint, this.distanceRatio, this.getOptimization());
+    protected createGridValue(
+        mapValue: CartesianMapValue,
+        points: {p1: Point; p2: Point},
+        centerPoint: Point
+    ): GridValue {
+        return CartesianGridValue.Create(
+            mapValue,
+            points,
+            centerPoint,
+            this.distanceRatio,
+            this.getOptimization()
+        );
     }
 
     private getDistanceRatio(centerPoint: MapLatLng): number {
         return MapTools.getCartesianDistanceRatio(
             centerPoint,
             this.geoValues,
-            this.cartesianMap2Points);
+            this.cartesianMap2Points
+        );
     }
-
 }

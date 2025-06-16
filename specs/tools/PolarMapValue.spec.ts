@@ -2,11 +2,8 @@ import {expect} from 'chai';
 import {PolarMapValue} from '../../src';
 
 describe('Tools.PolarMapValue', () => {
-
     it('should create a basic PolarMapValue without center', async () => {
-        const pmv1 = new PolarMapValue(
-            12.34, 20, 1000,
-            10, `myId`, `myName`);
+        const pmv1 = new PolarMapValue(12.34, 20, 1000, 10, `myId`, `myName`);
 
         expect(pmv1.polarAzimuthInDegrees).eq(20);
 
@@ -22,9 +19,7 @@ describe('Tools.PolarMapValue', () => {
 
     it('should create a conversion PolarMapValue with center', async () => {
         const center = {latitude: 10, longitude: 20};
-        const pmv1 = new PolarMapValue(
-            12.34, 20, 1000,
-            10, `myId`, `myName`);
+        const pmv1 = new PolarMapValue(12.34, 20, 1000, 10, `myId`, `myName`);
         pmv1.setCenter(center);
         expect(pmv1.polarAzimuthInDegrees).eq(20);
 
@@ -43,9 +38,7 @@ describe('Tools.PolarMapValue', () => {
 
     it('should get distanceTo', async () => {
         const center = {latitude: 10, longitude: 20};
-        const pmv1 = new PolarMapValue(
-            10, 0, 0,
-            0, `myId`, `myName`);
+        const pmv1 = new PolarMapValue(10, 0, 0, 0, `myId`, `myName`);
         pmv1.setCenter(center);
         expect(pmv1.polarAzimuthInDegrees).eq(0);
 

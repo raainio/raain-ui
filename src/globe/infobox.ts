@@ -12,7 +12,8 @@ export function initInfoBox(globeDiv, infoDiv) {
     const topBar = infoSlider.appendChild(newElement('div', 'infoTopBar'));
     const coords = topBar.appendChild(newElement('span'));
     const infoCloseButton = topBar.appendChild(newElement('button'));
-    infoCloseButton.appendChild(newSVG('svg', {class: 'icon stroke'}))
+    infoCloseButton
+        .appendChild(newSVG('svg', {class: 'icon stroke'}))
         .appendChild(newSVG('use', {href: '#close'}));
     infoCloseButton.addEventListener('click', hideInfo);
 

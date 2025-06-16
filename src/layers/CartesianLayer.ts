@@ -6,16 +6,17 @@ import {CartesianDrawer, CartesianGridValue} from '../drawers';
 import {IDrawer} from '../drawers/IDrawer';
 
 export class CartesianLayer implements IPixiUniqueLayer {
-
     private readonly mapGraph: Graphics;
     private addedInContainer: boolean;
     private cartesianDrawer: CartesianDrawer;
     private center: MapLatLng;
 
-    constructor(protected id: string,
-                protected type: string,
-                protected gridMap: Map,
-                protected addSomeDebugInfos = false) {
+    constructor(
+        protected id: string,
+        protected type: string,
+        protected gridMap: Map,
+        protected addSomeDebugInfos = false
+    ) {
         this.mapGraph = new Graphics();
     }
 
@@ -35,10 +36,12 @@ export class CartesianLayer implements IPixiUniqueLayer {
         return this.mapGraph.alpha !== 0;
     }
 
-    public setValues(center: MapLatLng | { lat: number, lng: number },
-                     values: CartesianMapValue[],
-                     config: any,
-                     version: string): void {
+    public setValues(
+        center: MapLatLng | {lat: number; lng: number},
+        values: CartesianMapValue[],
+        config: any,
+        version: string
+    ): void {
         this.center = new MapLatLng(center.lat, center.lng);
         this.cartesianDrawer = new CartesianDrawer(
             (mapValue: CartesianMapValue) => {
@@ -50,22 +53,23 @@ export class CartesianLayer implements IPixiUniqueLayer {
                 } catch (e) {
                     return {
                         p1: new Point(0, 0),
-                        p2: new Point(10, 10)
+                        p2: new Point(10, 10),
                     };
                 }
-            }, (mapValue: CartesianMapValue): boolean => {
+            },
+            (mapValue: CartesianMapValue): boolean => {
                 return this.gridMap.getBounds().contains(mapValue);
             },
             (): number => {
                 return this.gridMap.getZoom();
             },
-            this.type);
+            this.type
+        );
 
         this.cartesianDrawer.updateValues(values, version);
     }
 
     public render(pixiContainer: Container): number {
-
         const centerPoint = this.gridMap.latLngToContainerPoint(this.center);
 
         const drawCount = 0;
@@ -75,7 +79,9 @@ export class CartesianLayer implements IPixiUniqueLayer {
 
         this.mapGraph.removeChildren();
 
-        this.cartesianDrawer.renderCartesianMapValues(this.center, centerPoint,
+        this.cartesianDrawer.renderCartesianMapValues(
+            this.center,
+            centerPoint,
             (gridValue: CartesianGridValue) => {
                 const pixiGraphic = new Graphics();
                 pixiGraphic.beginFill(gridValue.getColor(), 1 - gridValue.getTransparency());
@@ -97,7 +103,8 @@ export class CartesianLayer implements IPixiUniqueLayer {
                 this.mapGraph.addChild(pixiGraphic);
 
                 return true;
-            });
+            }
+        );
 
         if (pixiContainer && !this.addedInContainer) {
             pixiContainer.addChild(this.mapGraph);
@@ -107,24 +114,25 @@ export class CartesianLayer implements IPixiUniqueLayer {
         // Debug purpose :
         if (this.addSomeDebugInfos) {
             const optimization = this.cartesianDrawer.getOptimization();
-            const pixiText = new Text('Car-' + optimization?.type + '-' + this.cartesianDrawer.getVersion(), {
-                fontFamily: 'Arial',
-                fontSize: 16,
-                // fontWeight: 'bold',
-                fill: MapTools.hexStringToNumber('#ff1010'),
-                align: 'center',
-            });
+            const pixiText = new Text(
+                'Car-' + optimization?.type + '-' + this.cartesianDrawer.getVersion(),
+                {
+                    fontFamily: 'Arial',
+                    fontSize: 16,
+                    // fontWeight: 'bold',
+                    fill: MapTools.hexStringToNumber('#ff1010'),
+                    align: 'center',
+                }
+            );
             this.mapGraph.addChild(pixiText);
         }
 
         return drawCount;
     }
 
-    setPixiApp(pixiApp: Application) {
-    }
+    setPixiApp(pixiApp: Application) {}
 
     getDrawer(): IDrawer {
         return this.cartesianDrawer;
     }
-
 }

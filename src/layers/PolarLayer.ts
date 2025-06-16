@@ -11,17 +11,18 @@ import {MapLatLng} from '../tools/MapLatLng';
 import {IDrawer} from '../drawers/IDrawer';
 
 export class PolarLayer implements IPixiUniqueLayer {
-
     private readonly mapGraph: Graphics;
     private polarDrawer: PolarDrawer;
     private center: MapLatLng;
     private readonly config: PolarLayerConfig;
     private addedInContainer: boolean;
 
-    constructor(protected id: string,
-                protected type: string,
-                protected gridMap: Map,
-                protected addSomeDebugInfos = false) {
+    constructor(
+        protected id: string,
+        protected type: string,
+        protected gridMap: Map,
+        protected addSomeDebugInfos = false
+    ) {
         this.mapGraph = new Graphics();
         this.config = new PolarLayerConfig();
     }
@@ -42,10 +43,12 @@ export class PolarLayer implements IPixiUniqueLayer {
         return this.mapGraph.alpha !== 0;
     }
 
-    public setValues(center: MapLatLng | { lat: number, lng: number },
-                     geoValues: PolarMapValue[],
-                     config: PolarLayerConfig,
-                     version: string) {
+    public setValues(
+        center: MapLatLng | {lat: number; lng: number},
+        geoValues: PolarMapValue[],
+        config: PolarLayerConfig,
+        version: string
+    ) {
         this.center = new MapLatLng(center.lat, center.lng);
         this.config.copy(config);
         this.polarDrawer = new PolarDrawer(
@@ -65,7 +68,8 @@ export class PolarLayer implements IPixiUniqueLayer {
             (): number => {
                 return this.gridMap.getZoom();
             },
-            this.type);
+            this.type
+        );
 
         const optimizations = PolarDrawerOptimization.Defaults();
 
@@ -91,7 +95,6 @@ export class PolarLayer implements IPixiUniqueLayer {
         };
 
         const drawPolarSharp = (polar1: PolarGridValue, polar2?: PolarGridValue) => {
-
             const pixiGraphic = new Graphics();
 
             if (!polar2) {
@@ -130,7 +133,11 @@ export class PolarLayer implements IPixiUniqueLayer {
             return true;
         };
 
-        const drawCount = this.polarDrawer.renderPolarMapValues(this.center, centerPoint, drawPolarSharp);
+        const drawCount = this.polarDrawer.renderPolarMapValues(
+            this.center,
+            centerPoint,
+            drawPolarSharp
+        );
 
         if (pixiContainer && !this.addedInContainer) {
             pixiContainer.addChild(this.mapGraph);
@@ -140,24 +147,25 @@ export class PolarLayer implements IPixiUniqueLayer {
         // Debug purpose :
         if (this.addSomeDebugInfos) {
             const optimization = this.polarDrawer.getOptimization();
-            const pixiText = new Text('Pol-' + optimization?.type + '-' + this.polarDrawer.getVersion(), {
-                fontFamily: 'Arial',
-                fontSize: 16,
-                // fontWeight: 'bold',
-                fill: MapTools.hexStringToNumber('#3cff10'),
-                align: 'center',
-            });
+            const pixiText = new Text(
+                'Pol-' + optimization?.type + '-' + this.polarDrawer.getVersion(),
+                {
+                    fontFamily: 'Arial',
+                    fontSize: 16,
+                    // fontWeight: 'bold',
+                    fill: MapTools.hexStringToNumber('#3cff10'),
+                    align: 'center',
+                }
+            );
             this.mapGraph.addChild(pixiText);
         }
 
         return drawCount;
     }
 
-    setPixiApp(pixiApp: Application) {
-    }
+    setPixiApp(pixiApp: Application) {}
 
     getDrawer(): IDrawer {
         return this.polarDrawer;
     }
-
 }

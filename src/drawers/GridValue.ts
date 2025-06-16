@@ -1,21 +1,19 @@
 import {ChartScaleColors, Tools} from '../factories';
 
 export class GridValue {
-
     constructor(
         private color: number,
         private transparency: number,
-        public id?: string) {
-    }
+        public id?: string
+    ) {}
 
     protected static translateColor(srcValue: number) {
-
         let color = '#000000';
         let transparency = 1; // 1 => invisible
 
         const entries = Object.entries(ChartScaleColors);
         const scaleDescValues: [number, string][] = entries
-            .map(entry => {
+            .map((entry) => {
                 return [parseFloat(entry[0]), Tools.rgbStringToHex(entry[1])] as [number, string];
             })
             .sort((a, b) => b[0] - a[0]);
@@ -38,5 +36,4 @@ export class GridValue {
     public getTransparency(ratio = 1): number {
         return this.transparency * ratio;
     }
-
 }

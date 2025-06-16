@@ -1,17 +1,15 @@
 import colorLib from '@kurkle/color';
 
-
 export enum DateRange {
     CENTURY,
     YEAR,
     MONTH,
     DAY,
     HOUR,
-    MINUTE
+    MINUTE,
 }
 
 export class Tools {
-
     public static getTransparency(value: string, transparency: number) {
         const alpha = transparency === undefined ? 0.5 : 1 - transparency;
         return colorLib(value).alpha(alpha).rgbString();

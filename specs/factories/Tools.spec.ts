@@ -2,9 +2,7 @@ import {expect} from 'chai';
 import {DateRange, Tools} from '../../src';
 
 describe('Factories.Tools', () => {
-
     it('should formatDate', async () => {
-
         expect(Tools.formatDate(new Date(0), DateRange.CENTURY)).eq('1970');
         expect(Tools.formatDate(new Date(0), DateRange.YEAR)).eq('1970');
         expect(Tools.formatDate(new Date(0), DateRange.MONTH)).eq('1970-01');

@@ -16,7 +16,7 @@ export function initMap(ball, params) {
 
     return tileSetter
         .init({context, framebuffer, style: forcedStyle, mapboxToken, projScale: true})
-        .promise.then(map => setup(map, ball, renderer));
+        .promise.then((map) => setup(map, ball, renderer));
 }
 
 function setup(map, ball, renderer) {
@@ -25,8 +25,8 @@ function setup(map, ball, renderer) {
     return {
         mapLoaded: () => loadStatus,
         select,
-        showLayer: (l) => (loadStatus = 0, map.showLayer(l)),
-        hideLayer: (l) => (loadStatus = 0, map.hideLayer(l)),
+        showLayer: (l) => ((loadStatus = 0), map.showLayer(l)),
+        hideLayer: (l) => ((loadStatus = 0), map.hideLayer(l)),
         getZoom: map.getZoom,
         destroy: renderer.destroy,
         update,
@@ -34,7 +34,7 @@ function setup(map, ball, renderer) {
 
     function update(satellitePos) {
         const hNorm = satellitePos[2] / ball.radius();
-        const rayTanPerPixel = ball.view.topEdge() * 2 / ball.view.height();
+        const rayTanPerPixel = (ball.view.topEdge() * 2) / ball.view.height();
         const dMap = hNorm * rayTanPerPixel * map.projection.scale(satellitePos);
 
         const k = 1.0 / dMap;

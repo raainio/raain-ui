@@ -27,9 +27,9 @@ const spinningBallModule: SpinningBallModule = spinningBallOriginal || {
             cursorPos: () => null,
             camMoving: () => false,
             wasTapped: () => false,
-            cursorChanged: () => false
+            cursorChanged: () => false,
         };
-    }
+    },
 };
 
 // Export the module

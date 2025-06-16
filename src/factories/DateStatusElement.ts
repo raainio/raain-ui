@@ -7,7 +7,7 @@ import {DateStatusUtils} from './DateStatusUtils';
 export interface IDataSet {
     label: string;
     style: string;
-    values: { date: Date, value: number }[];
+    values: {date: Date; value: number}[];
 }
 
 export interface IDataPoint {
@@ -25,12 +25,10 @@ export class DateStatusElementInput {
         public focusRange: DateRange = DateRange.CENTURY,
         public chartMinValue?: number,
         public chartMaxValue?: number
-    ) {
-    }
+    ) {}
 }
 
 export class DateStatusElement {
-
     public chart: Chart<any>;
     public chartTitle = '';
     public focusReset: (dataPoints?: IDataPoint[]) => Promise<void>;
@@ -46,12 +44,9 @@ export class DateStatusElement {
     public chartMaxValue: number | undefined;
 
     constructor(protected addSomeDebugInfos = false) {
-        this.focusReset = async () => {
-        };
-        this.focusPrevious = async () => {
-        };
-        this.focusNext = async () => {
-        };
+        this.focusReset = async () => {};
+        this.focusPrevious = async () => {};
+        this.focusNext = async () => {};
     }
 
     protected _setOfData: IDataSet[];
@@ -81,7 +76,13 @@ export class DateStatusElement {
 
         const data = {
             datasets,
-            labels: DateStatusUtils.focusLabels(inputs.focusDate, inputs.focusRange, this.minDate, this.maxDate, this.setOfData)
+            labels: DateStatusUtils.focusLabels(
+                inputs.focusDate,
+                inputs.focusRange,
+                this.minDate,
+                this.maxDate,
+                this.setOfData
+            ),
         };
 
         const config = this.createChartConfig(data);
@@ -101,23 +102,23 @@ export class DateStatusElement {
         }
     }
 
-    protected createChartConfig(data: { datasets: IDataPoint[], labels: string[] }): any {
+    protected createChartConfig(data: {datasets: IDataPoint[]; labels: string[]}): any {
         const options: any = {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
                 title: {
                     display: true,
-                    text: ' '
-                }
+                    text: ' ',
+                },
             },
             onClick: (...args: any[]) => {
                 return this.focusClick(args);
             },
             scales: {
                 x: {},
-                y: {}
-            }
+                y: {},
+            },
         };
 
         // Add min/max configuration if chartMinValue or chartMaxValue is provided
@@ -128,11 +129,15 @@ export class DateStatusElement {
 
         return {
             data,
-            options
+            options,
         };
     }
 
-    protected initializeChart(element: HTMLCanvasElement, config: any, inputs: DateStatusElementInput): void {
+    protected initializeChart(
+        element: HTMLCanvasElement,
+        config: any,
+        inputs: DateStatusElementInput
+    ): void {
         this.chart = new Chart(element, config);
         this.focusPos = this.getInitialFocusPos(inputs.focusDate, inputs.focusRange, this.minDate);
         this.focusDate = inputs.focusDate;
@@ -148,17 +153,19 @@ export class DateStatusElement {
 
     protected setupFocusClickHandler(): void {
         this.focusClick = async (e) => {
-
             if (this.focusRange >= DateRange.HOUR) {
                 return;
             }
 
             const focusPos = this.getFocusPosRelative(e, this.chart);
 
-            const {newFocusDate, newTitle} = DateStatusUtils.getFocusDateAndTitle(this.focusDate,
+            const {newFocusDate, newTitle} = DateStatusUtils.getFocusDateAndTitle(
+                this.focusDate,
                 this.focusRange + 1,
                 focusPos,
-                this.minDate, this.maxDate);
+                this.minDate,
+                this.maxDate
+            );
 
             this.focusRange++;
             this.focusPos = focusPos;
@@ -187,8 +194,13 @@ export class DateStatusElement {
 
             // Ensure we have valid min and max dates
             if (this.minDate && this.maxDate) {
-                this.chart.data.labels = DateStatusUtils.focusLabels(this.focusDate, this.focusRange,
-                    this.minDate, this.maxDate, this.setOfData);
+                this.chart.data.labels = DateStatusUtils.focusLabels(
+                    this.focusDate,
+                    this.focusRange,
+                    this.minDate,
+                    this.maxDate,
+                    this.setOfData
+                );
             }
 
             this.chart.update();
@@ -214,20 +226,37 @@ export class DateStatusElement {
         }
 
         this.chart.data.datasets.forEach((dataset: any, index: number) => {
-            dataset.data = DateStatusUtils.groupFocus(this.setOfData[index].values,
-                this.focusDate, this.focusRange,
-                this.minDate, this.maxDate);
+            dataset.data = DateStatusUtils.groupFocus(
+                this.setOfData[index].values,
+                this.focusDate,
+                this.focusRange,
+                this.minDate,
+                this.maxDate
+            );
         });
-        this.chart.data.labels = DateStatusUtils.focusLabels(this.focusDate, this.focusRange,
-            this.minDate, this.maxDate, this.setOfData);
+        this.chart.data.labels = DateStatusUtils.focusLabels(
+            this.focusDate,
+            this.focusRange,
+            this.minDate,
+            this.maxDate,
+            this.setOfData
+        );
 
         this.chart.update();
     }
 
-    protected updateChart(eFocusPos: number, eFocusDate: Date, eFocusRange: DateRange = this.focusRange): void {
-        const {newFocusDate, newTitle} = DateStatusUtils.getFocusDateAndTitle(eFocusDate,
-            eFocusRange, eFocusPos,
-            this.minDate, this.maxDate);
+    protected updateChart(
+        eFocusPos: number,
+        eFocusDate: Date,
+        eFocusRange: DateRange = this.focusRange
+    ): void {
+        const {newFocusDate, newTitle} = DateStatusUtils.getFocusDateAndTitle(
+            eFocusDate,
+            eFocusRange,
+            eFocusPos,
+            this.minDate,
+            this.maxDate
+        );
 
         this.focusPos = eFocusPos;
         this.focusDate = new Date(newFocusDate);
@@ -247,8 +276,8 @@ export class DateStatusElement {
         ];
 
         let min: number, max: number;
-        this.setOfData.forEach(s => {
-            s.values.forEach(v => {
+        this.setOfData.forEach((s) => {
+            s.values.forEach((v) => {
                 min = min ? Math.min(min, v.date.getTime()) : v.date.getTime();
                 max = max ? Math.max(max, v.date.getTime()) : v.date.getTime();
             });
@@ -260,15 +289,20 @@ export class DateStatusElement {
         const originalDataPoints: number[][] = [];
         for (const [index, dataContainer] of this.setOfData.entries()) {
             const borderColor = colors[index];
-            const data = DateStatusUtils.groupFocus(dataContainer.values, focusDate, focusRange, this.minDate, this.maxDate);
-            datasets.push(
-                {
-                    label: dataContainer.label,
-                    type: dataContainer.style,
-                    data,
-                    borderColor,
-                    backgroundColor: borderColor,
-                });
+            const data = DateStatusUtils.groupFocus(
+                dataContainer.values,
+                focusDate,
+                focusRange,
+                this.minDate,
+                this.maxDate
+            );
+            datasets.push({
+                label: dataContainer.label,
+                type: dataContainer.style,
+                data,
+                borderColor,
+                backgroundColor: borderColor,
+            });
             originalDataPoints.push(data);
         }
         this._originalDataPoints = originalDataPoints;
@@ -291,7 +325,11 @@ export class DateStatusElement {
         return pos;
     }
 
-    protected getFocusPosAdded(toAdd: number, focusDate: Date = this.focusDate, focusRange: DateRange = this.focusRange) {
+    protected getFocusPosAdded(
+        toAdd: number,
+        focusDate: Date = this.focusDate,
+        focusRange: DateRange = this.focusRange
+    ) {
         let pos = this.focusPos || 0;
         const newFocusDate = new Date(focusDate);
         const min = this.minDate;
@@ -315,5 +353,4 @@ export class DateStatusElement {
 
         return {pos, newFocusDate};
     }
-
 }

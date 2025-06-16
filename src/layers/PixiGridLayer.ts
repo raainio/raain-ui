@@ -34,7 +34,6 @@ class ApplicationOptions {
 }
 
 export class PixiGridLayer extends GridLayer {
-
     protected _id: string;
 
     protected pixiApp: Application;
@@ -56,7 +55,7 @@ export class PixiGridLayer extends GridLayer {
     protected _gridMapInitialZoom;
     protected _gridOptions;
 
-    constructor(id ?: string) {
+    constructor(id?: string) {
         super();
         this._id = id;
         this._lastUpdate = new Date('01-01-01');
@@ -100,8 +99,7 @@ export class PixiGridLayer extends GridLayer {
             },
         };
 
-        this.renderFn = (pixiContainer: Container) => {
-        };
+        this.renderFn = (pixiContainer: Container) => {};
     }
 
     // @Override
@@ -122,7 +120,10 @@ export class PixiGridLayer extends GridLayer {
 
         this._gridInitialZoom = this._gridOptions.projectionZoom(this._gridMap);
         this._gridWgsOrigin = new MapLatLng(0, 0);
-        this._gridWgsInitialShift = this._gridMap.project(this._gridWgsOrigin, this._gridInitialZoom);
+        this._gridWgsInitialShift = this._gridMap.project(
+            this._gridWgsOrigin,
+            this._gridInitialZoom
+        );
         this._gridMapInitialZoom = this._gridMap.getZoom();
         return this;
     }
@@ -193,7 +194,7 @@ export class PixiGridLayer extends GridLayer {
     // @Override
     protected _update() {
         // console.log('_update');
-        // @ts-ignore
+        // @ts-expect-error - GridLayer._update is protected but needs to be called
         super._update();
 
         if (!this._gridMap || !this._gridContainer) {
@@ -224,8 +225,7 @@ export class PixiGridLayer extends GridLayer {
         return mapNode.childNodes[0].nodeName === this._getPaneName();
     }
 
-    protected _addContainer() {
-    }
+    protected _addContainer() {}
 
     protected _setEvents() {
         const events = ['zoomend', 'viewreset'];
@@ -242,7 +242,6 @@ export class PixiGridLayer extends GridLayer {
     }
 
     protected _layerRedraw(offset?) {
-
         // const now = new Date();
         // if (this._lastUpdate.getTime() > (now.getTime() - 500)) {
         //     console.log('_layerRedraw already refreshed');

@@ -6,28 +6,33 @@ import {
     DynamicDateStatusElementInput,
     EarthMapElementInput,
     ElementsFactory,
-    MapElementInput
+    MapElementInput,
 } from '../../src';
 
 describe('Factories.ElementsFactory', () => {
-
-    beforeEach(() => {
-    });
+    beforeEach(() => {});
 
     it('should createCompare', async () => {
-        const fakeDom = new JSDOM(`<!DOCTYPE html><canvas id="myChart" width="400" height="400"></canvas>`);
+        const fakeDom = new JSDOM(
+            `<!DOCTYPE html><canvas id="myChart" width="400" height="400"></canvas>`
+        );
         const canvasElement = fakeDom.window.document.querySelector('#myChart');
         (canvasElement as any).getContext = () => {
             return {};
         };
         const ef = new ElementsFactory();
 
-        const created = ef.createCompare(canvasElement as HTMLCanvasElement, new CompareElementInput());
+        const created = ef.createCompare(
+            canvasElement as HTMLCanvasElement,
+            new CompareElementInput()
+        );
         expect(created).not.eq(undefined);
     });
 
     it('should createDynamicDateStatus', async () => {
-        const fakeDom = new JSDOM(`<!DOCTYPE html><canvas id="dynamicDate" width="400" height="400"></canvas>`);
+        const fakeDom = new JSDOM(
+            `<!DOCTYPE html><canvas id="dynamicDate" width="400" height="400"></canvas>`
+        );
         const canvasElement = fakeDom.window.document.querySelector('#dynamicDate');
         (canvasElement as any).getContext = () => {
             return {};
@@ -35,17 +40,17 @@ describe('Factories.ElementsFactory', () => {
         const ef = new ElementsFactory();
 
         // DynamicDateStatusElementInput is an interface, not a class
-        const input = new DynamicDateStatusElementInput(async (focusDate: Date, focusRange: DateRange) => {
-            return [
-                {
-                    label: 'Test Data',
-                    style: 'line',
-                    values: [
-                        {date: new Date(), value: 10}
-                    ]
-                }
-            ];
-        });
+        const input = new DynamicDateStatusElementInput(
+            async (focusDate: Date, focusRange: DateRange) => {
+                return [
+                    {
+                        label: 'Test Data',
+                        style: 'line',
+                        values: [{date: new Date(), value: 10}],
+                    },
+                ];
+            }
+        );
 
         const created = ef.createDynamicDateStatus(canvasElement as HTMLCanvasElement, input);
         expect(created).not.eq(undefined);
@@ -78,7 +83,6 @@ describe('Factories.ElementsFactory', () => {
     });
 
     xit('should createEarthMap', async () => {
-
         const fakeDom = new JSDOM(`<!DOCTYPE html><div id="earthMap"></div>`);
         const divElement = fakeDom.window.document.querySelector('#earthMap');
         const ef = new ElementsFactory();
