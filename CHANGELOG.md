@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- UT with local labels in CI
+
+## [2.3.15] - 2025-07-04
+
 ### Changed
 
 - UTC to local date label
@@ -16,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - remove drag (edit) capabilities in elements that don't need it
 
-## [2.3.14] - 2025-06-20
+## [2.3.14] - 2025-06-16
 
 ### Changed
 

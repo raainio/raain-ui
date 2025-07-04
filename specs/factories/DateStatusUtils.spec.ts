@@ -1,6 +1,7 @@
 import {expect} from 'chai';
 import {DateRange} from '../../src';
 import {DateStatusUtils} from '../../src/factories/DateStatusUtils';
+import sinon from 'sinon';
 
 describe('Factories.DateStatusUtils', () => {
     // Sample data for testing
@@ -26,6 +27,18 @@ describe('Factories.DateStatusUtils', () => {
         {label: 'data 1', style: 'bar', values: dateStatusPoints1},
         {label: 'data 2', style: 'bar', values: dateStatusPoints2},
     ];
+
+    let timezoneStub;
+
+    beforeEach(() => {
+        // Stub the timezone offset to always return -120 minutes (UTC+2)
+        timezoneStub = sinon.stub(Date.prototype, 'getTimezoneOffset').returns(-120);
+    });
+
+    afterEach(() => {
+        // Restore the original method after each test
+        timezoneStub.restore();
+    });
 
     describe('filterFocus', () => {
         it('should filter data points based on focus date and range', () => {
@@ -338,9 +351,7 @@ describe('Factories.DateStatusUtils', () => {
             );
 
             // Check format rather than exact date/time due to timezone differences
-            expect(result.newTitle).to.match(
-                /^\d{4}-\d{2}-\d{2} 15h$/
-            );
+            expect(result.newTitle).to.match(/^\d{4}-\d{2}-\d{2} 15h$/);
             expect(result.newFocusDate.getUTCHours()).to.equal(13);
         });
     });
