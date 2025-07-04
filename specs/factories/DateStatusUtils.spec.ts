@@ -253,9 +253,9 @@ describe('Factories.DateStatusUtils', () => {
             );
 
             expect(labels.length).to.equal(24); // 24 hours
-            expect(labels[0]).to.equal('UTC 2023-06-02 00h');
-            expect(labels[13]).to.equal('UTC 2023-06-02 13h');
-            expect(labels[23]).to.equal('UTC 2023-06-02 23h');
+            expect(labels[0]).to.equal('2023-06-02 02h');
+            expect(labels[13]).to.equal('2023-06-02 15h');
+            expect(labels[23]).to.equal('2023-06-03 01h');
         });
 
         it('should generate labels for HOUR range', () => {
@@ -273,8 +273,8 @@ describe('Factories.DateStatusUtils', () => {
 
             expect(labels.length).to.equal(60); // 60 minutes
             // Check format rather than exact time due to timezone differences
-            expect(labels[0]).to.match(/^UTC 2023-06-02 \d{2}:00$/);
-            expect(labels[59]).to.match(/^UTC 2023-06-02 \d{2}:59$/);
+            expect(labels[0]).to.match(/^2023-06-02 \d{2}:00$/);
+            expect(labels[59]).to.match(/^2023-06-02 \d{2}:59$/);
         });
     });
 
@@ -339,7 +339,7 @@ describe('Factories.DateStatusUtils', () => {
 
             // Check format rather than exact date/time due to timezone differences
             expect(result.newTitle).to.match(
-                /^UTC \d{4}-\d{2}-\d{2} 13h - Local \d{4}-\d{2}-\d{2} \d{2}h$/
+                /^\d{4}-\d{2}-\d{2} 15h$/
             );
             expect(result.newFocusDate.getUTCHours()).to.equal(13);
         });
@@ -397,7 +397,7 @@ describe('Factories.DateStatusUtils', () => {
 
         it('should build label for a day', () => {
             const date = new Date('2023-06-02T13:15:00Z');
-            const label = DateStatusUtils.buildLabelDate(date, 15);
+            const label = DateStatusUtils.buildLabelDay(date, 15);
             expect(label).to.equal('2023-06-15');
             expect(date.getUTCDate()).to.equal(15);
             expect(date.getUTCHours()).to.equal(0);

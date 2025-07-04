@@ -102,7 +102,6 @@ export class TimeframeContainers {
             });
         } else {
             const cartesianTools = new CartesianTools();
-            cartesianTools.buildLatLngEarthMap();
 
             frames = measures.map((m) => {
                 let values: CartesianMapValue[] = [];

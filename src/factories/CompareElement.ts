@@ -28,16 +28,16 @@ export class CompareElement {
                 {
                     type: 'bubble',
                     data: inputs.points,
-                    borderColor: Tools.getTransparency(ChartColors.grey, 0.2),
-                    backgroundColor: Tools.getTransparency(ChartColors.grey, 0.7),
+                    borderColor: Tools.getTransparency(ChartColors.bubbleGrey, 0.2),
+                    backgroundColor: Tools.getTransparency(ChartColors.bubbleGrey, 0.7),
                     pointStyle: 'circle',
                     pointHoverRadius: 15,
                 },
                 {
                     type: 'line',
                     data: bijectivePoints,
-                    borderColor: ChartColors.red,
-                    backgroundColor: Tools.getTransparency(ChartColors.red, 0.9),
+                    borderColor: ChartColors.lineRed,
+                    backgroundColor: Tools.getTransparency(ChartColors.lineRed, 0.9),
                     pointStyle: false,
                     borderDash: [2, 2],
                 },
@@ -73,6 +73,7 @@ export class CompareElement {
                             },
                         },
                     },
+                    dragData: false,
                 },
                 onClick(e: any) {
                     if (data.selectedPoint && inputs.clickCallback) {

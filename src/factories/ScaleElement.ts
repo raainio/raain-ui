@@ -41,7 +41,7 @@ export class ScaleElement {
                             return;
                         }
 
-                        let color1 = ChartColors.dark;
+                        let color1 = ChartColors.borderDark;
                         if (index < inputs.colors.length) {
                             color1 = inputs.colors[index].color;
                         }

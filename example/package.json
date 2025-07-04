@@ -16,7 +16,7 @@
     "hash-it": "^6.0.0",
     "leaflet": "^1.9.3",
     "pixi.js": "^5.3.12",
-    "raain-model": "^3.0.9",
+    "raain-model": "^3.0.17",
     "raain-ui": "file:../dist"
   },
   "devDependencies": {

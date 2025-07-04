@@ -165,19 +165,21 @@ export class DateStatusUtils {
             const groupedByDay = [];
             const daysInMonth = DateStatusUtils.getDaysInMonth(focusDate);
             for (let i = 1; i <= daysInMonth; i++) {
-                groupedByDay.push(DateStatusUtils.buildLabelDate(new Date(focusDate), i));
+                groupedByDay.push(DateStatusUtils.buildLabelDay(new Date(focusDate), i));
             }
             return groupedByDay;
         } else if (focusRange === DateRange.DAY) {
             const groupedByHour = [];
             for (let i = 0; i < 24; i++) {
-                groupedByHour.push(DateStatusUtils.buildLabelHour(new Date(focusDate), i));
+                groupedByHour.push(DateStatusUtils.buildLabelHour(new Date(focusDate), i, true));
             }
             return groupedByHour;
         } else if (focusRange === DateRange.HOUR) {
             const groupedByMinutes = [];
             for (let i = 0; i < 60; i++) {
-                groupedByMinutes.push(DateStatusUtils.buildLabelMinute(new Date(focusDate), i));
+                groupedByMinutes.push(
+                    DateStatusUtils.buildLabelMinute(new Date(focusDate), i, true)
+                );
             }
             return groupedByMinutes;
         }
@@ -202,7 +204,7 @@ export class DateStatusUtils {
         focusRange: DateRange,
         index: number,
         min: Date,
-        max: Date
+        _max: Date
     ) {
         const newFocusDate = new Date(oldFocusDate);
         let newTitle = '...';
@@ -212,11 +214,11 @@ export class DateStatusUtils {
         } else if (focusRange === DateRange.MONTH) {
             newTitle = DateStatusUtils.buildLabelMonth(newFocusDate, index);
         } else if (focusRange === DateRange.DAY) {
-            newTitle = DateStatusUtils.buildLabelDate(newFocusDate, index + 1);
+            newTitle = DateStatusUtils.buildLabelDay(newFocusDate, index + 1);
         } else if (focusRange === DateRange.HOUR) {
             newTitle = DateStatusUtils.buildLabelHour(newFocusDate, index, true);
         } else if (focusRange === DateRange.MINUTE) {
-            newTitle = DateStatusUtils.buildLabel(newFocusDate);
+            newTitle = DateStatusUtils.buildLabelMinute(newFocusDate, index, true);
         }
 
         return {newFocusDate, newTitle};
@@ -258,7 +260,7 @@ export class DateStatusUtils {
     /**
      * Builds a label for a day
      */
-    public static buildLabelDate(date: Date, dateNumber: number): string {
+    public static buildLabelDay(date: Date, dateNumber: number): string {
         date.setUTCDate(dateNumber);
         date.setUTCHours(0);
         date.setUTCMinutes(0);
@@ -280,7 +282,7 @@ export class DateStatusUtils {
             const userTimezoneOffset = local.getTimezoneOffset() * 60000;
             const localDate = new Date(date.getTime() - userTimezoneOffset);
             const localFormatted = Tools.formatDate(localDate, DateRange.HOUR);
-            return `UTC ${utcFormatted} - Local ${localFormatted}`;
+            return `${localFormatted}`;
         } else {
             return `UTC ${utcFormatted}`;
         }
@@ -298,7 +300,7 @@ export class DateStatusUtils {
             const userTimezoneOffset = local.getTimezoneOffset() * 60000;
             const localDate = new Date(date.getTime() - userTimezoneOffset);
             const localFormatted = Tools.formatDate(localDate, DateRange.MINUTE);
-            return `UTC ${utcFormatted} - Local ${localFormatted}`;
+            return `${localFormatted}`;
         } else {
             return `UTC ${utcFormatted}`;
         }

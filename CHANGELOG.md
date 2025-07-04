@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- UTC to local date label
+- Chart colors
+
+### Fixed
+
+- remove drag (edit) capabilities in elements that don't need it
+
+## [2.3.14] - 2025-06-20
+
+### Changed
+
+- Lint and pretty
+
 ## [2.3.13] - 2025-06-04
 
 ### Added
@@ -14,25 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added onLastClick callback option to DynamicDateStatusElement
 - Improved dataset initialization in DynamicDateStatusElement
 - Simplified type definitions using IDataSet interface
-
-### Changed
-
-- Version bump to 2.3.13
-- Version information export in bpInfo.ts
-
-## [2.3.9] - 2025-05-20
-
-### Changed
-
-- Version bump to 2.3.9
-- Version information export in bpInfo.ts
-
-## [2.3.8] - 2025-05-20
-
-### Changed
-
-- Version bump to 2.3.8
-- Version information export in bpInfo.ts
 
 ## [2.3.6] - 2025-04-01
 

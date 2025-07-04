@@ -111,6 +111,7 @@ export class DateStatusElement {
                     display: true,
                     text: ' ',
                 },
+                dragData: false,
             },
             onClick: (...args: any[]) => {
                 return this.focusClick(args);
@@ -266,13 +267,13 @@ export class DateStatusElement {
 
     protected buildDateTimeSeries(focusDate: Date, focusRange: DateRange) {
         const colors = [
-            Tools.getTransparency(ChartColors.blue, 0.5),
-            Tools.getTransparency(ChartColors.red, 0.5),
-            Tools.getTransparency(ChartColors.green, 0.5),
-            Tools.getTransparency(ChartColors.grey, 0.5),
-            Tools.getTransparency(ChartColors.orange, 0.5),
-            Tools.getTransparency(ChartColors.purple, 0.5),
-            Tools.getTransparency(ChartColors.yellow, 0.5),
+            Tools.getTransparency(ChartColors.status1, 0.5),
+            Tools.getTransparency(ChartColors.status2, 0.5),
+            Tools.getTransparency(ChartColors.status3, 0.5),
+            Tools.getTransparency(ChartColors.status4, 0.5),
+            Tools.getTransparency(ChartColors.status5, 0.5),
+            Tools.getTransparency(ChartColors.status6, 0.5),
+            Tools.getTransparency(ChartColors.status7, 0.5),
         ];
 
         let min: number, max: number;

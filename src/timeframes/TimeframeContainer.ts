@@ -1,6 +1,5 @@
 import {FrameContainer} from './FrameContainer';
-import {CompositeLayer} from '../layers/CompositeLayer';
-import {IPixiUniqueLayer} from '../layers/IPixiUniqueLayer';
+import {CompositeLayer, IPixiUniqueLayer} from '../layers';
 
 export class TimeframeContainer {
     protected compositeLayer: CompositeLayer;

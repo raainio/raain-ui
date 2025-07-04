@@ -77,12 +77,12 @@ export class ConfigurationElement {
                 {
                     type: 'scatter',
                     data: inputs.points,
-                    borderColor: Tools.getTransparency(ChartColors.blue, 0.5),
+                    borderColor: Tools.getTransparency(ChartColors.lineRed, 0.5),
                 },
                 {
                     type: 'line',
                     data: inputs.points,
-                    borderColor: ChartColors.blue,
+                    borderColor: ChartColors.lineRed,
                     fill: false,
                     tension: 0,
                 },
@@ -145,9 +145,9 @@ export class ConfigurationElement {
                     customCanvasBackgroundColor: {
                         colors: inputs.backgroundColors,
                         //  [
-                        //      {color: Tools.getTransparency(ChartColors.grey, 0.8), yStart: 5, yEnd: 10},
+                        //      {color: Tools.getTransparency(ChartColors.bubbleGrey, 0.8), yStart: 5, yEnd: 10},
                         //      {color: Tools.getTransparency(ChartColors.blue, 0.8), yStart: 10, yEnd: 20},
-                        //      {color: Tools.getTransparency(ChartColors.red, 0.8), yStart: 50, yEnd: 70},
+                        //      {color: Tools.getTransparency(ChartColors.lineRed, 0.8), yStart: 50, yEnd: 70},
                         //      {color: Tools.getTransparency(ChartColors.orange, 0.8), yStart: 100, yEnd: 240}
                         //  ]
                     },
@@ -174,7 +174,7 @@ export class ConfigurationElement {
                                 }
                                 return this.getLabelForValue(val);
                             },
-                            // color: 'red',
+                            // color: 'lineRed',
                         },
                     },
                 },
