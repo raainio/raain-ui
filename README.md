@@ -99,6 +99,54 @@ npm start
 This will open the example application at http://localhost:1234, where you can explore the various components and
 features of raain-ui.
 
+### 🌬️ Wind Marker Animations
+
+raain-ui includes CSS animations for visualizing wind speed and direction on map markers. To use these animations in your application:
+
+**1. Import the CSS file in your global styles:**
+
+```scss
+// In your global.scss or styles.scss
+@import "~raain-ui/data/wind-markers.css";
+```
+
+**Or in HTML:**
+
+```html
+<link rel="stylesheet" href="node_modules/raain-ui/dist/data/wind-markers.css">
+```
+
+**2. Use with MapElement:**
+
+```typescript
+import { MapLatLng } from 'raain-ui';
+
+// Create a marker with wind data
+const windMarker = new MapLatLng(
+    lat,           // latitude
+    lng,           // longitude
+    azimuth,       // alt property: azimuth 0-360° (0=North, 90=East, 180=South, 270=West)
+    id,            // marker id
+    name,          // marker name
+    strengthInMs   // value property: wind strength in meters/second
+);
+
+// Apply wind animation
+mapElement.changeMarkerStyle(
+    windMarker,
+    'marker-wind marker-wind-225',  // classes: base + direction
+    { strength: 10 }                 // CSS variable: wind strength
+);
+```
+
+**Available azimuth classes:** 0, 10, 20, 30, 45, 90, 135, 180, 200, 225, 270, 315
+
+The animation automatically:
+- Shows a directional arrow indicating wind direction
+- Animates marker movement in the wind direction
+- Adjusts animation speed based on wind strength
+- Displays a blue glow with intensity matching wind strength
+
 ## 📚 Documentation
 
 Comprehensive API documentation is available in the [specifications](./specs) directory. This includes detailed

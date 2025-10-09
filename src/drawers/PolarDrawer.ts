@@ -64,17 +64,17 @@ export class PolarDrawer implements IDrawer {
         return this.possibleDrawing !== this.getPossibleDrawing();
     }
 
-    public getExecOfWindowPoints(
+    public getExecOfWindowPoints<T>(
         values: PolarMapValue[],
-        fnToApplyToAllPoint: (c: PolarMapValue[]) => any
+        fnToApplyToAllPoint: (c: PolarMapValue[]) => T
     ) {
         const filteredValues = values.filter(this.polarMap2Display);
         return fnToApplyToAllPoint(filteredValues);
     }
 
-    public getExecOfVisiblePoints(
+    public getExecOfVisiblePoints<T>(
         values: PolarMapValue[],
-        fnToApplyToAllPoint: (v: PolarMapValue[]) => any
+        fnToApplyToAllPoint: (v: PolarMapValue[]) => T
     ) {
         const optimization = this.getOptimization();
         const filteredValues = optimization.filteringValues(

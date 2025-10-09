@@ -21,6 +21,8 @@ import {
     Tools,
 } from 'raain-ui';
 import {DateRange} from '../src';
+import markerIconUrl from 'url:./my-marker-icon.png';
+import markerShadowUrl from 'url:./my-marker-shadow.png';
 
 // 1) HTML Elements
 const mapHtmlElement = document.getElementById('map');
@@ -257,9 +259,9 @@ const scaleColors = sortedArray.map((entry) => {
 const scaleLabels = sortedArray.map((entry) => entry[0]);
 
 // 3) Configurations
-const iconsOptions = {
-    iconUrl: './my-marker-icon.png',
-    shadowUrl: './my-marker-shadow.png',
+const iconOptions = {
+    iconUrl: markerIconUrl,
+    shadowUrl: markerShadowUrl,
 };
 
 // 4) Factory
@@ -267,10 +269,54 @@ const factory = new ElementsFactory(center, true);
 const mapElement = factory.createMap(
     mapHtmlElement,
     new MapElementInput(timeframeContainers, [
-        {iconsLatLng: markers1, iconsOptions},
-        {iconsLatLng: markers2},
+        {iconsLatLng: markers1, iconOptions},
+        {iconsLatLng: markers2, iconOptions},
     ])
 );
+
+// Animated wind direction/strength cycling
+const windExamples = [
+    {azimuth: 0, strength: 8, description: 'North, 8 m/s'},
+    {azimuth: 45, strength: 12, description: 'Northeast, 12 m/s'},
+    {azimuth: 90, strength: 15, description: 'East, 15 m/s'},
+    {azimuth: 135, strength: 10, description: 'Southeast, 10 m/s'},
+    {azimuth: 180, strength: 6, description: 'South, 6 m/s'},
+    {azimuth: 200, strength: 10, description: 'Southwest, 10 m/s'},
+    {azimuth: 225, strength: 14, description: 'Southwest, 14 m/s'},
+    {azimuth: 270, strength: 5, description: 'West, 5 m/s'},
+    {azimuth: 315, strength: 9, description: 'Northwest, 9 m/s'},
+];
+
+let currentWindIndex = 0;
+
+function cycleWindAnimation() {
+    const example = windExamples[currentWindIndex];
+
+    // Remove all previous wind classes from marker
+    const markerElement = mapElement.getMarkerElement(markers2[0])?.getElement();
+    if (markerElement) {
+        // Remove all wind-related classes
+        markerElement.className = markerElement.className
+            .split(' ')
+            .filter((c) => !c.startsWith('marker-wind'))
+            .join(' ');
+    }
+
+    // Apply new wind style
+    mapElement.changeMarkerStyle(markers2[0], `marker-wind marker-wind-${example.azimuth}`, {
+        strength: example.strength,
+    });
+
+    // Move to next example
+    currentWindIndex = (currentWindIndex + 1) % windExamples.length;
+}
+
+// Initial wind style
+cycleWindAnimation();
+
+// Cycle through wind animations every 3 seconds
+setInterval(cycleWindAnimation, 3000);
+
 const compareElement = factory.createCompare(
     compareHtmlElement,
     new CompareElementInput(comparePoints, {x: 80, y: 80}, console.log)

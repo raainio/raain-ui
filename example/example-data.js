@@ -11,7 +11,13 @@ import {
     TimeframeContainer,
     TimeframeContainers,
 } from 'raain-ui';
-import {cartesianRainHistories, rainComputationQualities, rainPolarMeasureValues} from './data/require.gitignored.js';
+import {
+    cartesianRainHistories,
+    rainComputationQualities,
+    rainPolarMeasureValues,
+} from './data/require.gitignored.js';
+import markerIconUrl from 'url:./my-marker-icon.png';
+import markerShadowUrl from 'url:./my-marker-shadow.png';
 
 // 1) HTML elements
 const mapHtmlElement = document.getElementById('map');
@@ -35,23 +41,22 @@ const createPolarFromJson = (rpmv) => {
     }
 
     return polarMapValues;
-}
+};
 
 const createCartesianMapFromJson = (cartesianRainHistories) => {
-    return cartesianRainHistories.map(crh => {
+    return cartesianRainHistories.map((crh) => {
         const cmv = new CartesianMapValue(
             crh.computedValue.value,
             crh.computedValue.lat,
             crh.computedValue.lng,
             crh.computedValue.lat + 0.008,
-            crh.computedValue.lng + 0.014);
+            crh.computedValue.lng + 0.014
+        );
         return cmv;
     });
-}
+};
 
-const markers = [
-    new MapLatLng(center.latitude, center.longitude, 0, 'centerId', 'center'),
-];
+const markers = [new MapLatLng(center.latitude, center.longitude, 0, 'centerId', 'center')];
 
 const indexStart = 0;
 
@@ -71,21 +76,25 @@ frameContainers = [];
 let indexCartesian = indexStart;
 for (let cartesianRainHistory of cartesianRainHistories) {
     const date = new Date(now.getTime() + indexCartesian * 5 * 60000);
-    frameContainers.push(new FrameContainer(date, createCartesianMapFromJson(cartesianRainHistory), false, true));
+    frameContainers.push(
+        new FrameContainer(date, createCartesianMapFromJson(cartesianRainHistory), false, true)
+    );
     indexCartesian++;
     // if (indexCartesian > 12) break;
 }
 const allCartesianValues = new TimeframeContainer('allCartesianRain', frameContainers);
-const timeframeContainers = new TimeframeContainers([allPolarValues, allCartesianValues,]);
+const timeframeContainers = new TimeframeContainers([allPolarValues, allCartesianValues]);
 
 // 3) Factory
 const factory = new ElementsFactory(center, true);
-const iconsOptions = {
-    iconUrl: './my-marker-icon.png',
-    shadowUrl: './my-marker-shadow.png',
+const iconOptions = {
+    iconUrl: markerIconUrl,
+    shadowUrl: markerShadowUrl,
 };
-const mapElement = factory.createMap(mapHtmlElement,
-    new MapElementInput(timeframeContainers, [{iconsLatLng: markers, iconsOptions}]));
+const mapElement = factory.createMap(
+    mapHtmlElement,
+    new MapElementInput(timeframeContainers, [{iconsLatLng: markers, iconOptions}])
+);
 
 // Matrices
 // let positionValuesMatrix = rainComputationQualities[0].qualitySpeedMatrixContainer.flattenMatrices;
@@ -112,7 +121,10 @@ const animateCartesian = (toggle) => {
     if (!cartesianModeToggle) {
         return;
     }
-    timeframeContainers.showTimeframes('allCartesianRain', new Date(now.getTime() + indexAnimation * 5 * 60000));
+    timeframeContainers.showTimeframes(
+        'allCartesianRain',
+        new Date(now.getTime() + indexAnimation * 5 * 60000)
+    );
     animateMatrix();
     if (animationEnabled) {
         indexAnimation++;
@@ -130,7 +142,10 @@ const animatePolar = (toggle) => {
     if (cartesianModeToggle) {
         return;
     }
-    timeframeContainers.showTimeframes('allPolarRain', new Date(now.getTime() + indexAnimation * 5 * 60000));
+    timeframeContainers.showTimeframes(
+        'allPolarRain',
+        new Date(now.getTime() + indexAnimation * 5 * 60000)
+    );
     animateMatrix();
     if (animationEnabled) {
         indexAnimation++;
@@ -143,10 +158,21 @@ const animatePolar = (toggle) => {
 
 const animateMatrix = () => {
     speedMatrixHtmlElement.innerHTML = '';
-    speedHtmlTitle.innerHTML = '<p>' + indexAnimation + ' - ' + rainComputationQualities[indexAnimation].periodEnd + '</p>';
-    factory.createSpeedMatrixIndicator(speedMatrixHtmlElement, new SpeedMatrixElementInput(
-        rainComputationQualities[indexAnimation].qualitySpeedMatrixContainer.flattenMatrices[0],
-        rainComputationQualities[indexAnimation].qualitySpeedMatrixContainer.trustedIndicators[0]));
+    speedHtmlTitle.innerHTML =
+        '<p>' +
+        indexAnimation +
+        ' - ' +
+        rainComputationQualities[indexAnimation].periodEnd +
+        '</p>';
+    factory.createSpeedMatrixIndicator(
+        speedMatrixHtmlElement,
+        new SpeedMatrixElementInput(
+            rainComputationQualities[indexAnimation].qualitySpeedMatrixContainer.flattenMatrices[0],
+            rainComputationQualities[
+                indexAnimation
+            ].qualitySpeedMatrixContainer.trustedIndicators[0]
+        )
+    );
 };
 
 const forward = () => {

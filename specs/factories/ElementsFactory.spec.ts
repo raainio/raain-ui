@@ -87,7 +87,7 @@ describe('Factories.ElementsFactory', () => {
         const divElement = fakeDom.window.document.querySelector('#earthMap');
         const ef = new ElementsFactory();
 
-        const earthMapInput = new EarthMapElementInput(''); // EarthMapElementInput is an interface, not a class
+        const earthMapInput = new EarthMapElementInput();
         const created = ef.createEarthMap(divElement as HTMLElement, earthMapInput);
         expect(created).not.eq(undefined);
     });

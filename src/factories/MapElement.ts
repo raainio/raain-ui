@@ -126,6 +126,86 @@ export class MapElement {
         this.mapLeaflet.invalidateSize({animate: true});
     }
 
+    public updateMarkers(
+        markers: {
+            iconsLatLng: MapLatLng[];
+            iconsOptions?: IconOptions;
+        }[]
+    ) {
+        this.markersProduced = this.markersLayer.render(markers).markers;
+        return this.markersProduced;
+    }
+
+    public getMarkerElement(markerToFind: MapLatLng) {
+        if (!this.markersProduced?.length) {
+            return null;
+        }
+
+        const founds = this.markersProduced.filter(
+            (marker) =>
+                marker.getLatLng().lat === markerToFind.lat &&
+                marker.getLatLng().lng === markerToFind.lng
+        );
+        if (founds.length !== 1) {
+            return null;
+        }
+        return founds[0];
+    }
+
+    /**
+     * Change marker style by adding CSS classes and/or setting CSS custom properties
+     * @param marker The marker to style (MapLatLng)
+     * @param style CSS class(es) to add (space-separated string) or object with classes and cssVars
+     * @param cssVars Optional object with CSS custom properties (e.g., {strength: 10})
+     *
+     * Examples:
+     * - changeMarkerStyle(marker, 'marker-red')
+     * - changeMarkerStyle(marker, 'marker-wind marker-wind-200', {strength: 10})
+     * - changeMarkerStyle(marker, {classes: 'marker-wind marker-wind-200', cssVars: {strength: 10}})
+     */
+    public changeMarkerStyle(
+        marker: MapLatLng,
+        style: string | {classes: string; cssVars?: Record<string, string | number>},
+        cssVars?: Record<string, string | number>
+    ) {
+        const markerFound = this.getMarkerElement(marker);
+        if (!markerFound) {
+            return;
+        }
+
+        const element = markerFound.getElement();
+        if (!element) {
+            return;
+        }
+
+        // Handle different input formats
+        let classesToAdd: string;
+        let varsToSet: Record<string, string | number> | undefined;
+
+        if (typeof style === 'string') {
+            classesToAdd = style;
+            varsToSet = cssVars;
+        } else {
+            classesToAdd = style.classes;
+            varsToSet = style.cssVars;
+        }
+
+        // Add CSS classes (space-separated)
+        if (classesToAdd) {
+            const classes = classesToAdd.split(' ').filter((c) => c.trim());
+            classes.forEach((className) => {
+                element.classList.add(className);
+            });
+        }
+
+        // Set CSS custom properties
+        if (varsToSet) {
+            Object.entries(varsToSet).forEach(([key, value]) => {
+                element.style.setProperty(`--${key}`, String(value));
+            });
+        }
+    }
+
     private addCompositeLayer(
         mapLeaflet: Map,
         compositeLayer: CompositeLayer,

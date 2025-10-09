@@ -1,0 +1,260 @@
+/* ============================================================================
+ * Wind Speed/Direction Animation for Leaflet Markers
+ * ============================================================================
+ * Usage: Import this CSS file in your app's global styles or index.html
+ *
+ * @import "~raain-ui/data/wind-markers.css";
+ *
+ * Or in HTML:
+ * <link rel="stylesheet" href="node_modules/raain-ui/dist/data/wind-markers.css">
+ *
+ * Then apply classes to markers via MapElement.changeMarkerStyle():
+ * mapElement.changeMarkerStyle(marker, 'marker-wind marker-wind-200', {strength: 10});
+ */
+
+/* Base wind marker class */
+.marker-wind {
+    /* Calculate animation speed: stronger wind = faster animation */
+    --duration: calc(5s - (min(var(--strength, 5), 25) * 0.08s));
+
+    /* Calculate displacement: strength in m/s * 2 = pixels */
+    --displacement: calc(var(--strength, 5) * 2);
+
+    /* Visual glow intensity based on strength */
+    filter: drop-shadow(0 0 calc(var(--strength, 5) * 0.5px) rgba(100, 150, 255, 0.8));
+
+    position: relative;
+}
+
+/* Pulse animation (brightness/opacity) */
+@keyframes wind-pulse {
+    0%, 100% {
+        opacity: 1;
+        filter: brightness(1);
+    }
+    50% {
+        opacity: 0.85;
+        filter: brightness(1.15);
+    }
+}
+
+/* Direction arrow indicator */
+.marker-wind::after {
+    content: '→';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    font-size: 18px;
+    font-weight: bold;
+    color: rgba(100, 150, 255, 0.95);
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
+    pointer-events: none;
+    transform-origin: center;
+}
+
+/* Wind direction classes for every available degree */
+/* Azimuth 0 = North (upward), 90 = East (right), 180 = South (down), 270 = West (left) */
+
+.marker-wind-0::after, .marker-wind-360::after {
+    transform: translateX(-50%) rotate(180deg);
+}
+
+.marker-wind-0, .marker-wind-360 {
+    animation: wind-0 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite;
+}
+
+@keyframes wind-0 {
+    0%, 100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: 0 calc(var(--displacement) * -1px);
+    }
+}
+
+.marker-wind-10::after {
+    transform: translateX(-50%) rotate(190deg);
+}
+
+.marker-wind-10 {
+    animation: wind-10 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite;
+}
+
+@keyframes wind-10 {
+    0%, 100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: calc(var(--displacement) * 0.17px) calc(var(--displacement) * -0.98px);
+    }
+}
+
+.marker-wind-20::after {
+    transform: translateX(-50%) rotate(200deg);
+}
+
+.marker-wind-20 {
+    animation: wind-20 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite;
+}
+
+@keyframes wind-20 {
+    0%, 100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: calc(var(--displacement) * 0.34px) calc(var(--displacement) * -0.94px);
+    }
+}
+
+.marker-wind-30::after {
+    transform: translateX(-50%) rotate(210deg);
+}
+
+.marker-wind-30 {
+    animation: wind-30 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite;
+}
+
+@keyframes wind-30 {
+    0%, 100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: calc(var(--displacement) * 0.5px) calc(var(--displacement) * -0.87px);
+    }
+}
+
+.marker-wind-45::after {
+    transform: translateX(-50%) rotate(225deg);
+}
+
+.marker-wind-45 {
+    animation: wind-45 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite;
+}
+
+@keyframes wind-45 {
+    0%, 100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: calc(var(--displacement) * 0.71px) calc(var(--displacement) * -0.71px);
+    }
+}
+
+.marker-wind-90::after {
+    transform: translateX(-50%) rotate(270deg);
+}
+
+.marker-wind-90 {
+    animation: wind-90 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite;
+}
+
+@keyframes wind-90 {
+    0%, 100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: calc(var(--displacement) * 1px) 0;
+    }
+}
+
+.marker-wind-135::after {
+    transform: translateX(-50%) rotate(315deg);
+}
+
+.marker-wind-135 {
+    animation: wind-135 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite;
+}
+
+@keyframes wind-135 {
+    0%, 100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: calc(var(--displacement) * 0.71px) calc(var(--displacement) * 0.71px);
+    }
+}
+
+.marker-wind-180::after {
+    transform: translateX(-50%) rotate(0deg);
+}
+
+.marker-wind-180 {
+    animation: wind-180 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite;
+}
+
+@keyframes wind-180 {
+    0%, 100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: 0 calc(var(--displacement) * 1px);
+    }
+}
+
+.marker-wind-200::after {
+    transform: translateX(-50%) rotate(20deg);
+}
+
+.marker-wind-200 {
+    animation: wind-200 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite;
+}
+
+@keyframes wind-200 {
+    0%, 100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: calc(var(--displacement) * 0.34px) calc(var(--displacement) * 0.94px);
+    }
+}
+
+.marker-wind-225::after {
+    transform: translateX(-50%) rotate(45deg);
+}
+
+.marker-wind-225 {
+    animation: wind-225 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite;
+}
+
+@keyframes wind-225 {
+    0%, 100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: calc(var(--displacement) * -0.71px) calc(var(--displacement) * 0.71px);
+    }
+}
+
+.marker-wind-270::after {
+    transform: translateX(-50%) rotate(90deg);
+}
+
+.marker-wind-270 {
+    animation: wind-270 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite;
+}
+
+@keyframes wind-270 {
+    0%, 100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: calc(var(--displacement) * -1px) 0;
+    }
+}
+
+.marker-wind-315::after {
+    transform: translateX(-50%) rotate(135deg);
+}
+
+.marker-wind-315 {
+    animation: wind-315 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite;
+}
+
+@keyframes wind-315 {
+    0%, 100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: calc(var(--displacement) * -0.71px) calc(var(--displacement) * -0.71px);
+    }
+}

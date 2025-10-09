@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- MapElement changeMarkerStyle
+
+## [2.3.16] - 2025-07-04
+
+### Fixed
+
 - UT with local labels in CI
 
 ## [2.3.15] - 2025-07-04

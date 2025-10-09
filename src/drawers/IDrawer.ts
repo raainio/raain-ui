@@ -1,5 +1,13 @@
-export interface IDrawer {
-    getExecOfWindowPoints(values: any, fnToApplyToAllPoint: (c: any) => any): any;
+import {CartesianMapValue, PolarMapValue} from '../tools';
 
-    getExecOfVisiblePoints(values: any, fnToApplyToAllPoint: (c: any) => any): any;
+export interface IDrawer {
+    getExecOfWindowPoints<T>(
+        values: CartesianMapValue[] | PolarMapValue[],
+        fnToApplyToAllPoint: (c: CartesianMapValue[] | PolarMapValue[]) => T
+    ): T;
+
+    getExecOfVisiblePoints<T>(
+        values: CartesianMapValue[] | PolarMapValue[],
+        fnToApplyToAllPoint: (c: CartesianMapValue[] | PolarMapValue[]) => T
+    ): T;
 }

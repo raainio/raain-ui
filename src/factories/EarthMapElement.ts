@@ -13,7 +13,7 @@ import {initGlobe} from '../globe/main';
  * Class for Earth map configuration
  */
 export class EarthMapElementInput {
-    constructor(public accessToken: string) {}
+    constructor() {}
 }
 
 /**
