@@ -101,7 +101,8 @@ features of raain-ui.
 
 ### 🌬️ Wind Marker Animations
 
-raain-ui includes CSS animations for visualizing wind speed and direction on map markers. To use these animations in your application:
+raain-ui includes CSS animations for visualizing wind speed and direction on map markers. To use these animations in
+your application:
 
 **1. Import the CSS file in your global styles:**
 
@@ -113,13 +114,14 @@ raain-ui includes CSS animations for visualizing wind speed and direction on map
 **Or in HTML:**
 
 ```html
+
 <link rel="stylesheet" href="node_modules/raain-ui/dist/data/wind-markers.css">
 ```
 
 **2. Use with MapElement:**
 
 ```typescript
-import { MapLatLng } from 'raain-ui';
+import {MapLatLng} from 'raain-ui';
 
 // Create a marker with wind data
 const windMarker = new MapLatLng(
@@ -135,13 +137,14 @@ const windMarker = new MapLatLng(
 mapElement.changeMarkerStyle(
     windMarker,
     'marker-wind marker-wind-225',  // classes: base + direction
-    { strength: 10 }                 // CSS variable: wind strength
+    {strength: 10}                 // CSS variable: wind strength
 );
 ```
 
 **Available azimuth classes:** 0, 10, 20, 30, 45, 90, 135, 180, 200, 225, 270, 315
 
 The animation automatically:
+
 - Shows a directional arrow indicating wind direction
 - Animates marker movement in the wind direction
 - Adjusts animation speed based on wind strength
@@ -151,28 +154,6 @@ The animation automatically:
 
 Comprehensive API documentation is available in the [specifications](./specs) directory. This includes detailed
 information about all components, their properties, methods, and events.
-
-### 🧠 Memory Bank
-
-This project uses a Memory Bank for comprehensive documentation and context retention. The Memory Bank provides in-depth
-information about the project's architecture, design decisions, and development context.
-
-<details>
-<summary><b>Memory Bank Files</b> (click to expand)</summary>
-
-The Memory Bank is located in the `.memory-bank` directory and contains the following files:
-
-| File                   | Description                                                       |
-|------------------------|-------------------------------------------------------------------|
-| `memory-bank-rules.md` | Rules to follow and to consider in all contexts                   |
-| `projectbrief.md`      | Overview of the project, core requirements, and goals             |
-| `productContext.md`    | Why the project exists, problems it solves, and how it works      |
-| `systemPatterns.md`    | System architecture, key technical decisions, and design patterns |
-| `techContext.md`       | Technologies used, development setup, and technical constraints   |
-| `activeContext.md`     | Current work focus, recent changes, and next steps                |
-| `progress.md`          | What works, what's left to build, and known issues                |
-
-</details>
 
 ### 🅰️ Angular Configuration
 
