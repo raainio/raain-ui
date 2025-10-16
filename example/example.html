@@ -4,134 +4,8 @@
     <title>raain-ui-example</title>
     <meta charset="UTF-8"/>
     <!-- Include the CesiumJS JavaScript and CSS files -->
-    <script src="https://cesium.com/downloads/cesiumjs/releases/1.128/Build/Cesium/Cesium.js"></script>
-    <link href="https://cesium.com/downloads/cesiumjs/releases/1.128/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
-
-    <style>
-        /* Wind speed/direction animation for markers
-           Usage: Apply both classes together
-           - Base class: "marker-wind"
-           - Direction class: "marker-wind-{azimuth}" where azimuth is 0-360 in 10° steps
-           - Set strength via CSS variable: style="--strength: 10"
-
-           Example: class="marker-wind marker-wind-200" style="--strength: 10"
-           This creates a marker moving at azimuth 200° with strength 10 m/s
-        */
-
-        /* Base wind marker class */
-        .marker-wind {
-            /* Calculate animation speed: stronger wind = faster animation */
-            --duration: calc(2s - (min(var(--strength, 5), 25) * 0.04s));
-
-            /* Calculate displacement: strength in m/s * 2 = pixels */
-            --displacement: calc(var(--strength, 5) * 2);
-
-            /* Visual glow intensity based on strength */
-            filter: drop-shadow(0 0 calc(var(--strength, 5) * 0.5px) rgba(100, 150, 255, 0.8));
-
-            position: relative;
-        }
-
-        /* Pulse animation (brightness/opacity) */
-        @keyframes wind-pulse {
-            0%, 100% {
-                opacity: 1;
-                filter: brightness(1);
-            }
-            50% {
-                opacity: 0.85;
-                filter: brightness(1.15);
-            }
-        }
-
-        /* Direction arrow indicator */
-        .marker-wind::after {
-            content: '→';
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            font-size: 18px;
-            font-weight: bold;
-            color: rgba(100, 150, 255, 0.95);
-            text-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
-            pointer-events: none;
-            transform-origin: center;
-        }
-
-        /* Generate wind direction classes for every 10 degrees (0-360) */
-        /* Azimuth 0 = North (upward), 90 = East (right), 180 = South (down), 270 = West (left) */
-
-        /* North sector (350-10°) */
-        .marker-wind-0::after, .marker-wind-360::after { transform: translateX(-50%) rotate(180deg); }
-        .marker-wind-0, .marker-wind-360 { animation: wind-0 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite; }
-        @keyframes wind-0 { 0%, 100% { translate: 0 0; } 50% { translate: 0 calc(var(--displacement) * -1px); } }
-
-        .marker-wind-10::after { transform: translateX(-50%) rotate(190deg); }
-        .marker-wind-10 { animation: wind-10 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite; }
-        @keyframes wind-10 { 0%, 100% { translate: 0 0; } 50% { translate: calc(var(--displacement) * 0.17px) calc(var(--displacement) * -0.98px); } }
-
-        .marker-wind-20::after { transform: translateX(-50%) rotate(200deg); }
-        .marker-wind-20 { animation: wind-20 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite; }
-        @keyframes wind-20 { 0%, 100% { translate: 0 0; } 50% { translate: calc(var(--displacement) * 0.34px) calc(var(--displacement) * -0.94px); } }
-
-        .marker-wind-30::after { transform: translateX(-50%) rotate(210deg); }
-        .marker-wind-30 { animation: wind-30 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite; }
-        @keyframes wind-30 { 0%, 100% { translate: 0 0; } 50% { translate: calc(var(--displacement) * 0.5px) calc(var(--displacement) * -0.87px); } }
-
-        .marker-wind-45::after { transform: translateX(-50%) rotate(225deg); }
-        .marker-wind-45 { animation: wind-45 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite; }
-        @keyframes wind-45 { 0%, 100% { translate: 0 0; } 50% { translate: calc(var(--displacement) * 0.71px) calc(var(--displacement) * -0.71px); } }
-
-        .marker-wind-90::after { transform: translateX(-50%) rotate(270deg); }
-        .marker-wind-90 { animation: wind-90 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite; }
-        @keyframes wind-90 { 0%, 100% { translate: 0 0; } 50% { translate: calc(var(--displacement) * 1px) 0; } }
-
-        .marker-wind-135::after { transform: translateX(-50%) rotate(315deg); }
-        .marker-wind-135 { animation: wind-135 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite; }
-        @keyframes wind-135 { 0%, 100% { translate: 0 0; } 50% { translate: calc(var(--displacement) * 0.71px) calc(var(--displacement) * 0.71px); } }
-
-        .marker-wind-180::after { transform: translateX(-50%) rotate(0deg); }
-        .marker-wind-180 { animation: wind-180 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite; }
-        @keyframes wind-180 { 0%, 100% { translate: 0 0; } 50% { translate: 0 calc(var(--displacement) * 1px); } }
-
-        .marker-wind-200::after { transform: translateX(-50%) rotate(20deg); }
-        .marker-wind-200 { animation: wind-200 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite; }
-        @keyframes wind-200 { 0%, 100% { translate: 0 0; } 50% { translate: calc(var(--displacement) * 0.34px) calc(var(--displacement) * 0.94px); } }
-
-        .marker-wind-225::after { transform: translateX(-50%) rotate(45deg); }
-        .marker-wind-225 { animation: wind-225 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite; }
-        @keyframes wind-225 { 0%, 100% { translate: 0 0; } 50% { translate: calc(var(--displacement) * -0.71px) calc(var(--displacement) * 0.71px); } }
-
-        .marker-wind-270::after { transform: translateX(-50%) rotate(90deg); }
-        .marker-wind-270 { animation: wind-270 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite; }
-        @keyframes wind-270 { 0%, 100% { translate: 0 0; } 50% { translate: calc(var(--displacement) * -1px) 0; } }
-
-        .marker-wind-315::after { transform: translateX(-50%) rotate(135deg); }
-        .marker-wind-315 { animation: wind-315 var(--duration) ease-in-out infinite, wind-pulse var(--duration) ease-in-out infinite; }
-        @keyframes wind-315 { 0%, 100% { translate: 0 0; } 50% { translate: calc(var(--displacement) * -0.71px) calc(var(--displacement) * -0.71px); } }
-
-        /* Legacy: marker-changed uses wind animation */
-        .marker-changed {
-            /* Extends marker-wind with default values */
-            --strength: 10;
-        }
-        .marker-changed::after {
-            content: '→';
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%) rotate(20deg); /* 200° azimuth */
-            font-size: 18px;
-            font-weight: bold;
-            color: rgba(100, 150, 255, 0.95);
-            text-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
-            pointer-events: none;
-        }
-        .marker-changed {
-            animation: wind-200 var(--duration, 1.6s) ease-in-out infinite, wind-pulse var(--duration, 1.6s) ease-in-out infinite;
-            filter: drop-shadow(0 0 5px rgba(100, 150, 255, 0.8));
-        }
-    </style>
+    <script src="./http_cesium.com_downloads_cesiumjs_releases_1.128_Build_Cesium_Cesium.js"></script>
+    <link href="./http_cesium.com_downloads_cesiumjs_releases_1.128_Build_Cesium_Widgets_widgets.css" rel="stylesheet">
 
 </head>
 <body>
@@ -198,13 +72,6 @@
 <div id="earthMap" style="height: 400px; width: 400px;position: relative"></div>
 
 <script src="./example.js" type="module"></script>
-
-<script>
-    //  Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmMWYzYzE5NC05ZTdhLTQwNjAtOWI1Ny1lMjZiOTRmMTQ4MDgiLCJpZCI6Mjk1MjM3LCJpYXQiOjE3NDQ5Nzk5Nzd9.9rJCrhRntACDWSpWrzYAA0bIyPl9eLLBOBUU1G5ZhPo';
-    //  const viewer = new Cesium.Viewer('earthMap', {
-    //      terrain: Cesium.Terrain.fromWorldTerrain(),
-    //  });
-</script>
 
 </body>
 </html>

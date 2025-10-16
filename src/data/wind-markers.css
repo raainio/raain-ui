@@ -9,7 +9,7 @@
  * <link rel="stylesheet" href="node_modules/raain-ui/dist/data/wind-markers.css">
  *
  * Then apply classes to markers via MapElement.changeMarkerStyle():
- * mapElement.changeMarkerStyle(marker, 'marker-wind marker-wind-200', {strength: 10});
+ * mapElement.changeMarkerStyle(marker, 'marker-wind marker-wind-200', {strength: 10, trustful: 0.5});
  */
 
 /* Base wind marker class */
@@ -20,14 +20,31 @@
     /* Calculate displacement: subtle animation, reduced from original */
     --displacement: calc(var(--strength, 5) * 2);
 
-    /* Visual glow intensity based on strength */
-    filter: drop-shadow(0 0 calc(var(--strength, 5) * 0.5px) rgba(100, 150, 255, 0.8));
+    /* Trustful parameter: 0 = red (untrusted), 1 = original (trusted) */
+    --trustful: 1;
+
+    /* Calculate red overlay intensity: (1 - trustful) gives us 0 at trustful=1, 1 at trustful=0 */
+    --red-intensity: calc(1 - var(--trustful, 1));
+
+    /* Visual glow intensity based on strength and trustfulness */
+    /* When trustful is low, glow becomes red; when high, glow is blue */
+    filter: drop-shadow(0 0 calc(var(--strength, 5) * 0.5px) rgba(
+            calc(100 + 155 * var(--red-intensity)),
+            calc(150 * var(--trustful, 1)),
+            calc(255 * var(--trustful, 1)),
+            0.8
+    ));
 
     /* Rotation will be set by direction-specific classes */
     --rotation: 0deg;
 }
 
 .marker-wind img {
+    /* Apply red colorization based on trustful value */
+    /* Strong red tint: grayscale removes color, then apply red via sepia+hue */
+    filter: grayscale(var(--red-intensity)) sepia(var(--red-intensity)) saturate(calc(1 + var(--red-intensity) * 5)) hue-rotate(calc(var(--red-intensity) * -50deg));
+
+    /* Rotation set by direction-specific classes */
     transform: rotate(var(--rotation)) !important;
 }
 
@@ -38,31 +55,31 @@
     /* Override animation to use travel mode */
 }
 
-/* Pulse animation (brightness/opacity) */
+/* Pulse animation (opacity) */
 @keyframes wind-pulse {
     0%, 100% {
         opacity: 1;
-        filter: brightness(1);
+        filter: grayscale(var(--red-intensity)) sepia(var(--red-intensity)) saturate(calc(1 + var(--red-intensity) * 5)) hue-rotate(calc(var(--red-intensity) * -50deg));
     }
     50% {
         opacity: 0.85;
-        filter: brightness(1.15);
+        filter: grayscale(var(--red-intensity)) sepia(var(--red-intensity)) saturate(calc(1 + var(--red-intensity) * 5)) hue-rotate(calc(var(--red-intensity) * -50deg));
     }
 }
 
 /* Travel mode pulse - fade out at destination */
 @keyframes wind-pulse-travel {
     0% {
-        filter: brightness(1.2);
+        filter: grayscale(var(--red-intensity)) sepia(var(--red-intensity)) saturate(calc(1 + var(--red-intensity) * 5)) hue-rotate(calc(var(--red-intensity) * -50deg));
     }
     70% {
-        filter: brightness(0.8);
+        filter: grayscale(var(--red-intensity)) sepia(var(--red-intensity)) saturate(calc(1 + var(--red-intensity) * 5)) hue-rotate(calc(var(--red-intensity) * -50deg));
     }
     71%, 99% {
-        filter: brightness(0);
+        filter: grayscale(var(--red-intensity)) sepia(var(--red-intensity)) saturate(calc(1 + var(--red-intensity) * 5)) hue-rotate(calc(var(--red-intensity) * -50deg));
     }
     100% {
-        filter: brightness(1.2);
+        filter: grayscale(var(--red-intensity)) sepia(var(--red-intensity)) saturate(calc(1 + var(--red-intensity) * 5)) hue-rotate(calc(var(--red-intensity) * -50deg));
     }
 }
 

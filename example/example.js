@@ -1,4 +1,5 @@
 import 'leaflet/dist/leaflet.css';
+import '../src/data/wind-markers.css';
 import {
     CartesianMapValue,
     ChartScaleColors,
@@ -274,38 +275,58 @@ const mapElement = factory.createMap(
     ])
 );
 
-// Animated wind direction/strength cycling
+// Animated wind direction/strength cycling - Demo of wind-markers.css
 const windExamples = [
-    {azimuth: 0, strength: 8, description: 'North, 8 m/s'},
-    {azimuth: 45, strength: 12, description: 'Northeast, 12 m/s'},
-    {azimuth: 90, strength: 15, description: 'East, 15 m/s'},
-    {azimuth: 135, strength: 10, description: 'Southeast, 10 m/s'},
-    {azimuth: 180, strength: 6, description: 'South, 6 m/s'},
-    {azimuth: 200, strength: 10, description: 'Southwest, 10 m/s'},
-    {azimuth: 225, strength: 14, description: 'Southwest, 14 m/s'},
-    {azimuth: 270, strength: 5, description: 'West, 5 m/s'},
-    {azimuth: 315, strength: 9, description: 'Northwest, 9 m/s'},
+    {azimuth: 0, strength: 8, trustful: 0.5, description: 'North, 8 m/s, 100% trust'},
+    {azimuth: 10, strength: 12, trustful: 0.9, description: 'North-Northeast, 12 m/s, 90% trust'},
+    {azimuth: 20, strength: 15, trustful: 0.8, description: 'North-Northeast, 15 m/s, 80% trust'},
+    {azimuth: 30, strength: 10, trustful: 0.7, description: 'North-Northeast, 10 m/s, 70% trust'},
+    {azimuth: 45, strength: 12, trustful: 0.6, description: 'Northeast, 12 m/s, 60% trust'},
+    {azimuth: 90, strength: 15, trustful: 0.5, description: 'East, 15 m/s, 50% trust'},
+    {azimuth: 135, strength: 10, trustful: 0.4, description: 'Southeast, 10 m/s, 40% trust'},
+    {azimuth: 180, strength: 6, trustful: 0.3, description: 'South, 6 m/s, 30% trust'},
+    {azimuth: 200, strength: 10, trustful: 0.2, description: 'South-Southwest, 10 m/s, 20% trust'},
+    {azimuth: 225, strength: 14, trustful: 0.1, description: 'Southwest, 14 m/s, 10% trust'},
+    {azimuth: 270, strength: 5, trustful: 0.0, description: 'West, 5 m/s, 0% trust (red)'},
+    {azimuth: 315, strength: 9, trustful: 1.0, description: 'Northwest, 9 m/s, 100% trust'},
 ];
 
 let currentWindIndex = 0;
+let currentWindMode = false; // Toggle between normal and travel mode
 
 function cycleWindAnimation() {
-    const example = windExamples[currentWindIndex];
+    const example1 = windExamples[currentWindIndex];
+    const example2 = windExamples[windExamples.length - currentWindIndex - 1];
 
-    // Remove all previous wind classes from marker
-    const markerElement = mapElement.getMarkerElement(markers2[0])?.getElement();
-    if (markerElement) {
-        // Remove all wind-related classes
-        markerElement.className = markerElement.className
-            .split(' ')
-            .filter((c) => !c.startsWith('marker-wind'))
-            .join(' ');
+    // Toggle between normal and travel mode every full cycle
+    if (currentWindIndex === 0) {
+        currentWindMode = !currentWindMode;
     }
 
-    // Apply new wind style
-    mapElement.changeMarkerStyle(markers2[0], `marker-wind marker-wind-${example.azimuth}`, {
-        strength: example.strength,
+    // Build CSS class with optional travel mode
+    const windClass1 = currentWindMode
+        ? `marker-wind marker-wind-travel marker-wind-${example1.azimuth}`
+        : `marker-wind marker-wind-${example1.azimuth}`;
+    const windClass2 = currentWindMode
+        ? `marker-wind marker-wind-travel marker-wind-${example2.azimuth}`
+        : `marker-wind marker-wind-${example2.azimuth}`;
+
+    // Apply new wind style using changeMarkerStyle
+    // The strength CSS variable controls animation speed and displacement
+    // The trustful CSS variable controls red colorization (0=red, 1=original)
+    mapElement.changeMarkerStyle(markers1[0], windClass1, {
+        strength: example1.strength,
+        trustful: example1.trustful,
     });
+    mapElement.changeMarkerStyle(markers1[1], windClass2, {
+        strength: example2.strength,
+        trustful: example2.trustful,
+    });
+
+    console.log(
+        `Wind demo: ${example1.description} (${windClass1}, strength: ${example1.strength}, trustful: ${example1.trustful})`,
+        `vs ${example2.description} (${windClass2}, strength: ${example2.strength}, trustful: ${example2.trustful})`
+    );
 
     // Move to next example
     currentWindIndex = (currentWindIndex + 1) % windExamples.length;
@@ -315,7 +336,7 @@ function cycleWindAnimation() {
 cycleWindAnimation();
 
 // Cycle through wind animations every 3 seconds
-setInterval(cycleWindAnimation, 3000);
+// setInterval(cycleWindAnimation, 3000);
 
 const compareElement = factory.createCompare(
     compareHtmlElement,

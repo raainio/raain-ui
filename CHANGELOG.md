@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- wind-markers.css updated to show trustful indicator
+
+## [2.3.20] - 2025-10-13
+
+### Changed
+
 - Dependencies ^ => ~
 
 ## [2.3.19] - 2025-10-09
