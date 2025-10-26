@@ -1,5 +1,6 @@
 import 'leaflet/dist/leaflet.css';
 import '../src/data/wind-markers.css';
+import '../src/data/wind-markers-static.css';
 import {
     CartesianMapValue,
     ChartScaleColors,
@@ -292,39 +293,42 @@ const windExamples = [
 ];
 
 let currentWindIndex = 0;
-let currentWindMode = false; // Toggle between normal and travel mode
+let currentWindMode = false; // Toggle between animated and static mode
 
 function cycleWindAnimation() {
     const example1 = windExamples[currentWindIndex];
     const example2 = windExamples[windExamples.length - currentWindIndex - 1];
 
-    // Toggle between normal and travel mode every full cycle
+    // Toggle between animated and static mode every full cycle
     if (currentWindIndex === 0) {
         currentWindMode = !currentWindMode;
     }
 
-    // Build CSS class with optional travel mode
+    // Build CSS class - either animated or static
     const windClass1 = currentWindMode
-        ? `marker-wind marker-wind-travel marker-wind-${example1.azimuth}`
+        ? `marker-wind-static marker-wind-static-${example1.azimuth}`
         : `marker-wind marker-wind-${example1.azimuth}`;
     const windClass2 = currentWindMode
-        ? `marker-wind marker-wind-travel marker-wind-${example2.azimuth}`
+        ? `marker-wind-static marker-wind-static-${example2.azimuth}`
         : `marker-wind marker-wind-${example2.azimuth}`;
 
     // Apply new wind style using changeMarkerStyle
-    // The strength CSS variable controls animation speed and displacement
+    // For animated mode: strength controls animation speed and displacement
+    // For static mode: strength is displayed as text label, speed-text shows value
     // The trustful CSS variable controls red colorization (0=red, 1=original)
     mapElement.changeMarkerStyle(markers1[0], windClass1, {
         strength: example1.strength,
         trustful: example1.trustful,
+        'speed-text': `${example1.strength.toFixed(1)} m/s`,
     });
     mapElement.changeMarkerStyle(markers1[1], windClass2, {
         strength: example2.strength,
         trustful: example2.trustful,
+        'speed-text': `${example2.strength.toFixed(1)} m/s`,
     });
 
     console.log(
-        `Wind demo: ${example1.description} (${windClass1}, strength: ${example1.strength}, trustful: ${example1.trustful})`,
+        `Wind demo (${currentWindMode ? 'STATIC' : 'ANIMATED'}): ${example1.description} (${windClass1}, strength: ${example1.strength}, trustful: ${example1.trustful})`,
         `vs ${example2.description} (${windClass2}, strength: ${example2.strength}, trustful: ${example2.trustful})`
     );
 
@@ -336,7 +340,7 @@ function cycleWindAnimation() {
 cycleWindAnimation();
 
 // Cycle through wind animations every 3 seconds
-// setInterval(cycleWindAnimation, 3000);
+// Not Needed for now: setInterval(cycleWindAnimation, 3000);
 
 const compareElement = factory.createCompare(
     compareHtmlElement,
