@@ -265,6 +265,7 @@ const scaleColors = sortedArray.map((entry) => {
 const scaleLabels = sortedArray.map((entry) => entry[0]);
 
 // 3) Configurations - Create rotatable wind icons using RaainDivIcon
+// Example 1: Static HTML - fixed size icon
 const windIcon1 = new RaainDivIcon({
     html: `<img src="${markerIconUrl}" style="width: 25px; height: 41px; display: block;" />`,
     iconSize: [25, 41],
@@ -275,9 +276,11 @@ const windIcon1 = new RaainDivIcon({
     className: 'rotated-wind-marker',
 });
 
+// Example 2: Dynamic HTML template - size changes based on wind strength
 const windIcon2 = new RaainDivIcon({
-    html: `<img src="${markerIconUrl}" style="width: 25px; height: 41px; display: block;" />`,
-    iconSize: [25, 41],
+    htmlTemplate: `<img src="${markerIconUrl}" style="width: {width}px; height: {height}px; display: block;" />`,
+    width: 25,
+    height: 41,
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
     rotationAngle: 0,
@@ -313,13 +316,21 @@ function cycleWindAnimation() {
     const example1 = windExamples[currentWindIndex];
     const example2 = windExamples[windExamples.length - currentWindIndex - 1];
 
-    // Update rotation using the new RaainDivIcon API
+    // Update rotation on both icons
     windIcon1.setRotation(example1.azimuth);
     windIcon2.setRotation(example2.azimuth);
 
+    // Demonstrate dynamic sizing on windIcon2 (with htmlTemplate)
+    // Scale icon size based on wind strength (strength 5-15 m/s -> size 20-50px)
+    const scaleFactor = 2.5;
+    const baseSize = 20;
+    const width2 = baseSize + example2.strength * scaleFactor;
+    const height2 = (width2 * 41) / 25; // Maintain aspect ratio
+    windIcon2.setSize(width2, height2);
+
     console.log(
         `Wind rotation: Marker1 -> ${example1.description} (${example1.azimuth}°)`,
-        `| Marker2 -> ${example2.description} (${example2.azimuth}°)`
+        `| Marker2 -> ${example2.description} (${example2.azimuth}°, size: ${Math.round(width2)}x${Math.round(height2)}px)`
     );
 
     // Move to next example

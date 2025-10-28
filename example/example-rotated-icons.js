@@ -214,11 +214,12 @@ export function example5_CustomRotationOrigin(map) {
 }
 
 /**
- * Example 6: Wind speed visualization with rotation
+ * Example 6: Wind speed visualization with rotation (static html)
  */
 export function example6_WindSpeedVisualization(map) {
     /**
      * Helper function to create a wind marker with speed and direction
+     * Uses static html field - size is computed once during creation
      */
     function createWindMarker(lat, lng, speed, direction) {
         // Scale arrow size based on wind speed
@@ -276,6 +277,123 @@ export function example6_WindSpeedVisualization(map) {
     ];
 
     return windData.map((wind) => createWindMarker(wind.lat, wind.lng, wind.speed, wind.direction));
+}
+
+/**
+ * Example 7: Dynamic wind speed with htmlTemplate (runtime size changes)
+ * This demonstrates using htmlTemplate for icons that need to change size dynamically
+ */
+export function example7_DynamicWindSpeed(map) {
+    /**
+     * Helper function to get color based on wind speed
+     */
+    function getSpeedColor(speed) {
+        if (speed < 5) return '#4ade80'; // Green
+        if (speed < 10) return '#facc15'; // Yellow
+        if (speed < 15) return '#fb923c'; // Orange
+        return '#ef4444'; // Red
+    }
+
+    /**
+     * Create a dynamic wind marker using htmlTemplate
+     */
+    function createDynamicWindMarker(lat, lng, initialSpeed, initialDirection) {
+        const initialSize = 20 + Math.min(initialSpeed * 2, 40);
+        const color = getSpeedColor(initialSpeed);
+
+        // Use htmlTemplate with {width} and {height} placeholders for dynamic sizing
+        const icon = new RaainDivIcon({
+            htmlTemplate: `
+                <div style="
+                    width: {width}px;
+                    height: {height}px;
+                    background: ${color};
+                    clip-path: polygon(50% 0%, 100% 100%, 50% 85%, 0% 100%);
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+                    position: relative;
+                    transition: all 0.3s ease-out;
+                ">
+                    <span style="
+                        position: absolute;
+                        top: 60%;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        color: white;
+                        font-size: 10px;
+                        font-weight: bold;
+                        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+                    " class="wind-speed-label">${initialSpeed}</span>
+                </div>
+            `,
+            width: initialSize,
+            height: initialSize,
+            iconAnchor: [initialSize / 2, initialSize * 0.85],
+            rotationAngle: initialDirection,
+            className: 'dynamic-wind-marker',
+        });
+
+        const marker = leafletMarker([lat, lng], {icon}).addTo(map);
+        marker.bindPopup(
+            `<b>Dynamic Wind Data</b><br>Speed: ${initialSpeed} m/s<br>Direction: ${initialDirection}°`
+        );
+
+        return {marker, icon, currentSpeed: initialSpeed};
+    }
+
+    // Create dynamic wind markers
+    const windData = [
+        {lat: 51.502, lng: -0.095, speed: 5, direction: 45},
+        {lat: 51.507, lng: -0.095, speed: 10, direction: 90},
+        {lat: 51.502, lng: -0.085, speed: 8, direction: 180},
+    ];
+
+    const dynamicMarkers = windData.map((wind) =>
+        createDynamicWindMarker(wind.lat, wind.lng, wind.speed, wind.direction)
+    );
+
+    // Simulate real-time wind speed updates every 2 seconds
+    const interval = setInterval(() => {
+        dynamicMarkers.forEach(({marker, icon, currentSpeed}, index) => {
+            // Simulate wind speed change (+/- 2 m/s, constrained to 1-20 m/s)
+            const newSpeed = Math.max(1, Math.min(20, currentSpeed + (Math.random() - 0.5) * 4));
+            dynamicMarkers[index].currentSpeed = newSpeed;
+
+            // Calculate new size based on speed
+            const newSize = 20 + Math.min(newSpeed * 2, 40);
+
+            // Update icon size dynamically using setSize()
+            icon.setSize(newSize, newSize);
+
+            // Update anchor proportionally
+            const newAnchor = [newSize / 2, newSize * 0.85];
+            icon.options.iconAnchor = newAnchor;
+
+            // Update speed label in the icon
+            const iconElement = icon.getIconElement();
+            if (iconElement) {
+                const label = iconElement.querySelector('.wind-speed-label');
+                if (label) {
+                    label.textContent = Math.round(newSpeed);
+                }
+            }
+
+            // Update popup
+            const position = marker.getLatLng();
+            marker.setPopupContent(
+                `<b>Dynamic Wind Data</b><br>Speed: ${Math.round(newSpeed)} m/s<br>Direction: ${Math.round(icon.getRotation())}°`
+            );
+
+            // Also rotate slightly to simulate wind direction change
+            const newDirection = (icon.getRotation() + (Math.random() - 0.5) * 20 + 360) % 360;
+            icon.setRotation(newDirection);
+
+            console.log(
+                `Marker ${index + 1}: Speed ${Math.round(newSpeed)} m/s, Size ${Math.round(newSize)}px, Direction ${Math.round(newDirection)}°`
+            );
+        });
+    }, 2000);
+
+    return {markers: dynamicMarkers, interval};
 }
 
 /**
@@ -434,6 +552,7 @@ if (typeof _window !== 'undefined') {
         example4_MultipleMarkers,
         example5_CustomRotationOrigin,
         example6_WindSpeedVisualization,
+        example7_DynamicWindSpeed,
         exampleMain_WindDirectionMarkers,
         getFunctionSource,
     };

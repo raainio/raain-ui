@@ -4,6 +4,13 @@ import {DivIcon, DivIconOptions, Marker, PointExpression} from 'leaflet';
  * Extended DivIconOptions to include rotation and dynamic sizing properties
  */
 export interface RaainDivIconOptions extends DivIconOptions {
+    // from DivIconOptions
+    html?: string | HTMLElement | false;
+    iconSize?: PointExpression | undefined;
+    iconAnchor?: PointExpression | undefined;
+    popupAnchor?: PointExpression | undefined;
+    className?: string | undefined;
+
     /**
      * Initial rotation angle in degrees (0 = North, 90 = East, 180 = South, 270 = West)
      */
@@ -25,7 +32,8 @@ export interface RaainDivIconOptions extends DivIconOptions {
     height?: number;
 
     /**
-     * Base HTML template - can include {width} and {height} placeholders for dynamic sizing
+     * HTML template with {width} and {height} placeholders for dynamic sizing
+     * Use this for icons that need to change size at runtime using setSize()
      */
     htmlTemplate?: string;
 }
