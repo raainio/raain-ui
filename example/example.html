@@ -1,46 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>raain-ui-example</title>
+    <title>raain-ui - Layers & Timeframes</title>
     <meta charset="UTF-8"/>
-    <!-- Include the CesiumJS JavaScript and CSS files -->
+    <!-- Include the CesiumJS JavaScript and CSS files
     <script src="./http_cesium.com_downloads_cesiumjs_releases_1.128_Build_Cesium_Cesium.js"></script>
-    <link href="./http_cesium.com_downloads_cesiumjs_releases_1.128_Build_Cesium_Widgets_widgets.css" rel="stylesheet">
-
+    <link href="./http_cesium.com_downloads_cesiumjs_releases_1.128_Build_Cesium_Widgets_widgets.css" rel="stylesheet"> -->
+    <!-- Common example styles -->
+    <link href="./example-common.css" rel="stylesheet">
 </head>
 <body>
 
-<a href="example.html">example1</a>
-<a href="example-data.html">example2</a>
+<div id="header">
+    <a href="example.html">Layers & Timeframes</a>
+    <a href="example-data.html">Animations & Data</a>
+    <a href="example-rotated-icons.html">Rotated Icons</a>
+</div>
 
-<h3>map example</h3>
-<a onclick="toggleAnimation()"> >> animate</a>
-<a onclick="switchTimeFramePolarRain0()"> >> switchTimeFramePolarRain0</a>
-<a onclick="switchTimeFrameCartesian0()"> >> switchTimeFrameCartesian0</a>
-<a onclick="switchTimeFramePolarRain1()"> >> switchTimeFramePolarRain1</a>
-<a onclick="switchTimeFramePolarWithoutOptimization()"> >> switchTimeFramePolarWithoutOptimization</a>
-<a onclick="switchTimeFrameIcons()"> >> switchTimeFrameIcons</a>
-<hr>
+<h3>Map Example</h3>
+<div class="controls">
+    <a onclick="toggleAnimation()">▶ Animate</a>
+    <a onclick="switchTimeFramePolarRain0()">Polar Rain 0</a>
+    <a onclick="switchTimeFrameCartesian0()">Cartesian 0</a>
+    <a onclick="switchTimeFramePolarRain1()">Polar Rain 1</a>
+    <a onclick="switchTimeFramePolarWithoutOptimization()">Polar (No Opt)</a>
+    <a onclick="switchTimeFrameIcons()">Icons</a>
+</div>
 <div id="map" style="height: 500px; width: 100%;"></div>
 
-<h3>compare example</h3>
+<h3>Compare Example</h3>
 <div style="height: 300px; width: 100%;">
     <canvas id="compare"></canvas>
 </div>
 
-<h3>date focus example</h3>
+<h3>Date Focus Example</h3>
+<div class="controls">
+    <a onclick="focusPrevious()">← Previous</a>
+    <a onclick="focusReset()">Reset</a>
+    <a onclick="focusNext()">Next →</a>
+</div>
 <div style="height: 300px; width: 100%;">
-    <a onclick="focusPrevious()"> << </a>
-    <a onclick="focusReset()"> focusReset</a>
-    <a onclick="focusNext()"> >> </a>
     <canvas id="dateFocus"></canvas>
 </div>
 
-<h3>dynamic date focus example</h3>
+<h3>Dynamic Date Focus Example</h3>
+<div class="controls">
+    <a onclick="dynamicFocusPrevious()">← Previous</a>
+    <a onclick="dynamicFocusReset()">Reset</a>
+    <a onclick="dynamicFocusNext()">Next →</a>
+</div>
 <div style="height: 300px; width: 100%;">
-    <a onclick="dynamicFocusPrevious()"> << </a>
-    <a onclick="dynamicFocusReset()"> focusReset</a>
-    <a onclick="dynamicFocusNext()"> >> </a>
     <canvas id="dynamicDate"></canvas>
 </div>
 

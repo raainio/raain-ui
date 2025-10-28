@@ -28,8 +28,9 @@
     filter: grayscale(var(--red-intensity)) sepia(var(--red-intensity)) saturate(calc(1 + var(--red-intensity) * 5)) hue-rotate(calc(var(--red-intensity) * -50deg));
 
     /* Smooth rotation transition when angle changes */
-    /* Rotation is applied via JavaScript by modifying the transform property */
+    /* Rotation is applied via JavaScript by modifying the transform property
     transition: transform 0.3s ease-out;
+    */
 }
 
 /* Speed text label - as a real DOM element (not pseudo-element) */

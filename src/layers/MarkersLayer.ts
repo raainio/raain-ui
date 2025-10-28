@@ -1,16 +1,6 @@
-import {
-    Icon,
-    icon as leafletIcon,
-    IconOptions,
-    layerGroup,
-    LayerGroup,
-    Map,
-    Marker,
-    marker as leafletMarker,
-    MarkerOptions,
-} from 'leaflet';
+import {layerGroup, LayerGroup, Map, Marker, marker as leafletMarker, MarkerOptions} from 'leaflet';
 import {IPixiLayer} from './IPixiLayer';
-import {MapLatLng} from '../tools/MapLatLng';
+import {MapLatLng, RaainDivIcon} from '../tools';
 
 export class MarkersLayer implements IPixiLayer {
     protected _layerGroup: LayerGroup;
@@ -51,15 +41,11 @@ export class MarkersLayer implements IPixiLayer {
         this._height = height;
     }
 
-    public render(markers: {iconsLatLng: MapLatLng[]; iconOptions?: IconOptions}[]): {
+    public render(markers: {iconsLatLng: MapLatLng[]; raainDivIcon?: RaainDivIcon}[]): {
         markers: Marker[];
     } {
         if (this._layerGroup) {
             this._layerGroup.clearLayers();
-        }
-
-        if (!markers) {
-            return {markers: []};
         }
 
         // Add markers
@@ -67,26 +53,41 @@ export class MarkersLayer implements IPixiLayer {
         let x: number;
         let y: number;
         for (const marker of markers) {
-            let iconOption: Icon;
-            if (marker.iconOptions) {
-                iconOption = leafletIcon(marker.iconOptions);
-            }
+            const raainDivIcon = marker.raainDivIcon;
 
             for (const iconsLatLng of marker.iconsLatLng) {
                 x = iconsLatLng.lat;
                 y = iconsLatLng.lng;
+
                 if (x !== undefined && !isNaN(x) && y !== undefined && !isNaN(y)) {
                     const options: MarkerOptions = {
                         title: iconsLatLng.name,
                         alt: iconsLatLng.id,
                     };
-                    if (iconOption) {
-                        options.icon = iconOption;
+
+                    if (raainDivIcon) {
+                        options.icon = raainDivIcon;
                     }
-                    ms.push(leafletMarker([x, y], options));
+
+                    const leafletMarkerInstance = leafletMarker([x, y], options);
+
+                    if (raainDivIcon) {
+                        raainDivIcon.bindToMarker(leafletMarkerInstance);
+                    } else {
+                        console.warn('raain-ui >> no raainDivIcon provided for this marker!');
+                    }
+
+                    ms.push(leafletMarkerInstance);
                 } else {
                     // implement your own error handling
-                    console.error('MARKER ERROR: ', iconsLatLng.id, 'x: ', x, ' y: ', y);
+                    console.error(
+                        'raain-ui >> MARKER ERROR: ',
+                        iconsLatLng.id,
+                        'x: ',
+                        x,
+                        ' y: ',
+                        y
+                    );
                 }
             }
         }

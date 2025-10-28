@@ -100,7 +100,7 @@ export class PolarDrawer implements IDrawer {
         };
 
         if (distanceRatio <= 0) {
-            console.warn('polar distanceRatio is 0 - no sense ? ', center, centerPoint);
+            console.warn('raain-ui >> polar distanceRatio is 0 - no sense ? ', center, centerPoint);
             return 0;
         }
 
@@ -116,7 +116,7 @@ export class PolarDrawer implements IDrawer {
         );
         for (let [i, polarValue] of filteredValues.entries()) {
             if (done > optimization.hardLimit) {
-                console.warn('polar hard limit reached ', optimization.hardLimit);
+                console.warn('raain-ui >> polar hard limit reached ', optimization.hardLimit);
                 break;
             }
 

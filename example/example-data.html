@@ -1,26 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>raain-ui-example</title>
+    <title>raain-ui - Animations & Data</title>
     <meta charset="UTF-8"/>
+    <!-- Common example styles -->
+    <link href="./example-common.css" rel="stylesheet">
+    <style>
+        /* Page-specific styles */
+        #map {
+            height: 650px;
+            width: 650px;
+        }
+    </style>
 </head>
 <body>
 
-<a href="example.html">example1</a>
-<a href="example-data.html">example2</a>
+<div id="header">
+    <a href="example.html">Layers & Timeframes</a>
+    <a href="example-data.html">Animations & Data</a>
+    <a href="example-rotated-icons.html">Rotated Icons</a>
+</div>
 
-<a onclick="animateCartesian(true)"> >> animateCartesian</a>
-<a onclick="animatePolar(true)"> >> animatePolar</a>
-<a onclick="toggleAnimation()"> >> toggleAnimation</a>
-<a onclick="backward()"> << backward</a>
-<a onclick="forward()"> forward >></a>
+<h3>Data Visualization Controls</h3>
+<div class="controls">
+    <a onclick="animateCartesian(true)">▶ Animate Cartesian</a>
+    <a onclick="animatePolar(true)">▶ Animate Polar</a>
+    <a onclick="toggleAnimation()">⏯ Toggle Animation</a>
+    <a onclick="backward()">← Backward</a>
+    <a onclick="forward()">Forward →</a>
+</div>
 
-
-<div style="float:left;">
-    <div id="map" style="height: 650px; width: 650px;float:left;"></div>
-
-    <div style="height: 300px; width: 300px;float:left; padding-left: 30px;">
-        <h5 id="speedTitle">...</h5>
+<div class="content-wrapper">
+    <div id="map"></div>
+    <div class="matrix-container">
+        <h5 id="speedTitle">Speed Matrix</h5>
         <canvas id="speedMatrix"></canvas>
     </div>
 </div>

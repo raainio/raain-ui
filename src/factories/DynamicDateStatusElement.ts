@@ -45,7 +45,6 @@ export class DynamicDateStatusElement extends DateStatusElement {
     }
 
     public build(element: HTMLCanvasElement, inputs: DynamicDateStatusElementInput) {
-        console.log('DynamicDateStatusElement.build');
         this.element = element;
         this.inputs = inputs;
         this.fetchDataFn = this.inputs.fetchDataFn;
@@ -85,7 +84,7 @@ export class DynamicDateStatusElement extends DateStatusElement {
                 await originalFocusReset(dataPoints);
             } catch (error) {
                 if (!document || !document['mocked']) {
-                    console.error('Error fetching data and focus reset:', error);
+                    console.error('raain-ui >> Error fetching data and focus reset:', error);
                 }
             } finally {
                 this.setLoadingState(false);
@@ -107,7 +106,7 @@ export class DynamicDateStatusElement extends DateStatusElement {
                 // Call original's method
                 await originalFocusNext();
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('raain-ui >> Error fetching data:', error);
                 // Handle error state
             } finally {
                 // Hide loading state
@@ -130,7 +129,7 @@ export class DynamicDateStatusElement extends DateStatusElement {
                 // Call original's method
                 await originalFocusPrevious();
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('raain-ui >> Error fetching data:', error);
                 // Handle error state
             } finally {
                 // Hide loading state
@@ -165,7 +164,7 @@ export class DynamicDateStatusElement extends DateStatusElement {
                 // Call original's method
                 await originalFocusClick(e);
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('raain-ui >> Error fetching data:', error);
                 // Handle error state
             } finally {
                 // Hide loading state

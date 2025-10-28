@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>raain-ui - Rotated Icons</title>
+    <meta charset="UTF-8"/>
+    <!-- Common example styles -->
+    <link href="./example-common.css" rel="stylesheet">
+    <style>
+        /* Page-specific styles */
+        #map {
+            height: 600px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .wind-icon {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .wind-icon::after {
+            content: '↑'; /* Use upward arrow since 0° = North */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div id="header">
+    <a href="example.html">Layers & Timeframes</a>
+    <a href="example-data.html">Animations & Data</a>
+    <a href="example-rotated-icons.html">Rotated Icons</a>
+</div>
+
+<h1>RaainDivIcon Example</h1>
+
+<div class="controls">
+    <h3>Controls</h3>
+    <button onclick="rotateAll(45)">Rotate All +45°</button>
+    <button onclick="rotateAll(-45)">Rotate All -45°</button>
+    <button onclick="animateRotation()">Animate Rotation</button>
+    <button onclick="stopAnimation()">Stop Animation</button>
+    <button onclick="resetRotation()">Reset to Original Angles</button>
+    <button onclick="setRandomRotations()">Random Rotations</button>
+    <div style="margin-top: 10px;">
+        <label>Average Rotation: <span id="rotation-display">0°</span></label>
+    </div>
+</div>
+
+<div id="map"></div>
+
+<div style="margin-top: 40px;">
+    <h3>Usage Example - Source Code</h3>
+    <p style="color: #666; margin-bottom: 10px;">This is the actual code running on this page (from <code>exampleMain_WindDirectionMarkers()</code>):</p>
+    <pre id="source-code-display" style="background: white; padding: 20px; border-radius: 8px; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e0e0e0;"><code
+            style="color: #333; font-size: 14px; line-height: 1.6;">Loading source code...</code></pre>
+</div>
+
+<script src="./example-rotated-icons.js" type="module"></script>
+<script type="module">
+    // Wait for RotatedIconExamples to be ready and run the main example
+    (async () => {
+        while (!window.RotatedIconExamples) {
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
+
+        // Run the main example (uses raain-ui MapElement way)
+        const example = window.RotatedIconExamples.exampleMain_WindDirectionMarkers();
+
+        // Expose control functions to window for button onclick handlers
+        window.rotateAll = example.controls.rotateAll;
+        window.animateRotation = example.controls.animateRotation;
+        window.stopAnimation = example.controls.stopAnimation;
+        window.resetRotation = example.controls.resetRotation;
+        window.setRandomRotations = example.controls.setRandomRotations;
+
+        // Display the source code dynamically
+        const sourceCode = window.RotatedIconExamples.getFunctionSource(
+            window.RotatedIconExamples.exampleMain_WindDirectionMarkers
+        );
+        const codeElement = document.getElementById('source-code-display');
+        if (codeElement) {
+            // Escape HTML for display
+            const escapedCode = sourceCode
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            codeElement.innerHTML = `<code style="color: #333; font-size: 14px; line-height: 1.6;">${escapedCode}</code>`;
+        }
+    })();
+</script>
+</body>
+</html>

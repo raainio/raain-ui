@@ -19,7 +19,7 @@ interface SpinningBallModule {
 // Use the imported module or create a fallback if it fails
 const spinningBallModule: SpinningBallModule = spinningBallOriginal || {
     init: (params) => {
-        console.error('spinning-ball module failed to load properly');
+        console.error('raain-ui >> spinning-ball module failed to load properly');
         // Return a minimal implementation to prevent crashes
         return {
             update: () => false,

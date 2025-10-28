@@ -19,10 +19,15 @@ import {
 import markerIconUrl from 'url:./my-marker-icon.png';
 import markerShadowUrl from 'url:./my-marker-shadow.png';
 
+// eslint-disable-next-line no-undef
+const _document = document;
+// eslint-disable-next-line no-undef
+const _window = window;
+
 // 1) HTML elements
-const mapHtmlElement = document.getElementById('map');
-const speedMatrixHtmlElement = document.getElementById('speedMatrix');
-const speedHtmlTitle = document.getElementById('speedTitle');
+const mapHtmlElement = _document.getElementById('map');
+const speedMatrixHtmlElement = _document.getElementById('speedMatrix');
+const speedHtmlTitle = _document.getElementById('speedTitle');
 
 // 2) Data
 const center = {latitude: 48.774569, longitude: 2.008407};
@@ -199,11 +204,11 @@ const backward = () => {
     }
 };
 
-window.animateCartesian = animateCartesian;
-window.animatePolar = animatePolar;
-window.toggleAnimation = toggleAnimation;
-window.forward = forward;
-window.backward = backward;
+_window.animateCartesian = animateCartesian;
+_window.animatePolar = animatePolar;
+_window.toggleAnimation = toggleAnimation;
+_window.forward = forward;
+_window.backward = backward;
 
 mapElement.compositeLayer.showTheFistMatchingId('Cartesian');
 setTimeout(animateCartesian, animationTimeInMs);

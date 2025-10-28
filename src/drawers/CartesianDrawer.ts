@@ -100,7 +100,7 @@ export class CartesianDrawer implements IDrawer {
 
         for (const mapValue of filteredValues) {
             if (done > optimization.hardLimit) {
-                console.warn('cartesian hard limit reached ', optimization.hardLimit);
+                console.warn('raain-ui >> cartesian hard limit reached ', optimization.hardLimit);
                 break;
             }
             const points = this.cartesianMap2Points(mapValue);

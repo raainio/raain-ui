@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `RaainDivIcon` to show markers in map: it allows rotation and more complex design manipulation
+- Add `example-rotated-icons.html` to use raain-ui MapElement pattern
+
+## [2.3.22] - 2025-10-26
+
 ## [2.3.21] - 2025-10-16
 
 ### Changed

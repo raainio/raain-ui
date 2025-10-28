@@ -1,6 +1,5 @@
 import 'leaflet/dist/leaflet.css';
 import '../src/data/wind-markers.css';
-import '../src/data/wind-markers-static.css';
 import {
     CartesianMapValue,
     ChartScaleColors,
@@ -16,6 +15,7 @@ import {
     MonitoringBarsElementInput,
     MonitoringLinesElementInput,
     PolarMapValue,
+    RaainDivIcon,
     ScaleElementInput,
     SpeedMatrixElementInput,
     TimeframeContainer,
@@ -24,20 +24,24 @@ import {
 } from 'raain-ui';
 import {DateRange} from '../src';
 import markerIconUrl from 'url:./my-marker-icon.png';
-import markerShadowUrl from 'url:./my-marker-shadow.png';
+
+// eslint-disable-next-line no-undef
+const _document = document;
+// eslint-disable-next-line no-undef
+const _window = window;
 
 // 1) HTML Elements
-const mapHtmlElement = document.getElementById('map');
-const compareHtmlElement = document.getElementById('compare');
-const dateFocusHtmlElement = document.getElementById('dateFocus');
-const speedHtmlTitle = document.getElementById('speedTitle');
-const speedMatrixHtmlElement = document.getElementById('speedMatrix');
-const configurationHtmlElement = document.getElementById('configuration');
-const perfBarHtmlElement = document.getElementById('perfBar');
-const perfLineHtmlElement = document.getElementById('perfLine');
-const scaleHtmlElement = document.getElementById('scale');
-const earthMapHtmlElement = document.getElementById('earthMap');
-const dynamicDateHtmlElement = document.getElementById('dynamicDate');
+const mapHtmlElement = _document.getElementById('map');
+const compareHtmlElement = _document.getElementById('compare');
+const dateFocusHtmlElement = _document.getElementById('dateFocus');
+const speedHtmlTitle = _document.getElementById('speedTitle');
+const speedMatrixHtmlElement = _document.getElementById('speedMatrix');
+const configurationHtmlElement = _document.getElementById('configuration');
+const perfBarHtmlElement = _document.getElementById('perfBar');
+const perfLineHtmlElement = _document.getElementById('perfLine');
+const scaleHtmlElement = _document.getElementById('scale');
+const earthMapHtmlElement = _document.getElementById('earthMap');
+const dynamicDateHtmlElement = _document.getElementById('dynamicDate');
 
 // 2) Values
 const center = {latitude: 51.505, longitude: -0.09};
@@ -260,76 +264,62 @@ const scaleColors = sortedArray.map((entry) => {
 });
 const scaleLabels = sortedArray.map((entry) => entry[0]);
 
-// 3) Configurations
-const iconOptions = {
-    iconUrl: markerIconUrl,
-    shadowUrl: markerShadowUrl,
-};
+// 3) Configurations - Create rotatable wind icons using RaainDivIcon
+const windIcon1 = new RaainDivIcon({
+    html: `<img src="${markerIconUrl}" style="width: 25px; height: 41px; display: block;" />`,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    rotationAngle: 0,
+    rotationOrigin: 'center center',
+    className: 'rotated-wind-marker',
+});
+
+const windIcon2 = new RaainDivIcon({
+    html: `<img src="${markerIconUrl}" style="width: 25px; height: 41px; display: block;" />`,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    rotationAngle: 0,
+    rotationOrigin: 'center center',
+    className: 'rotated-wind-marker',
+});
 
 // 4) Factory
 const factory = new ElementsFactory(center, true);
 const mapElement = factory.createMap(
     mapHtmlElement,
     new MapElementInput(timeframeContainers, [
-        {iconsLatLng: markers1, iconOptions},
-        {iconsLatLng: markers2, iconOptions},
+        {iconsLatLng: markers1, raainDivIcon: windIcon1},
+        {iconsLatLng: markers2, raainDivIcon: windIcon2},
     ])
 );
 
-// Animated wind direction/strength cycling - Demo of wind-markers.css
+// Animated wind direction/strength cycling - Demo of RaainDivIcon
 const windExamples = [
-    {azimuth: 0, strength: 8, trustful: 0.5, description: 'North, 8 m/s, 100% trust'},
-    {azimuth: 10, strength: 12, trustful: 0.9, description: 'North-Northeast, 12 m/s, 90% trust'},
-    {azimuth: 20, strength: 15, trustful: 0.8, description: 'North-Northeast, 15 m/s, 80% trust'},
-    {azimuth: 30, strength: 10, trustful: 0.7, description: 'North-Northeast, 10 m/s, 70% trust'},
-    {azimuth: 45, strength: 12, trustful: 0.6, description: 'Northeast, 12 m/s, 60% trust'},
-    {azimuth: 90, strength: 15, trustful: 0.5, description: 'East, 15 m/s, 50% trust'},
-    {azimuth: 135, strength: 10, trustful: 0.4, description: 'Southeast, 10 m/s, 40% trust'},
-    {azimuth: 180, strength: 6, trustful: 0.3, description: 'South, 6 m/s, 30% trust'},
-    {azimuth: 200, strength: 10, trustful: 0.2, description: 'South-Southwest, 10 m/s, 20% trust'},
-    {azimuth: 225, strength: 14, trustful: 0.1, description: 'Southwest, 14 m/s, 10% trust'},
-    {azimuth: 270, strength: 5, trustful: 0.0, description: 'West, 5 m/s, 0% trust (red)'},
-    {azimuth: 315, strength: 9, trustful: 1.0, description: 'Northwest, 9 m/s, 100% trust'},
+    {azimuth: 0, strength: 8, description: 'North, 8 m/s'},
+    {azimuth: 33, strength: 12, description: 'Northeast, 12 m/s'},
+    {azimuth: 77, strength: 15, description: 'East, 15 m/s'},
+    {azimuth: 135, strength: 10, description: 'Southeast, 10 m/s'},
+    {azimuth: 180, strength: 6, description: 'South, 6 m/s'},
+    {azimuth: 225, strength: 14, description: 'Southwest, 14 m/s'},
+    {azimuth: 260, strength: 5, description: 'West, 5 m/s'},
+    {azimuth: 315, strength: 9, description: 'Northwest, 9 m/s'},
 ];
 
-let currentWindIndex = 0;
-let currentWindMode = false; // Toggle between animated and static mode
+let currentWindIndex = 2;
 
 function cycleWindAnimation() {
     const example1 = windExamples[currentWindIndex];
     const example2 = windExamples[windExamples.length - currentWindIndex - 1];
 
-    // Toggle between animated and static mode every full cycle
-    if (currentWindIndex === 0) {
-        currentWindMode = !currentWindMode;
-    }
-
-    // Build CSS class - either animated or static
-    const windClass1 = currentWindMode
-        ? `marker-wind-static marker-wind-static-${example1.azimuth}`
-        : `marker-wind marker-wind-${example1.azimuth}`;
-    const windClass2 = currentWindMode
-        ? `marker-wind-static marker-wind-static-${example2.azimuth}`
-        : `marker-wind marker-wind-${example2.azimuth}`;
-
-    // Apply new wind style using changeMarkerStyle
-    // For animated mode: strength controls animation speed and displacement
-    // For static mode: strength is displayed as text label, speed-text shows value
-    // The trustful CSS variable controls red colorization (0=red, 1=original)
-    mapElement.changeMarkerStyle(markers1[0], windClass1, {
-        strength: example1.strength,
-        trustful: example1.trustful,
-        'speed-text': `${example1.strength.toFixed(1)} m/s`,
-    });
-    mapElement.changeMarkerStyle(markers1[1], windClass2, {
-        strength: example2.strength,
-        trustful: example2.trustful,
-        'speed-text': `${example2.strength.toFixed(1)} m/s`,
-    });
+    // Update rotation using the new RaainDivIcon API
+    windIcon1.setRotation(example1.azimuth);
+    windIcon2.setRotation(example2.azimuth);
 
     console.log(
-        `Wind demo (${currentWindMode ? 'STATIC' : 'ANIMATED'}): ${example1.description} (${windClass1}, strength: ${example1.strength}, trustful: ${example1.trustful})`,
-        `vs ${example2.description} (${windClass2}, strength: ${example2.strength}, trustful: ${example2.trustful})`
+        `Wind rotation: Marker1 -> ${example1.description} (${example1.azimuth}°)`,
+        `| Marker2 -> ${example2.description} (${example2.azimuth}°)`
     );
 
     // Move to next example
@@ -340,7 +330,7 @@ function cycleWindAnimation() {
 cycleWindAnimation();
 
 // Cycle through wind animations every 3 seconds
-// Not Needed for now: setInterval(cycleWindAnimation, 3000);
+// setInterval(cycleWindAnimation, 3000);
 
 const compareElement = factory.createCompare(
     compareHtmlElement,
@@ -616,20 +606,20 @@ const animatePerf = () => {
     setTimeout(animatePerf, animationTimeInMs);
 };
 
-window.toggleAnimation = toggleAnimation;
-window.switchTimeFramePolarRain0 = switchTimeFramePolarRain0;
-window.switchTimeFrameCartesian0 = switchTimeFrameCartesian0;
-window.switchTimeFramePolarRain1 = switchTimeFramePolarRain1;
-window.switchTimeFramePolarWithoutOptimization = switchTimeFramePolarWithoutOptimization;
-window.switchTimeFrameIcons = switchTimeFrameIcons;
+_window.toggleAnimation = toggleAnimation;
+_window.switchTimeFramePolarRain0 = switchTimeFramePolarRain0;
+_window.switchTimeFrameCartesian0 = switchTimeFrameCartesian0;
+_window.switchTimeFramePolarRain1 = switchTimeFramePolarRain1;
+_window.switchTimeFramePolarWithoutOptimization = switchTimeFramePolarWithoutOptimization;
+_window.switchTimeFrameIcons = switchTimeFrameIcons;
 
-window.focusReset = dateStatusElement.focusReset;
-window.focusPrevious = dateStatusElement.focusPrevious;
-window.focusNext = dateStatusElement.focusNext;
+_window.focusReset = dateStatusElement.focusReset;
+_window.focusPrevious = dateStatusElement.focusPrevious;
+_window.focusNext = dateStatusElement.focusNext;
 
-window.dynamicFocusReset = dynamicDateElement.focusReset;
-window.dynamicFocusPrevious = dynamicDateElement.focusPrevious;
-window.dynamicFocusNext = dynamicDateElement.focusNext;
+_window.dynamicFocusReset = dynamicDateElement.focusReset;
+_window.dynamicFocusPrevious = dynamicDateElement.focusPrevious;
+_window.dynamicFocusNext = dynamicDateElement.focusNext;
 
 // #############
 
