@@ -120,7 +120,6 @@ describe('Timeframes.TimeframeContainers', () => {
             isReady: true,
         });
         const cartesianTools = new CartesianTools();
-        cartesianTools.buildLatLngEarthMap();
         rainComputationMap1.setMapData([rainMeasure1, rainMeasure1], {
             mergeStrategy: MergeStrategy.AVERAGE,
             cartesianTools,

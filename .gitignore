@@ -35,3 +35,7 @@ disti/
 .env
 *gitignored*
 *gitignored
+
+# Added by mle-best-practices
+.claude/
+.cursor/
