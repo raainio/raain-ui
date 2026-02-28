@@ -9,6 +9,7 @@ import {MonitoringBarsElement, MonitoringBarsElementInput} from './MonitoringBar
 import {MonitoringLinesElement, MonitoringLinesElementInput} from './MonitoringLinesElement';
 import {ScaleElement, ScaleElementInput} from './ScaleElement';
 import {EarthMapElement, EarthMapElementInput} from './EarthMapElement';
+import {ModelPerformanceElement, ModelPerformanceElementInput} from './ModelPerformanceElement';
 
 export class ElementsFactory {
     constructor(
@@ -99,6 +100,15 @@ export class ElementsFactory {
         inputs: DynamicDateStatusElementInput
     ): DynamicDateStatusElement {
         const el = new DynamicDateStatusElement(this.addSomeDebugInfos);
+        el.build(element, inputs);
+        return el;
+    }
+
+    public createModelPerformance(
+        element: HTMLCanvasElement,
+        inputs: ModelPerformanceElementInput
+    ): ModelPerformanceElement {
+        const el = new ModelPerformanceElement(this.addSomeDebugInfos);
         el.build(element, inputs);
         return el;
     }

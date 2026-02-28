@@ -12,3 +12,4 @@ export * from './Tools';
 export * from './ChartColors';
 export * from './ChartScaleColors';
 export * from './EarthMapElement';
+export * from './ModelPerformanceElement';

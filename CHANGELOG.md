@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.28] - 2026-02-28
+
+### Added
+
+- [RAD-178] ModelPerformanceElement chart for KPE indicator visualization
+- [RAD-178] ElementsFactory extended with model performance chart builder
+
+## [2.3.27] - 2026-01-22
+
 ## [2.3.25] - 2025-12-08
 
 ## [2.3.24] - 2025-10-28
