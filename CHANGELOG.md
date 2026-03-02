@@ -7,20 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Raain 3.1.x => 3.2.x
+
 ## [2.3.28] - 2026-02-28
 
 ### Added
 
-- [RAD-178] ModelPerformanceElement chart for KPE indicator visualization
-- [RAD-178] ElementsFactory extended with model performance chart builder
+- ModelPerformanceElement chart for KPE indicator visualization
+- ElementsFactory extended with model performance chart builder
 
 ## [2.3.27] - 2026-01-22
-
-## [2.3.25] - 2025-12-08
-
-## [2.3.24] - 2025-10-28
-
-## [2.3.23] - 2025-10-28
 
 ### Added
 
