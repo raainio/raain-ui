@@ -8,7 +8,9 @@ export class ModelPerformanceElementInput {
             date: Date;
             KPEi: number | null;
             KPE1: number | null;
-        }> = []
+        }> = [],
+        public yMin: number = 0,
+        public yMax: number = 1
     ) {}
 }
 
@@ -57,8 +59,8 @@ export class ModelPerformanceElement {
                         },
                     },
                     y: {
-                        min: -2,
-                        max: 1,
+                        min: inputs.yMin,
+                        max: inputs.yMax,
                         title: {
                             display: true,
                             text: 'KPE',
