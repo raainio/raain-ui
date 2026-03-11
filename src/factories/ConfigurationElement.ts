@@ -101,30 +101,32 @@ export class ConfigurationElement {
                     legend: {
                         display: false,
                     },
-                    dragData: inputs.readonly ? false : {
-                        // round: 1, // rounds the values to n decimal places; in this case 1, e.g 0.1234 => 0.1)
-                        magnet: {
-                            to: (value: {x: number; y: number}) => {
-                                return {x: value.x, y: Math.round(value.y * 10) / 10};
-                            },
-                        },
-                        showTooltip: false, // show the tooltip while dragging [default = true]
-                        dragX: true, // also enable dragging along the x-axis.
-                        onDrag: (
-                            e: any,
-                            datasetIndex: number,
-                            index: number,
-                            value: {x: number; y: number}
-                        ) => {
-                            if (inputs.dragCallback) {
-                                const result = inputs.dragCallback(e);
-                                if (result === false) {
-                                    return false;
-                                }
-                            }
-                            return true;
-                        },
-                    },
+                    dragData: inputs.readonly
+                        ? false
+                        : {
+                              // round: 1, // rounds the values to n decimal places; in this case 1, e.g 0.1234 => 0.1)
+                              magnet: {
+                                  to: (value: {x: number; y: number}) => {
+                                      return {x: value.x, y: Math.round(value.y * 10) / 10};
+                                  },
+                              },
+                              showTooltip: false, // show the tooltip while dragging [default = true]
+                              dragX: true, // also enable dragging along the x-axis.
+                              onDrag: (
+                                  e: any,
+                                  datasetIndex: number,
+                                  index: number,
+                                  value: {x: number; y: number}
+                              ) => {
+                                  if (inputs.dragCallback) {
+                                      const result = inputs.dragCallback(e);
+                                      if (result === false) {
+                                          return false;
+                                      }
+                                  }
+                                  return true;
+                              },
+                          },
                     tooltip: {
                         enabled: true,
                         filter: (t: any) => {
