@@ -10,7 +10,8 @@ export class ConfigurationElementInput {
         public maxPoint: {x: number; y: number} = {x: 100, y: 100},
         public logAdded = false,
         public backgroundColors: {color: string; yStart: number; yEnd: number}[] = [],
-        public dragCallback?: any
+        public dragCallback?: any,
+        public readonly = false
     ) {}
 }
 
@@ -100,7 +101,7 @@ export class ConfigurationElement {
                     legend: {
                         display: false,
                     },
-                    dragData: {
+                    dragData: inputs.readonly ? false : {
                         // round: 1, // rounds the values to n decimal places; in this case 1, e.g 0.1234 => 0.1)
                         magnet: {
                             to: (value: {x: number; y: number}) => {
@@ -115,26 +116,14 @@ export class ConfigurationElement {
                             index: number,
                             value: {x: number; y: number}
                         ) => {
-                            const done = inputs.dragCallback ? inputs.dragCallback(e) : null;
+                            if (inputs.dragCallback) {
+                                const result = inputs.dragCallback(e);
+                                if (result === false) {
+                                    return false;
+                                }
+                            }
                             return true;
                         },
-                        // this solely works for continous, numerical x-axis scales (no categories or dates)!
-                        // onDrag: (e, datasetIndex, index, value) => {
-                        //     console.log('onDrag : ', e, datasetIndex, index, value);
-                        //     if (points && index > 0) {
-                        //         const pointBefore = points[index - 1];
-                        //         if (pointBefore.y > value.y) {
-                        //             return false;
-                        //         }
-                        //     }
-                        //     if (points && index < points.length) {
-                        //         const pointAfter = points[index + 1];
-                        //         if (pointAfter.y < value.y) {
-                        //             return false;
-                        //         }
-                        //     }
-                        //     return true;
-                        // },
                     },
                     tooltip: {
                         enabled: true,
