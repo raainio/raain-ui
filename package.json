@@ -35,7 +35,7 @@
     "geolib": "~3.3.4",
     "leaflet": "~1.9.4",
     "pixi.js": "~5.3.12",
-    "raain-model": "~3.2.2",
+    "raain-model": "~3.2.6",
     "satellite-view": "~2.1.2",
     "spinning-ball": "~0.5.0",
     "tile-setter": "~0.1.12",
